@@ -1,16 +1,13 @@
 <?php
 namespace VVC\Controller;
 
-use VVC\Controller\Router;
-use VVC\Controller\BaseController;
 use VVC\Model\Database\Reader;
 
+/**
+ * Processes user authentication
+ */
 class LoginController extends BaseController
 {
-    public function __construct(Router $router, $template)
-    {
-        parent::__construct($router, $template);
-    }
 
     public function showLoginPage()
     {
@@ -37,26 +34,28 @@ class LoginController extends BaseController
         $password = $postData['password'];
 
         try {
-            $user = Reader::findUserByUsername($username);
-
-            if (empty($user)) {
-                $this->flashes->add('fail', 'Username was not found');
-                return $this->showLoginFailPage($username);
-            }
-            //(!password_verify($password, $user['password']
-            if ($password != $user['password']) {
-                $this->flashes->add('fail', 'Password is incorrect');
-                return $this->showLoginFailPage($username);
-            }
-
-            $this->flashes->add('success', "Welcome back, {$user['username']}");
-            $this->router->redirect('/');
-
+            $dbReader = new Reader();
+            $user = $dbReader->findUserByUsername($username);
         } catch (\Exception $e) {
             // TODO logError($e);
+            // throw $e;
             $this->flashes->add('fail', 'Login failed, please try again');
             return $this->showLoginFailPage($username);
         }
+
+        if (empty($user)) {
+            $this->flashes->add('fail', 'Username was not found');
+            return $this->showLoginFailPage($username);
+        }
+        //(!password_verify($password, $user['password']
+        if ($password != $user['password']) {
+            $this->flashes->add('fail', 'Password is incorrect');
+            return $this->showLoginFailPage($username);
+        }
+
+        $this->flashes->add('success', "Welcome back, {$user['username']}");
+        $this->router->makeCookies($user['id'], $user['role_id']);
+        $this->router->redirect('/');
 
         //redirect('/', makeCookies($user['id'], $user['role_id']));
     }

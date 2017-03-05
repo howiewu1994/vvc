@@ -1,17 +1,14 @@
 <?php
 namespace VVC\Controller;
 
-use VVC\Controller\Router;
-use VVC\Controller\BaseController;
 use VVC\Model\Database\Reader;
 use VVC\Model\Database\Creator;
 
+/**
+ * Processes user registration
+ */
 class RegistrationController extends BaseController
 {
-    public function __construct(Router $router, $template)
-    {
-        parent::__construct($router, $template);
-    }
 
     public function showRegistrationPage()
     {
@@ -44,23 +41,29 @@ class RegistrationController extends BaseController
         }
 
         try {
-            $user = Reader::findUserByUsername($username);
+            $dbReader = new Reader();
+            $user = $dbReader->findUserByUsername($username);
+
             if (!empty($user)) {
                 $this->flashes->add('fail', 'This username is already registered');
                 return $this->showRegistrationFailPage($postData['username']);
             }
 
-            $hashed = password_hash($password, PASSWORD_DEFAULT);
+            //$hashed = password_hash($password, PASSWORD_DEFAULT);
+            $hashed = $password;
 
-            $user = Creator::createUser($username, $hashed);
+            $dbCreator = new Creator();
+            $user = $dbCreator->createUser($username, $hashed);
+
             $this->flashes->add('success', 'Registration complete');
+            $this->router->makeCookies($user['id'], $user['role_id']);
             $this->router->redirect('/');
 
         } catch (\Exception $e) {
             // TODO logError($e);
+            // throw $e;
             $this->flashes->add('fail', 'Registration failed, please try again');
             return $this->showRegistrationFailPage($postData['username']);
         }
     }
-
 }

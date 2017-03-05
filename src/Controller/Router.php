@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * Finds appropriate controller based on htpp request uri
+ * and sends http response
+ */
 class Router
 {
     private $session;
@@ -72,6 +76,30 @@ class Router
         return $this->cookies;
     }
 
+    function makeCookies(int $userId, int $userRole)
+    {
+        $expireTime = time() + 3600;
+
+        $jwt = \Firebase\JWT\JWT::encode([
+            'iss'   =>  $this->request->getBaseUrl(),   // issuer (domain, '')
+            'uid'   =>  $userId,                        // userId
+            'exp'   =>  $expireTime,                    // user id
+            'iat'   =>  time(),                         // issued at
+            'nbf'   =>  time(),                         // not before (delay)
+            'adm'   =>  $userRole == 1                  // is admin or not
+        ], getenv('SECRET_KEY'), 'HS256');
+
+        $cookie = new \Symfony\Component\HttpFoundation\Cookie(
+            'auth_token',
+            $jwt,
+            $expireTime,
+            '/',
+            getenv('COOKIE_DOMAIN')
+        );
+
+        $this->cookies[] = $cookie;
+    }
+
     public function sendResponse(
         $html,
         $httpCode = Response::HTTP_FOUND,
@@ -87,7 +115,11 @@ class Router
         $response->send();
     }
 
-    public function redirect($uri)
+    /**
+     * Internal redirect to process request at another Location
+     * @param  string $uri
+     */
+    public function redirect(string $uri)
     {
         $this->sendResponse(null, Response::HTTP_FOUND, ['location' => $uri]);
     }
