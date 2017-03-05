@@ -1,9 +1,32 @@
 <?php
 namespace VVC\Model\Database;
 
-class Reader
+use VVC\Model\Database\Connection;
+
+/**
+ * Processes SELECT queries
+ */
+class Reader extends Connection
 {
-    public static function findUserByUsername($username)
+    /**
+     * Returns existing user data
+     * @param  string $username
+     * @return [id, username, password, role_id, created_at] OR false
+     */
+    public function findUserByUsername($username)
+    {
+        // test stub
+        if (NO_DATABASE) {
+            return $this->findUserByUsername_stub($username);
+        }
+
+        $sql = "SELECT * FROM users WHERE username = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$username]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function findUserByUsername_stub($username)
     {
         if ($username == 'user'){
             return [
@@ -20,7 +43,7 @@ class Reader
                 'role_id' => 1
             ];
         } else {
-            return false;
+            return [];
         }
     }
 }
