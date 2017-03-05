@@ -1,14 +1,22 @@
 <?php
 namespace VVC\Controller;
 
-use VVC\Controller\Router;
 use Symfony\Component\HttpFoundation\Response;
 
-class BaseController
+/**
+ * Basic template for all page controllers
+ * Loads twig, wraps all needed variables via render()
+ * and transfers response to router
+ *
+ * Interfaces: replacing template, replacing http response code,
+ * adding variables to twig, adding flash messages to twig,
+ * cleaning up input variables
+ */
+class BaseController extends Auth
 {
     protected $router;
+    protected $auth;
     protected $twig;
-    protected $page;
 
     protected $template;
     protected $httpCode = Response::HTTP_FOUND;
@@ -19,6 +27,8 @@ class BaseController
     {
         $this->router = $router;
         $this->flashes = $router->getSession()->getFlashBag();
+
+        $this->auth = new Auth($router);
 
         $this->template = $template;
         $this->loadTwig();
@@ -35,19 +45,21 @@ class BaseController
         $this->twig = new \Twig_Environment($loader);
 
         $this->twig->addFunction(new \Twig_Function(
-            'authenticated', array($this, 'isAuthenticated')
+            'authenticated', array($this->auth, 'isAuthenticated')
         ));
         $this->twig->addFunction(new \Twig_Function(
-            'admin', array($this, 'isAdmin')
+            'admin', array($this->auth, 'isAdmin')
         ));
-
-        $this->page = $this->twig->load($this->getTemplate());
     }
 
+    /**
+     * Renders current $template, wraps variables for twig and sends response
+     */
     public function render()
     {
+        $page = $this->twig->load($this->getTemplate());
         $this->addFlashMessages();
-        $html = $this->page->render($this->getVars());
+        $html = $page->render($this->getVars());
         $this->router->sendResponse($html);
     }
 
@@ -61,9 +73,14 @@ class BaseController
         $this->template = $template;
     }
 
-    public function getHttpCode()
+    public function getHttpCode() : int
     {
         return $this->httpCode;
+    }
+
+    public function setHttpCode(int $httpCode)
+    {
+        $this->httpCode = $httpCode;
     }
 
     public function getVars() : array
@@ -71,30 +88,25 @@ class BaseController
         return $this->vars;
     }
 
+    /**
+     * Adds a key-value pair for future use in a twig template
+     * @param string $varName
+     * @param any $varValue
+     */
     public function addVar(string $varName, $varValue)
     {
         $this->vars[$varName] = $varValue;
     }
 
-    public function isAuthenticated()
-    {
-        return false;
-    }
-
-    public function isAdmin()
-    {
-        if (!isAuthenticated()) {
-            return false;
-        }
-
-        return true;
-    }
-
+    /**
+     * Extracts and prepares flash messages for future use in a twig template
+     */
     function addFlashMessages()
     {
-        $session = $this->router->getSession();;
+        $session = $this->router->getSession();
 
         $messages = [];
+        // TODO change flashBag to $this->flashes
         foreach ($session->getFlashBag()->all() as $msgType => $msg) {
             $messages[$msgType] = $msg;
         }
@@ -104,7 +116,12 @@ class BaseController
         $this->addVar('messages', $messages);
     }
 
-    public function isClean(array $vars) : bool
+    /**
+     * Cleans up input data and returns true if it has not changed
+     * @param  array $vars - by reference
+     * @return bool
+     */
+    public function isClean(array &$vars) : bool
     {
         $beforeCleanup = $vars;
         $this->cleanupVars($vars);
@@ -112,7 +129,7 @@ class BaseController
         return $beforeCleanup == $vars;
     }
 
-    public function cleanupVars(&$vars)
+    public function cleanupVars(array &$vars)
     {
         foreach ($vars as $key => $val) {
             switch ($key) {

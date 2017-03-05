@@ -1,15 +1,25 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-const APP_ROOT = '/vvc/web';
+date_default_timezone_set("Asia/Shanghai");
 
-use Symfony\Component\HttpFoundation\Session\Session;
-use VVC\Controller\Router;
+// Flags for testing
+const NO_DATABASE = false;      // use real database connection?
+/**
+ * Access rights (privileges) :
+ * -1 - default (need to login)
+ *  0 - no privileges on all pages
+ *  1 - admin privileges on all pages
+ *  2 - signed in user privileges on all pages
+ */
+const ACCESS_RIGHTS = 0;
 
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
-$session = new Session();
+$session = new Symfony\Component\HttpFoundation\Session\Session();
 $session->start();
 
-$router = new Router($session);
+$request = Symfony\Component\HttpFoundation\Request::createFromGlobals();
+
+$router = new VVC\Controller\Router($session);
