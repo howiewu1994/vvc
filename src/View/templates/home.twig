@@ -1,0 +1,20 @@
+{% extends 'base.twig' %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="well">
+        <h2>虚拟宠物医院学习系统</h2>
+        {% block flash_messages %}
+            {# display success messages if:
+                login success
+                registration success
+             #}
+            {% include "inc/flash_messages.twig" %}
+        {% endblock %}
+        <p>Welcome to Virtual Vet Clinic. You can select 3D navigation or go
+        browse illness catalog page.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% block nav %}
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Virtual Vet Clinic</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/3d">3D Navigation</a></li>
+                <li><a href="/catalog">Catalog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if not authenticated() %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/registration">Registration</a></li>
+                {% else %}
+                    {% if admin() %}
+                        <li><a href="/admin">Admin Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="/account">My Account</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}

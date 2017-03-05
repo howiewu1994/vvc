@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block meta %}
+            <meta charset="UTF-8">
+            <meta name="viewport"
+                  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% endblock %}
+
+        <title>{% block title %}Virtual Vet Clinic{% endblock %}</title>
+
+        {% block links %}
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css">
+        {% endblock %}
+
+        {% block scripts %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}{% include "inc/header.twig" %}{% endblock %}
+        {% block nav %}{% include "inc/nav.twig" %}{% endblock %}
+        {% block body %}{% endblock %}
+        {% block footer %}{% include "inc/footer.twig" %}{% endblock %}
+    </body>
+</html>

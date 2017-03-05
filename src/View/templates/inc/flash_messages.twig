@@ -1,0 +1,12 @@
+{% for message_type, messages in messages %}
+    {% for message in messages %}
+        {% if message_type == 'fail' %}
+            {% set css = 'danger' %}
+        {% elseif message_type == 'success' %}
+            {% set css = 'success' %}
+        {% endif %}
+        <div class="alert alert-{{ css }} alert-dismissable">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
