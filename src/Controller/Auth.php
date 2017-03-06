@@ -77,6 +77,17 @@ class Auth
         }
     }
 
+    public static function killToken(string $token)
+    {
+        return new \Symfony\Component\HttpFoundation\Cookie(
+            $token,
+            'Expired',
+            time() - 3600,
+            '/',
+            getenv('COOKIE_DOMAIN')
+        );
+    }
+
     public static function isAuthenticated() : bool
     {
         // stub for testing
@@ -122,13 +133,7 @@ class Auth
         global $session;
 
         if (!self::isAuthenticated()) {
-            $token = new \Symfony\Component\HttpFoundation\Cookie(
-                'auth_token',
-                'Expired',
-                time() - 3600,
-                '/',
-                getenv('COOKIE_DOMAIN')
-            );
+            $token = self::killToken('auth_token');
             $session->getFlashBag()->add('success', 'Please sign in first');
             return Router::redirect('/login', $token);
         }
@@ -153,5 +158,15 @@ class Auth
         }
 
         return true;
+    }
+
+    public static function logout()
+    {
+        global $session;
+
+        $token = self::killToken('auth_token');
+        $session->getFlashBag()->add('success', 'Logged out successfully');
+        
+        return Router::redirect('/login', $token);
     }
 }

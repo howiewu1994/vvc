@@ -30,7 +30,7 @@ class Creator extends Connection
         }
 
         $sql = "INSERT INTO
-            usaers(username, password, role_id, created_at)
+            users(username, password, role_id, created_at)
             VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $role_id, $created_at]);

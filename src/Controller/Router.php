@@ -54,6 +54,7 @@ class Router
             case '/logout' :
 
                 Auth::requireAuth();
+                Auth::logout();
                 break;
 
             case '/account' :
