@@ -26,19 +26,19 @@ class Reader extends Connection
 
     public function findUserByUsername_stub($username)
     {
-        if ($username == 'admin'){
+        if ($username == ADMIN_NAME){
             return [
                 'id' => 1,
-                'username' => 'admin',
-                'password' => password_hash('123', PASSWORD_DEFAULT),
+                'username' => ADMIN_NAME,
+                'password' => password_hash(ADMIN_PASSWORD, PASSWORD_DEFAULT),
                 'role_id' => 1,
                 'created_at' => date("Y-m-d H:i:s")
             ];
-        } elseif ($username == 'user') {
+        } elseif ($username == USER_NAME) {
             return [
                 'id' => 2,
-                'username' => 'user',
-                'password' => password_hash('123', PASSWORD_DEFAULT),
+                'username' => USER_NAME,
+                'password' => password_hash(USER_PASSWORD, PASSWORD_DEFAULT),
                 'role_id' => 2,
                 'created_at' => date("Y-m-d H:i:s")
             ];

@@ -3,10 +3,12 @@ namespace VVC\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 
+const TEMPLATES_DIR = __DIR__ . '/../View/templates';
+
 /**
  * Basic template for all page controllers
  * Loads twig, wraps all needed variables via render()
- * and transfers response to router
+ * and transfers response via Router
  *
  * Interfaces: replacing template, replacing http response code,
  * adding variables to twig, adding flash messages to twig,
@@ -14,23 +16,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class BaseController extends Auth
 {
-    protected $router;
-    protected $auth;
     protected $twig;
-
     protected $template;
     protected $httpCode = Response::HTTP_FOUND;
-    protected $flashes;
+    protected $flashBag;
     protected $vars = [];
 
-    public function __construct(Router $router, $template = 'home.twig')
+    public function __construct(string $template)
     {
-        $this->router = $router;
-        $this->flashes = $router->getSession()->getFlashBag();
+        global $session;
 
-        $this->auth = new Auth($router);
-
+        $this->flashBag = $session->getFlashBag();
         $this->template = $template;
+
         $this->loadTwig();
     }
 
@@ -39,33 +37,32 @@ class BaseController extends Auth
         $this->render();
     }
 
+    /**
+     * Prepares twig environment and loads default functions to twig,
+     * e.g. auth functions
+     */
     public function loadTwig()
     {
         $loader = new \Twig_Loader_Filesystem(TEMPLATES_DIR);
         $this->twig = new \Twig_Environment($loader);
 
         $this->twig->addFunction(new \Twig_Function(
-            'authenticated', array($this->auth, 'isAuthenticated')
+            'authenticated', array('VVC\Controller\Auth', 'isAuthenticated')
         ));
         $this->twig->addFunction(new \Twig_Function(
-            'admin', array($this->auth, 'isAdmin')
+            'admin', array('VVC\Controller\Auth', 'isAdmin')
         ));
     }
 
     /**
-     * Renders current $template, wraps variables for twig and sends response
+     * Renders current template, wraps variables for twig and sends response
      */
     public function render()
     {
-        $page = $this->twig->load($this->getTemplate());
-        $this->addFlashMessages();
-        $html = $page->render($this->getVars());
-        $this->router->sendResponse($html);
-    }
-
-    public function getTemplate() : string
-    {
-        return $this->template;
+        $page = $this->twig->load($this->template);
+        $this->prepareFlashMessages();
+        $html = $page->render($this->vars);
+        Router::sendResponse($html);
     }
 
     public function setTemplate(string $template)
@@ -73,19 +70,9 @@ class BaseController extends Auth
         $this->template = $template;
     }
 
-    public function getHttpCode() : int
-    {
-        return $this->httpCode;
-    }
-
     public function setHttpCode(int $httpCode)
     {
         $this->httpCode = $httpCode;
-    }
-
-    public function getVars() : array
-    {
-        return $this->vars;
     }
 
     /**
@@ -101,13 +88,10 @@ class BaseController extends Auth
     /**
      * Extracts and prepares flash messages for future use in a twig template
      */
-    function addFlashMessages()
+    function prepareFlashMessages()
     {
-        $session = $this->router->getSession();
-
         $messages = [];
-        // TODO change flashBag to $this->flashes
-        foreach ($session->getFlashBag()->all() as $msgType => $msg) {
+        foreach ($this->flashBag->all() as $msgType => $msg) {
             $messages[$msgType] = $msg;
         }
         //  print_r($messages);
@@ -118,7 +102,7 @@ class BaseController extends Auth
 
     /**
      * Cleans up input data and returns true if it has not changed
-     * @param  array $vars - by reference
+     * @param  array $vars - by reference -> possibly changed after cleanup
      * @return bool
      */
     public function isClean(array &$vars) : bool

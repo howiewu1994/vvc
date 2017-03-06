@@ -1,59 +1,57 @@
 <?php
 namespace VVC\Controller;
 
-const TEMPLATES_DIR = __DIR__ . '/../View/templates';
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Finds appropriate controller based on htpp request uri
- * and sends http response
+ * Processes htpp request and sends http response
  */
 class Router
 {
-    private $session;
-    private $request;
-    private $cookies = [];
-
-    public function __construct($session)
+    /**
+     * Finds appropriate controller based on request uri
+     * and decides what method to call based on get&post data
+     */
+    public static function run()
     {
-        $this->session = $session;
-        $this->request = Request::createFromGlobals();
-        $getData = $this->request->query->all();
-        $postData = $this->request->request->all();
+        global $req;
+        global $session;
 
-        $uri = $this->request->getPathInfo();
+        $get = $req->query->all();
+        $post = $req->request->all();
+        $uri = $req->getPathInfo();
+
         switch ($uri) {
             case '/' :
-                $controller = new BaseController($this, 'home.twig');
+                $controller = new BaseController('home.twig');
                 $controller->showHomepage();
                 break;
             case '/login' :
-                $controller = new LoginController($this, 'login.twig');
+                $controller = new LoginController('login.twig');
 
-                if (empty($postData)) {
+                if (empty($post)) {
                     $controller->showLoginPage();
                 } else {
-                    $controller->login($postData);
+                    $controller->login($post);
                 }
                 break;
             case '/registration' :
-                $controller = new RegistrationController($this, 'registration.twig');
+                $controller = new RegistrationController('registration.twig');
 
-                if (empty($postData)) {
+                if (empty($post)) {
                     $controller->showRegistrationPage();
                 } else {
-                    $controller->register($postData);
+                    $controller->register($post);
                 }
                 break;
             case '/3d' :
-                $controller = new NavigationController($this, 'navigation.twig');
+                $controller = new NavigationController('navigation.twig');
                 $controller->showSelectRolePage();
                 break;
             case '/catalog' :
-                $controller = new CatalogController($this, 'catalog.twig');
+                $controller = new CatalogController('catalog.twig');
                 $controller->showCatalogPage();
                 break;
             default:
@@ -61,55 +59,23 @@ class Router
         }
     }
 
-    public function getSession()
-    {
-        return $this->session;
-    }
-
-    public function getRequest() : Request
-    {
-        return $this->request;
-    }
-
-    public function getCookies() : array
-    {
-        return $this->cookies;
-    }
-
-    function makeCookies(int $userId, int $userRole)
-    {
-        $expireTime = time() + 3600;
-
-        $jwt = \Firebase\JWT\JWT::encode([
-            'iss'   =>  $this->request->getBaseUrl(),   // issuer (domain, '')
-            'uid'   =>  $userId,                        // userId
-            'exp'   =>  $expireTime,                    // user id
-            'iat'   =>  time(),                         // issued at
-            'nbf'   =>  time(),                         // not before (delay)
-            'adm'   =>  $userRole == 1                  // is admin or not
-        ], getenv('SECRET_KEY'), 'HS256');
-
-        $cookie = new \Symfony\Component\HttpFoundation\Cookie(
-            'auth_token',
-            $jwt,
-            $expireTime,
-            '/',
-            getenv('COOKIE_DOMAIN')
-        );
-
-        $this->cookies[] = $cookie;
-    }
-
-    public function sendResponse(
+    /**
+     * Prepares and sends http response
+     * @param  [type] $html     - rendered twig output
+     * @param  int $httpCode    - HTTP_FOUND, HTTP_NOT_FOUND, etc
+     * @param  array $headers   - optional http headers
+     * @param  array $authToken - optional authentication token
+     */
+    public static function sendResponse(
         $html,
         $httpCode = Response::HTTP_FOUND,
-        $headers = [])
+        array $headers = [],
+        $authToken = null)
     {
-        $cookies = $this->getCookies();
         $response = new Response($html, $httpCode, $headers);
 
-        foreach ($cookies as $cookie) {
-            $response->headers->setCookie($cookie);
+        if ($authToken) {
+            $response->headers->setCookie($authToken);
         }
 
         $response->send();
@@ -118,9 +84,15 @@ class Router
     /**
      * Internal redirect to process request at another Location
      * @param  string $uri
+     * @param  Cookie Object $authToken
      */
-    public function redirect(string $uri)
+    public static function redirect(string $uri, $authToken)
     {
-        $this->sendResponse(null, Response::HTTP_FOUND, ['location' => $uri]);
+        self::sendResponse(
+            null,
+            Response::HTTP_FOUND,
+            ['location' => $uri],
+            $authToken
+        );
     }
 }

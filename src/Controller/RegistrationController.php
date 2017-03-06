@@ -22,22 +22,27 @@ class RegistrationController extends BaseController
         $this->render();
     }
 
-    public function register(array $postData)
+    /**
+     * Verifies inputs, registers user and redirects to homepage
+     * OR stays on registration page and displays errors
+     * @param  array  $post - [username, password, confirm_password]
+     */
+    public function register(array $post)
     {
-        if (!$this->isClean($postData)) {
-            $this->flashes->add('fail',
+        if (!$this->isClean($post)) {
+            $this->flashBag->add('fail',
                 'Username or password contain invalid characters'
             );
-            return $this->showRegistrationFailPage($postData['username']);
+            return $this->showRegistrationFailPage($post['username']);
         }
 
-        $username = $postData['username'];
-        $password = $postData['password'];
-        $confirmPassword = $postData['confirm_password'];
+        $username = $post['username'];
+        $password = $post['password'];
+        $confirmPassword = $post['confirm_password'];
 
         if ($password != $confirmPassword) {
-            $this->flashes->add('fail', 'Passwords do not match');
-            return $this->showRegistrationFailPage($postData['username']);
+            $this->flashBag->add('fail', 'Passwords do not match');
+            return $this->showRegistrationFailPage($post['username']);
         }
 
         try {
@@ -45,8 +50,8 @@ class RegistrationController extends BaseController
             $user = $dbReader->findUserByUsername($username);
 
             if (!empty($user)) {
-                $this->flashes->add('fail', 'This username is already registered');
-                return $this->showRegistrationFailPage($postData['username']);
+                $this->flashBag->add('fail', 'This username is already registered');
+                return $this->showRegistrationFailPage($post['username']);
             }
 
             $hashed = password_hash($password, PASSWORD_DEFAULT);
@@ -54,15 +59,15 @@ class RegistrationController extends BaseController
             $dbCreator = new Creator();
             $user = $dbCreator->createUser($username, $hashed);
 
-            $this->flashes->add('success', 'Registration complete');
-            $this->router->makeCookies($user['id'], $user['role_id']);
-            $this->router->redirect('/');
+            $this->flashBag->add('success', 'Registration complete');
+            $authToken = Auth::encodeToken($user['id'], $user['role_id']);
+            Router::redirect('/', $authToken);
 
         } catch (\Exception $e) {
             // TODO logError($e);
             // throw $e;
-            $this->flashes->add('fail', 'Registration failed, please try again');
-            return $this->showRegistrationFailPage($postData['username']);
+            $this->flashBag->add('fail', 'Registration failed, please try again');
+            return $this->showRegistrationFailPage($post['username']);
         }
     }
 }

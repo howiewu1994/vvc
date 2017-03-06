@@ -8,35 +8,76 @@ use Firebase\JWT\JWT;
  */
 class Auth
 {
-    private $router;
-
-    public function __construct($router)
+    /**
+     * Wraps authentication token in a jwt
+     * @param  int    $userId
+     * @param  int    $userRole
+     * @return Cookie
+     */
+    public static function encodeToken(int $userId, int $userRole)
     {
-        $this->router = $router;
+        global $req;
+
+        try {
+            $expireTime = time() + 3600;    // cookie lives for one hour
+
+            $jwt = \Firebase\JWT\JWT::encode([
+                'iss'   =>  $req->getBaseUrl(),     // issuer (domain)
+                'exp'   =>  $expireTime,            // user id
+                'iat'   =>  time(),                 // issued at
+                'nbf'   =>  time(),                 // not before (delay)
+                'uid'   =>  $userId,                // user id
+                'adm'   =>  $userRole == 1          // is admin or not
+            ], getenv('SECRET_KEY'), 'HS256');
+
+            $token = new \Symfony\Component\HttpFoundation\Cookie(
+                'auth_token',
+                $jwt,
+                $expireTime,
+                '/',
+                getenv('COOKIE_DOMAIN')
+            );
+
+            return $token;
+
+        } catch (\Exception $e) {
+            // TODO logError($e)
+            throw $e;
+            return null;    // or [] ?
+        }
     }
 
     /**
-     * Makes cookies content available
+     * Makes token content available
      * @param  string $field - uid, adm
      * @return whole jwt OR single field value
      */
-    function decodeJwt(string $field = null)
+    public static function decodeToken(string $field = null)
     {
-        JWT::$leeway = 1;
-        $jwt = JWT::decode(
-            $this->router->getRequest()->cookies->get('auth_token'),
-            getenv('SECRET_KEY'),
-            ['HS256']
-        );
+        global $req;
+        JWT::$leeway = 1;   // for sync issues
 
-        if ($field === null) {
-            return $jwt;
+        try {
+            $jwt = JWT::decode(
+            $req->cookies->get('auth_token'),
+                getenv('SECRET_KEY'),
+                ['HS256']
+            );
+
+            if ($field === null) {
+                return $jwt;
+            }
+
+            return $jwt->{$field};
+
+        } catch (\Exception $e) {
+            // TODO logError($e)
+            throw $e;
+            return false;
         }
-
-        return $jwt->{$field};
     }
 
-    public function isAuthenticated() : bool
+    public static function isAuthenticated() : bool
     {
         // stub for testing
         if (ACCESS_RIGHTS == 0) {
@@ -45,21 +86,17 @@ class Auth
             return true;
         }
 
-        if (!$this->router->getRequest()->cookies->has('auth_token')) {
+        global $req;
+
+        if (!$req->cookies->has('auth_token')) {
             return false;
         }
 
-        try {
-            $this->decodeJwt();
-            return true;
-        } catch (\Exception $e) {
-            // TODO logError($e)
-            throw $e;
-            return false;
-        }
+        self::decodeToken();
+        return true;
     }
 
-    public function isAdmin() : bool
+    public static function isAdmin() : bool
     {
         // stub for tests
         if (ACCESS_RIGHTS == 1) {
@@ -68,34 +105,28 @@ class Auth
             return false;
         }
 
-        if (!$this->isAuthenticated()) {
+        if (!self::isAuthenticated()) {
             return false;
         }
 
-        try {
-            $isAdmin = $this->decodeJWT('adm');
-            return (boolean)$isAdmin;
-        } catch (\Exception $e) {
-            // TODO logError($e)
-            throw $e;
-            return false;
-        }
+        $isAdmin = self::decodeToken('adm');
+        return (boolean)$isAdmin;
     }
 
-    function requireAuth()
+    public static function requireAuth()
     {
-        if (!$this->isAuthenticated()) {
-            $cookie = new Symfony\Component\HttpFoundation\Cookie(
+        global $session;
+
+        if (!self::isAuthenticated()) {
+            $token = new Symfony\Component\HttpFoundation\Cookie(
                 'auth_token',
                 'Expired',
                 time() - 3600,
                 '/',
                 getenv('COOKIE_DOMAIN')
             );
-            $this->router->getSession()->getFlashBag()->add(
-                'fail', 'Please sign in first'
-            );
-            //redirect('login.php', ['cookies' => [$accessToken]]);
+            $session->getFlashBag()->add('fail', 'Please sign in first');
+            redirect('/login', $token);
         }
         return true;
     }

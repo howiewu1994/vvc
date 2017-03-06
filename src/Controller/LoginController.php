@@ -4,7 +4,7 @@ namespace VVC\Controller;
 use VVC\Model\Database\Reader;
 
 /**
- * Processes user authentication
+ * Processes user login
  */
 class LoginController extends BaseController
 {
@@ -21,17 +21,22 @@ class LoginController extends BaseController
         $this->render();
     }
 
-    public function login(array $postData)
+    /**
+     * Verifies login info, logs in user and redirects to homepage
+     * OR stays on login page and displays errors
+     * @param  array  $post - [username, password]
+     */
+    public function login(array $post)
     {
-        if (!$this->isClean($postData)) {
-            $this->flashes->add('fail',
+        if (!$this->isClean($post)) {
+            $this->flashBag->add('fail',
                 'Username or password contain invalid characters'
             );
-            return $this->showLoginFailPage($postData['username']);
+            return $this->showLoginFailPage($post['username']);
         }
 
-        $username = $postData['username'];
-        $password = $postData['password'];
+        $username = $post['username'];
+        $password = $post['password'];
 
         try {
             $dbReader = new Reader();
@@ -39,23 +44,23 @@ class LoginController extends BaseController
         } catch (\Exception $e) {
             // TODO logError($e);
             // throw $e;
-            $this->flashes->add('fail', 'Login failed, please try again');
+            $this->flashBag->add('fail', 'Login failed, please try again');
             return $this->showLoginFailPage($username);
         }
 
         if (empty($user)) {
-            $this->flashes->add('fail', 'Username was not found');
+            $this->flashBag->add('fail', 'Username was not found');
             return $this->showLoginFailPage($username);
         }
 
         if (!password_verify($password, $user['password'])) {
-            $this->flashes->add('fail', 'Password is incorrect');
+            $this->flashBag->add('fail', 'Password is incorrect');
             return $this->showLoginFailPage($username);
         }
 
-        $this->flashes->add('success', "Welcome back, {$user['username']}");
-        $this->router->makeCookies($user['id'], $user['role_id']);
-        $this->router->redirect('/');
+        $this->flashBag->add('success', "Welcome back, {$user['username']}");
+        $authToken = Auth::encodeToken($user['id'], $user['role_id']);
+        Router::redirect('/', $authToken);
     }
 
 }
