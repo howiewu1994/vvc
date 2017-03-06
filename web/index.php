@@ -15,7 +15,7 @@ const NO_DATABASE = true;      // do not use real database connection
 const ACCESS_RIGHTS = -1;
 
 /**
- * Default user and admin login data
+ * Default user and admin login details
  * Use when ACCESS_RIGHTS = -1
  * and when NO_DATABASE = true;
  */

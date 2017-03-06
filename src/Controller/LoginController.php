@@ -8,6 +8,7 @@ use VVC\Model\Database\Reader;
  */
 class LoginController extends BaseController
 {
+    protected $template = 'login.twig';
 
     public function showLoginPage()
     {
@@ -16,7 +17,7 @@ class LoginController extends BaseController
 
     public function showLoginFailPage(string $username)
     {
-        $this->addVar('username', $username);
+        $this->addTwigVar('username', $username);
 
         $this->render();
     }
@@ -29,9 +30,7 @@ class LoginController extends BaseController
     public function login(array $post)
     {
         if (!$this->isClean($post)) {
-            $this->flashBag->add('fail',
-                'Username or password contain invalid characters'
-            );
+            $this->flash('fail', 'Username or password contain invalid characters');
             return $this->showLoginFailPage($post['username']);
         }
 
@@ -44,23 +43,24 @@ class LoginController extends BaseController
         } catch (\Exception $e) {
             // TODO logError($e);
             // throw $e;
-            $this->flashBag->add('fail', 'Login failed, please try again');
+            $this->flash('fail', 'Login failed, please try again');
             return $this->showLoginFailPage($username);
         }
 
         if (empty($user)) {
-            $this->flashBag->add('fail', 'Username was not found');
+            $this->flash('fail', 'Username was not found');
             return $this->showLoginFailPage($username);
         }
 
         if (!password_verify($password, $user['password'])) {
-            $this->flashBag->add('fail', 'Password is incorrect');
+            $this->flash('fail', 'Password is incorrect');
             return $this->showLoginFailPage($username);
         }
 
-        $this->flashBag->add('success', "Welcome back, {$user['username']}");
+        global $session;
+
+        $this->flash('success', "Welcome back, {$user['username']}");
         $authToken = Auth::encodeToken($user['id'], $user['role_id']);
         Router::redirect('/', $authToken);
     }
-
 }

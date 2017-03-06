@@ -17,18 +17,12 @@ const TEMPLATES_DIR = __DIR__ . '/../View/templates';
 class BaseController extends Auth
 {
     protected $twig;
-    protected $template;
+    protected $template = 'home.twig';
     protected $httpCode = Response::HTTP_FOUND;
-    protected $flashBag;
     protected $vars = [];
 
-    public function __construct(string $template)
+    public function __construct()
     {
-        global $session;
-
-        $this->flashBag = $session->getFlashBag();
-        $this->template = $template;
-
         $this->loadTwig();
     }
 
@@ -46,12 +40,8 @@ class BaseController extends Auth
         $loader = new \Twig_Loader_Filesystem(TEMPLATES_DIR);
         $this->twig = new \Twig_Environment($loader);
 
-        $this->twig->addFunction(new \Twig_Function(
-            'authenticated', array('VVC\Controller\Auth', 'isAuthenticated')
-        ));
-        $this->twig->addFunction(new \Twig_Function(
-            'admin', array('VVC\Controller\Auth', 'isAdmin')
-        ));
+        $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
+        $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
     }
 
     /**
@@ -76,28 +66,68 @@ class BaseController extends Auth
     }
 
     /**
-     * Adds a key-value pair for future use in a twig template
+     * Adds a key-value pair for use in a twig template
      * @param string $varName
      * @param any $varValue
      */
-    public function addVar(string $varName, $varValue)
+    public function addTwigVar(string $varName, $varValue)
     {
         $this->vars[$varName] = $varValue;
     }
 
     /**
+     * Load function for use in twig template
+     * @param string $twigFuncName - how to refer inside twig
+     * @param string $funcName     - real function name
+     * @param $handle
+     *        class name if using static function
+     *        object instance if using non static function
+     *        null if using standalone function
+     */
+    public function addTwigFunc(
+        string $twigFuncName,
+        string $funcName,
+        $handle = null)
+    {
+        if ($handle) {
+            $this->twig->addFunction(new \Twig_Function(
+                $twigFuncName, [$handle, $funcName]
+            ));
+        } else {
+            $this->twig->addFunction(new \Twig_Function(
+                $twigFuncName, $funcName
+            ));
+        }
+    }
+
+    /**
+     * Shortcut for adding flash messages to
+     * the session's flashBag
+     * @param string $msgType   - 'success', 'fail'
+     * @param string $msg
+     */
+    public function flash(string $msgType, string $msg)
+    {
+        global $session;
+
+        $session->getFlashBag()->add($msgType, $msg);
+    }
+
+    /**
      * Extracts and prepares flash messages for future use in a twig template
      */
-    function prepareFlashMessages()
+    public function prepareFlashMessages()
     {
+        global $session;
+
         $messages = [];
-        foreach ($this->flashBag->all() as $msgType => $msg) {
+        foreach ($session->getFlashBag()->all() as $msgType => $msg) {
             $messages[$msgType] = $msg;
         }
-        //  print_r($messages);
-        //  exit;
+        //print_r($messages);
+        //exit;
 
-        $this->addVar('messages', $messages);
+        $this->addTwigVar('messages', $messages);
     }
 
     /**

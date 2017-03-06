@@ -25,11 +25,13 @@ class Router
 
         switch ($uri) {
             case '/' :
-                $controller = new BaseController('home.twig');
+
+                $controller = new BaseController();
                 $controller->showHomepage();
                 break;
+
             case '/login' :
-                $controller = new LoginController('login.twig');
+                $controller = new LoginController();
 
                 if (empty($post)) {
                     $controller->showLoginPage();
@@ -37,8 +39,10 @@ class Router
                     $controller->login($post);
                 }
                 break;
+
             case '/registration' :
-                $controller = new RegistrationController('registration.twig');
+
+                $controller = new RegistrationController();
 
                 if (empty($post)) {
                     $controller->showRegistrationPage();
@@ -46,14 +50,36 @@ class Router
                     $controller->register($post);
                 }
                 break;
+
+            case '/logout' :
+
+                Auth::requireAuth();
+                break;
+
+            case '/account' :
+
+                Auth::requireAuth();
+                break;
+
+            case '/admin' :
+
+                Auth::requireAdmin();
+                break;
+
             case '/3d' :
-                $controller = new NavigationController('navigation.twig');
+
+                Auth::requireAuth();
+                $controller = new NavigationController();
                 $controller->showSelectRolePage();
                 break;
+
             case '/catalog' :
-                $controller = new CatalogController('catalog.twig');
+
+                Auth::requireAuth();
+                $controller = new CatalogController();
                 $controller->showCatalogPage();
                 break;
+
             default:
                 // 404 NOT_FOUND
         }
@@ -86,7 +112,7 @@ class Router
      * @param  string $uri
      * @param  Cookie Object $authToken
      */
-    public static function redirect(string $uri, $authToken)
+    public static function redirect(string $uri, $authToken = null)
     {
         self::sendResponse(
             null,
@@ -94,5 +120,6 @@ class Router
             ['location' => $uri],
             $authToken
         );
+        exit;   // close current script execution after redirect
     }
 }

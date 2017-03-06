@@ -9,6 +9,7 @@ use VVC\Model\Database\Creator;
  */
 class RegistrationController extends BaseController
 {
+    protected $template = 'registration.twig';
 
     public function showRegistrationPage()
     {
@@ -17,7 +18,7 @@ class RegistrationController extends BaseController
 
     public function showRegistrationFailPage(string $username)
     {
-        $this->addVar('username', $username);
+        $this->addTwigVar('username', $username);
 
         $this->render();
     }
@@ -30,9 +31,7 @@ class RegistrationController extends BaseController
     public function register(array $post)
     {
         if (!$this->isClean($post)) {
-            $this->flashBag->add('fail',
-                'Username or password contain invalid characters'
-            );
+            $this->flash('fail', 'Username or password contain invalid characters');
             return $this->showRegistrationFailPage($post['username']);
         }
 
@@ -41,7 +40,7 @@ class RegistrationController extends BaseController
         $confirmPassword = $post['confirm_password'];
 
         if ($password != $confirmPassword) {
-            $this->flashBag->add('fail', 'Passwords do not match');
+            $this->flash('fail', 'Passwords do not match');
             return $this->showRegistrationFailPage($post['username']);
         }
 
@@ -50,7 +49,7 @@ class RegistrationController extends BaseController
             $user = $dbReader->findUserByUsername($username);
 
             if (!empty($user)) {
-                $this->flashBag->add('fail', 'This username is already registered');
+                $this->flash('fail', 'This username is already registered');
                 return $this->showRegistrationFailPage($post['username']);
             }
 
@@ -59,14 +58,14 @@ class RegistrationController extends BaseController
             $dbCreator = new Creator();
             $user = $dbCreator->createUser($username, $hashed);
 
-            $this->flashBag->add('success', 'Registration complete');
+            $this->flash('success', 'Registration complete');
             $authToken = Auth::encodeToken($user['id'], $user['role_id']);
             Router::redirect('/', $authToken);
 
         } catch (\Exception $e) {
             // TODO logError($e);
             // throw $e;
-            $this->flashBag->add('fail', 'Registration failed, please try again');
+            $this->flash('fail', 'Registration failed, please try again');
             return $this->showRegistrationFailPage($post['username']);
         }
     }

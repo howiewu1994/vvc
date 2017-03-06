@@ -42,8 +42,8 @@ class Auth
 
         } catch (\Exception $e) {
             // TODO logError($e)
-            throw $e;
-            return null;    // or [] ?
+            // throw $e;
+            return null;
         }
     }
 
@@ -72,7 +72,7 @@ class Auth
 
         } catch (\Exception $e) {
             // TODO logError($e)
-            throw $e;
+            // throw $e;
             return false;
         }
     }
@@ -113,21 +113,45 @@ class Auth
         return (boolean)$isAdmin;
     }
 
+    /**
+     * Redirects user to login page if not signed in
+     * @return true - if signed in
+     */
     public static function requireAuth()
     {
         global $session;
 
         if (!self::isAuthenticated()) {
-            $token = new Symfony\Component\HttpFoundation\Cookie(
+            $token = new \Symfony\Component\HttpFoundation\Cookie(
                 'auth_token',
                 'Expired',
                 time() - 3600,
                 '/',
                 getenv('COOKIE_DOMAIN')
             );
-            $session->getFlashBag()->add('fail', 'Please sign in first');
-            redirect('/login', $token);
+            $session->getFlashBag()->add('success', 'Please sign in first');
+            return Router::redirect('/login', $token);
         }
+
+        return true;
+    }
+
+    /**
+     * Redirects user to homepage if not admin
+     * @return true - if admin
+     */
+    public static function requireAdmin()
+    {
+        global $session;
+        self::requireAuth();
+
+        if (!self::isAdmin()) {
+            $session->getFlashBag()->add(
+                'fail', 'Not authorized to view this page contents'
+            );
+            Router::redirect('/');
+        }
+
         return true;
     }
 }
