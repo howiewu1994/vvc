@@ -47,8 +47,8 @@ class LoginController extends BaseController
             $this->flashes->add('fail', 'Username was not found');
             return $this->showLoginFailPage($username);
         }
-        //(!password_verify($password, $user['password']
-        if ($password != $user['password']) {
+
+        if (!password_verify($password, $user['password'])) {
             $this->flashes->add('fail', 'Password is incorrect');
             return $this->showLoginFailPage($username);
         }
@@ -56,8 +56,6 @@ class LoginController extends BaseController
         $this->flashes->add('success', "Welcome back, {$user['username']}");
         $this->router->makeCookies($user['id'], $user['role_id']);
         $this->router->redirect('/');
-
-        //redirect('/', makeCookies($user['id'], $user['role_id']));
     }
 
 }

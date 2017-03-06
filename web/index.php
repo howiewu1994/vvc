@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 date_default_timezone_set("Asia/Shanghai");
 
 // Flags for testing
-const NO_DATABASE = false;      // use real database connection?
+const NO_DATABASE = true;      // do not use real database connection
 /**
  * Access rights (privileges) :
  * -1 - default (need to login)

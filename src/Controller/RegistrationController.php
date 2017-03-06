@@ -49,8 +49,7 @@ class RegistrationController extends BaseController
                 return $this->showRegistrationFailPage($postData['username']);
             }
 
-            //$hashed = password_hash($password, PASSWORD_DEFAULT);
-            $hashed = $password;
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
 
             $dbCreator = new Creator();
             $user = $dbCreator->createUser($username, $hashed);

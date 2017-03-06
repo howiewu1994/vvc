@@ -1,8 +1,6 @@
 <?php
 namespace VVC\Model\Database;
 
-use VVC\Model\Database\Connection;
-
 /**
  * Processes SELECT queries
  */
@@ -28,19 +26,21 @@ class Reader extends Connection
 
     public function findUserByUsername_stub($username)
     {
-        if ($username == 'user'){
+        if ($username == 'admin'){
             return [
                 'id' => 1,
-                'username' => 'user',
-                'password' => '123',
-                'role_id' => 2
+                'username' => 'admin',
+                'password' => password_hash('123', PASSWORD_DEFAULT),
+                'role_id' => 1,
+                'created_at' => date("Y-m-d H:i:s")
             ];
-        } elseif ($username == 'admin') {
+        } elseif ($username == 'user') {
             return [
                 'id' => 2,
-                'username' => 'admin',
-                'password' => '123',
-                'role_id' => 1
+                'username' => 'user',
+                'password' => password_hash('123', PASSWORD_DEFAULT),
+                'role_id' => 2,
+                'created_at' => date("Y-m-d H:i:s")
             ];
         } else {
             return [];

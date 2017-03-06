@@ -8,9 +8,10 @@ namespace VVC\Model\Database;
  */
 class Connection
 {
-    // $instance holds connection that is shared between all child classes
+    // Holds connection that is shared between all child classes
     // Destroyed when execution of the script ends
     private static $instance;
+    
     // Copy of a connection for every child
     // Destroyed when child is destroyed
     protected $db;
