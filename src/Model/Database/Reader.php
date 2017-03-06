@@ -24,6 +24,24 @@ class Reader extends Connection
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Returns existing user data
+     * @param  int $userId
+     * @return [id, username, password, role_id, created_at] OR false
+     */
+    public function findUserById($userId)
+    {
+        // test stub
+        if (NO_DATABASE) {
+            return false;
+        }
+
+        $sql = "SELECT * FROM users WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
     public function findUserByUsername_stub($username)
     {
         if ($username == ADMIN_NAME){

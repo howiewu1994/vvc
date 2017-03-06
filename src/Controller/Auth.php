@@ -103,7 +103,10 @@ class Auth
             return false;
         }
 
-        self::decodeToken();
+        if (!self::decodeToken()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -132,6 +135,15 @@ class Auth
     {
         global $session;
 
+        // stub for tests
+        if (ACCESS_RIGHTS == 0) {
+            $token = self::killToken('auth_token');
+            $session->getFlashBag()->add('success', 'Please sign in first');
+            return Router::redirect('/login', $token);
+        } elseif (ACCESS_RIGHTS > 0) {
+            return true;
+        }
+
         if (!self::isAuthenticated()) {
             $token = self::killToken('auth_token');
             $session->getFlashBag()->add('success', 'Please sign in first');
@@ -148,13 +160,24 @@ class Auth
     public static function requireAdmin()
     {
         global $session;
+
+        // stub for tests
+        if (ACCESS_RIGHTS == 1) {
+            return true;
+        } elseif (ACCESS_RIGHTS == 0 || ACCESS_RIGHTS == 2) {
+            $session->getFlashBag()->add(
+                'fail', 'Not authorized to view this page contents'
+            );
+            return Router::redirect('/');
+        }
+
         self::requireAuth();
 
         if (!self::isAdmin()) {
             $session->getFlashBag()->add(
                 'fail', 'Not authorized to view this page contents'
             );
-            Router::redirect('/');
+            return Router::redirect('/');
         }
 
         return true;
@@ -166,7 +189,17 @@ class Auth
 
         $token = self::killToken('auth_token');
         $session->getFlashBag()->add('success', 'Logged out successfully');
-        
+
         return Router::redirect('/login', $token);
+    }
+
+    public static function getUserId()
+    {
+        if (!self::isAuthenticated()) {
+            return false;
+        }
+
+        $uid = self::decodeToken('uid');
+        return $uid;
     }
 }

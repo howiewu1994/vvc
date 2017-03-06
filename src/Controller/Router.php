@@ -60,11 +60,20 @@ class Router
             case '/account' :
 
                 Auth::requireAuth();
+                $controller = new AccountController();
+
+                if (empty($post)) {
+                    $controller->showChangePasswordPage();
+                } else {
+                    $controller->changePassword($post);
+                }
                 break;
 
             case '/admin' :
 
                 Auth::requireAdmin();
+                $controller = new DashboardController();
+                $controller->showDashboardPage();
                 break;
 
             case '/3d' :

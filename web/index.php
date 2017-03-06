@@ -3,8 +3,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 date_default_timezone_set("Asia/Shanghai");
 
-// Flags for testing
-const NO_DATABASE = true;      // do not use real database connection
+/**
+ * TESTING FLAGS
+ *
+ * Fake database connection
+ * Use to login as admin or user with details below
+ * Only works for logging in and logging out
+ */
+const NO_DATABASE = true;
+
 /**
  * Access rights (privileges) :
  * -1 - default (need to login)

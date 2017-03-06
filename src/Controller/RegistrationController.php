@@ -60,7 +60,7 @@ class RegistrationController extends BaseController
 
             $this->flash('success', 'Registration complete');
             $authToken = Auth::encodeToken($user['id'], $user['role_id']);
-            Router::redirect('/', $authToken);
+            return Router::redirect('/', $authToken);
 
         } catch (\Exception $e) {
             // TODO logError($e);
