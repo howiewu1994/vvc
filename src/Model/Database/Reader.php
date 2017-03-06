@@ -1,8 +1,6 @@
 <?php
 namespace VVC\Model\Database;
 
-use VVC\Model\Database\Connection;
-
 /**
  * Processes SELECT queries
  */
@@ -26,21 +24,41 @@ class Reader extends Connection
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Returns existing user data
+     * @param  int $userId
+     * @return [id, username, password, role_id, created_at] OR false
+     */
+    public function findUserById($userId)
+    {
+        // test stub
+        if (NO_DATABASE) {
+            return false;
+        }
+
+        $sql = "SELECT * FROM users WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
     public function findUserByUsername_stub($username)
     {
-        if ($username == 'user'){
+        if ($username == ADMIN_NAME){
             return [
                 'id' => 1,
-                'username' => 'user',
-                'password' => '123',
-                'role_id' => 2
+                'username' => ADMIN_NAME,
+                'password' => password_hash(ADMIN_PASSWORD, PASSWORD_DEFAULT),
+                'role_id' => 1,
+                'created_at' => date("Y-m-d H:i:s")
             ];
-        } elseif ($username == 'admin') {
+        } elseif ($username == USER_NAME) {
             return [
                 'id' => 2,
-                'username' => 'admin',
-                'password' => '123',
-                'role_id' => 1
+                'username' => USER_NAME,
+                'password' => password_hash(USER_PASSWORD, PASSWORD_DEFAULT),
+                'role_id' => 2,
+                'created_at' => date("Y-m-d H:i:s")
             ];
         } else {
             return [];

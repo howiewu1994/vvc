@@ -4,10 +4,11 @@ namespace VVC\Controller;
 use VVC\Model\Database\Reader;
 
 /**
- * Processes user authentication
+ * Processes user login
  */
 class LoginController extends BaseController
 {
+    protected $template = 'login.twig';
 
     public function showLoginPage()
     {
@@ -16,22 +17,25 @@ class LoginController extends BaseController
 
     public function showLoginFailPage(string $username)
     {
-        $this->addVar('username', $username);
+        $this->addTwigVar('username', $username);
 
         $this->render();
     }
 
-    public function login(array $postData)
+    /**
+     * Verifies login info, logs in user and redirects to homepage
+     * OR stays on login page and displays errors
+     * @param  array  $post - [username, password]
+     */
+    public function login(array $post)
     {
-        if (!$this->isClean($postData)) {
-            $this->flashes->add('fail',
-                'Username or password contain invalid characters'
-            );
-            return $this->showLoginFailPage($postData['username']);
+        if (!$this->isClean($post)) {
+            $this->flash('fail', 'Username or password contain invalid characters');
+            return $this->showLoginFailPage($post['username']);
         }
 
-        $username = $postData['username'];
-        $password = $postData['password'];
+        $username = $post['username'];
+        $password = $post['password'];
 
         try {
             $dbReader = new Reader();
@@ -39,25 +43,24 @@ class LoginController extends BaseController
         } catch (\Exception $e) {
             // TODO logError($e);
             // throw $e;
-            $this->flashes->add('fail', 'Login failed, please try again');
+            $this->flash('fail', 'Login failed, please try again');
             return $this->showLoginFailPage($username);
         }
 
         if (empty($user)) {
-            $this->flashes->add('fail', 'Username was not found');
-            return $this->showLoginFailPage($username);
-        }
-        //(!password_verify($password, $user['password']
-        if ($password != $user['password']) {
-            $this->flashes->add('fail', 'Password is incorrect');
+            $this->flash('fail', 'Username was not found');
             return $this->showLoginFailPage($username);
         }
 
-        $this->flashes->add('success', "Welcome back, {$user['username']}");
-        $this->router->makeCookies($user['id'], $user['role_id']);
-        $this->router->redirect('/');
+        if (!password_verify($password, $user['password'])) {
+            $this->flash('fail', 'Password is incorrect');
+            return $this->showLoginFailPage($username);
+        }
 
-        //redirect('/', makeCookies($user['id'], $user['role_id']));
+        global $session;
+
+        $this->flash('success', "Welcome back, {$user['username']}");
+        $authToken = Auth::encodeToken($user['id'], $user['role_id']);
+        return Router::redirect('/', $authToken);
     }
-
 }
