@@ -9,13 +9,18 @@ class User
     private $roleId;
     private $createdAt;
 
-    public function __construct(array $args)
-    {
-        $this->setId($args['id']);
-        $this->setUsername($args['username']);
-        $this->setPassword($args['password']);
-        $this->setRoleId($args['role_id']);
-        $this->setCreatedAt($args['created_at']);
+    public function __construct(
+        int     $id,
+        string  $username,
+        string  $password,
+        int     $roleId,
+        string  $createdAt
+    ) {
+        $this->setId($id);
+        $this->setUsername($username);
+        $this->setPassword($password);
+        $this->setRoleId($roleId);
+        $this->setCreatedAt($createdAt);
     }
 
     public function getId() : int

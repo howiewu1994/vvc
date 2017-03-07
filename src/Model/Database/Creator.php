@@ -41,12 +41,12 @@ class Creator extends Connection
 
     public function createUser_stub($username, $password) : array
     {
-        return new User([
-            'id' => 1,
-            'username' => $username,
-            'password' => $password,
-            'role_id' => 1,
-            'created_at' => date("Y-m-d H:i:s")
-        ]);
+        return new User(
+            1,
+            $username,
+            $password,
+            1,
+            date("Y-m-d H:i:s")
+        );
     }
 }

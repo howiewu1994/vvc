@@ -2,6 +2,8 @@
 namespace VVC\Model\Database;
 
 use VVC\Model\Data\User;
+use VVC\Model\Data\IllnessCollection;
+use VVC\Model\Data\IllnessRecord;
 
 /**
  * Processes SELECT queries
@@ -28,7 +30,13 @@ class Reader extends Connection
             return false;
         }
 
-        return new User($result);
+        return new User(
+            $result['id'],
+            $result['username'],
+            $result['password'],
+            $result['role_id'],
+            $result['created_at']
+        );
     }
 
     /**
@@ -51,11 +59,70 @@ class Reader extends Connection
             return false;
         }
 
-        return new User($result);
+        return new User(
+            $result['id'],
+            $result['username'],
+            $result['password'],
+            $result['role_id'],
+            $result['created_at']
+        );
+    }
+
+    /**
+     * Returns all illnesses collection
+     * Only basic info is needed, no steps array
+     * @return IllnessCollection, empty or not
+     */
+    public function getAllIllnesses() : IllnessCollection
+    {
+        if (NO_DATABASE) {
+            $collection = new IllnessCollection();
+            $collection->add(new IllnessRecord(
+                1,
+                'Illness 1',
+                'Class 1',
+                'Illness 1 description.',
+                2
+            ));
+            $collection->add(new IllnessRecord(
+                2,
+                'Illness 2',
+                'Class 1',
+                'Illness 2 description.',
+                0
+            ));
+            $collection->add(new IllnessRecord(
+                3,
+                'Illness 3',
+                'Class 2',
+                'Illness 3 description.',
+                1
+            ));
+
+            return $collection;
+        }
+
+        $sql = "SELECT * FROM illnesses";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $collection = new IllnessCollection();
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            $collection->add(new IllnessRecord(
+                $row['id'],
+                $row['name'],
+                $row['class'],
+                $row['description'],
+                $row['stay']
+            ));
+        }
+
+        return $collection;
     }
 
     // getIllnessById - return illness
-    // getIllnesses (limit = null, offset = null)
+    // getAllIllnesses (limit = null, offset = null)
 
     // getClassByName
     // getAllClasses
@@ -69,21 +136,21 @@ class Reader extends Connection
     public function findUserByUsername_stub($username)
     {
         if ($username == ADMIN_NAME){
-            return new User([
-                'id' => 1,
-                'username' => ADMIN_NAME,
-                'password' => password_hash(ADMIN_PASSWORD, PASSWORD_DEFAULT),
-                'role_id' => 1,
-                'created_at' => date("Y-m-d H:i:s")
-            ]);
+            return new User(
+                1,
+                ADMIN_NAME,
+                password_hash(ADMIN_PASSWORD, PASSWORD_DEFAULT),
+                1,
+                date("Y-m-d H:i:s")
+            );
         } elseif ($username == USER_NAME) {
-            return new User([
-                'id' => 2,
-                'username' => USER_NAME,
-                'password' => password_hash(USER_PASSWORD, PASSWORD_DEFAULT),
-                'role_id' => 2,
-                'created_at' => date("Y-m-d H:i:s")
-            ]);
+            return new User(
+                2,
+                USER_NAME,
+                password_hash(USER_PASSWORD, PASSWORD_DEFAULT),
+                2,
+                date("Y-m-d H:i:s")
+            );
         } else {
             return false;
         }

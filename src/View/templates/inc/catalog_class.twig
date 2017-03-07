@@ -1,0 +1,8 @@
+<div class="media well">
+    <div class="media-body">
+      <h4 class="media-heading">{{ class }}</h4>
+      {% for illness in illnesses %}
+          {% include "inc/catalog_illness.twig" %}
+      {% endfor %}
+    </div>
+</div>

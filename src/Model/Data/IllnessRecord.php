@@ -4,13 +4,27 @@ namespace VVC\Model\Data;
 class IllnessRecord
 {
     private $id = 0;
-    private $name = 'Illness';
+    public $name = 'Illness';
     private $class = 'General';
-    private $description = 'Very basic pet illness.';
+    public $description = 'Very basic pet illness.';
     // how many days - 0 OR 1,2,3..
     private $stay = 0;
 
     private $steps = [];
+
+    public function __construct(
+        int     $id,
+        string  $name,
+        string  $class,
+        string  $description,
+        int     $stay
+    ) {
+        $this->setId($id);
+        $this->setName($name);
+        $this->setClass($class);
+        $this->setDescription($description);
+        $this->setStay($stay);
+    }
 
     public function getId() : int
     {
