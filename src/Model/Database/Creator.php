@@ -1,6 +1,8 @@
 <?php
 namespace VVC\Model\Database;
 
+use VVC\Model\Data\User;
+
 /**
  * Processes INSERT queries
  */
@@ -12,7 +14,7 @@ class Creator extends Connection
      * @param  string  $password   - already hashed
      * @param  integer $role_id    - admin = 1, user = 2
      * @param  string  $created_at - date of registration
-     * @return [id, username, password, role_id, created_at] OR false
+     * @return User OR false
      */
     public function createUser(
         $username,
@@ -39,12 +41,12 @@ class Creator extends Connection
 
     public function createUser_stub($username, $password) : array
     {
-        return [
-            'id' => 3,
+        return new User([
+            'id' => 1,
             'username' => $username,
             'password' => $password,
             'role_id' => 1,
             'created_at' => date("Y-m-d H:i:s")
-        ];
+        ]);
     }
 }

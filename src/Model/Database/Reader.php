@@ -1,6 +1,8 @@
 <?php
 namespace VVC\Model\Database;
 
+use VVC\Model\Data\User;
+
 /**
  * Processes SELECT queries
  */
@@ -9,7 +11,7 @@ class Reader extends Connection
     /**
      * Returns existing user data
      * @param  string $username
-     * @return [id, username, password, role_id, created_at] OR false
+     * @return User OR false
      */
     public function findUserByUsername($username)
     {
@@ -21,13 +23,18 @@ class Reader extends Connection
         $sql = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new User($result);
     }
 
     /**
      * Returns existing user data
      * @param  int $userId
-     * @return [id, username, password, role_id, created_at] OR false
+     * @return User OR false
      */
     public function findUserById($userId)
     {
@@ -39,29 +46,46 @@ class Reader extends Connection
         $sql = "SELECT * FROM users WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new User($result);
     }
+
+    // getIllnessById - return illness
+    // getIllnesses (limit = null, offset = null)
+
+    // getClassByName
+    // getAllClasses
+
+    // getDrugById ?
+    // getAllDrugs
+
+    // getPaymentById ?
+    // getAllPayments
 
     public function findUserByUsername_stub($username)
     {
         if ($username == ADMIN_NAME){
-            return [
+            return new User([
                 'id' => 1,
                 'username' => ADMIN_NAME,
                 'password' => password_hash(ADMIN_PASSWORD, PASSWORD_DEFAULT),
                 'role_id' => 1,
                 'created_at' => date("Y-m-d H:i:s")
-            ];
+            ]);
         } elseif ($username == USER_NAME) {
-            return [
+            return new User([
                 'id' => 2,
                 'username' => USER_NAME,
                 'password' => password_hash(USER_PASSWORD, PASSWORD_DEFAULT),
                 'role_id' => 2,
                 'created_at' => date("Y-m-d H:i:s")
-            ];
+            ]);
         } else {
-            return [];
+            return false;
         }
     }
 }

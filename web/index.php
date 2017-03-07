@@ -10,7 +10,7 @@ date_default_timezone_set("Asia/Shanghai");
  * Use to login as admin or user with details below
  * Only works for logging in and logging out
  */
-const NO_DATABASE = true;
+const NO_DATABASE = false;
 
 /**
  * Access rights (privileges) :
