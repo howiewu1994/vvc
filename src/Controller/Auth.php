@@ -100,10 +100,13 @@ class Auth
         global $req;
 
         if (!$req->cookies->has('auth_token')) {
+            // TODO log this, might be a bug,
+            // but probably that's cookie running out of time (1 hour)
             return false;
         }
 
         if (!self::decodeToken()) {
+            // TODO log this.
             return false;
         }
 

@@ -16,7 +16,7 @@ class CatalogController extends BaseController
             // TODO logError($e);
             // throw $e;
             $this->flash('fail', 'Database operation failed');
-            return Router::redirect('/');
+            Router::redirect('/');
         }
 
         $this->addTwigVar('catalog', $catalog->getRecords());
@@ -25,10 +25,6 @@ class CatalogController extends BaseController
 
     public function showIllnessPage($illnessId)
     {
-        if (!is_numeric($illnessId)) {
-            return $this->showCatalogPage();
-        }
-
         try {
             $dbReader = new Reader();
             $illness = $dbReader->getFullIllnessById($illnessId);
@@ -36,7 +32,7 @@ class CatalogController extends BaseController
             // TODO logError($e);
             // throw $e;
             $this->flash('fail', 'Database operation failed');
-            $this->showCatalogPage();
+            return $this->showCatalogPage();
         }
 
         if (empty($illness)) {

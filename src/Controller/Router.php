@@ -21,7 +21,7 @@ class Router
 
         $get = $req->query->all();
         $post = $req->request->all();
-        $route = self::getPath();
+        $route = self::getRoute();
 
         switch ($route['base']) {
             case '' :
@@ -31,6 +31,7 @@ class Router
                 break;
 
             case 'login' :
+
                 $controller = new LoginController();
 
                 if (empty($post)) {
@@ -62,9 +63,10 @@ class Router
                 Auth::requireAuth();
                 $controller = new AccountController();
 
-                if (empty($post)) {
+                if (empty($route['section'])) {
                     $controller->showChangePasswordPage();
                 } else {
+                    if (empty($route))
                     $controller->changePassword($post);
                 }
                 break;
@@ -73,7 +75,35 @@ class Router
 
                 Auth::requireAdmin();
                 $controller = new DashboardController();
-                $controller->showDashboardPage();
+
+                if ($route['count'] == 1) {
+                    $controller->showDashboardPage();
+                }
+
+                switch ($route['section']) {
+                    case 'accounts' :
+
+                    case 'illnesses' :
+                        if (!empty($route['page'])
+                            && is_numeric($route['page'])) {
+                            $controller->showIllnessPage($route['page']);
+                        } else {
+                            $controller->showIllnessListPage();
+                        }
+                        break;
+                    case 'drugs' :
+
+                    case 'payments' :
+
+                    default :
+                        $controller->showDashboardPage();
+                }
+
+                if (empty($route['page'])) {
+                    $controller->showCatalogPage();
+                } else {
+                    $controller->showIllnessPage($route['page']);
+                }
                 break;
 
             case '3d' :
@@ -88,10 +118,10 @@ class Router
                 Auth::requireAuth();
                 $controller = new CatalogController();
 
-                if (empty($route['page'])) {
-                    $controller->showCatalogPage();
-                } else {
+                if (!empty($route['page']) && is_numeric($route['page'])) {
                     $controller->showIllnessPage($route['page']);
+                } else {
+                    $controller->showCatalogPage();
                 }
                 break;
 
@@ -112,18 +142,20 @@ class Router
      *
      */
 
-    public static function getPath()
+    public static function getRoute()
     {
         global $req;
 
         $route = [];
-        $uri = explode('/', $req->getPathInfo());
-        $count = count($uri);
+        $uri = trim($req->getPathInfo(), '/');
+        $uri = explode('/', $uri);
 
-        $route['base'] = $uri[1];
-        if ($count > 2) {
-            $route['section'] = $uri[2];
-            $route['page'] = $uri[$count-1];
+        $route['count'] = count($uri);
+        $route['base'] = $uri[0];
+
+        if ($route['count'] > 1) {
+            $route['section'] = $uri[1];
+            $route['page'] = $uri[$route['count']-1];
         }
         // print_r($uri);
         // print_r($route);
@@ -152,6 +184,7 @@ class Router
         }
 
         $response->send();
+        exit;   // close current script execution after redirect
     }
 
     /**
@@ -167,6 +200,5 @@ class Router
             ['location' => $uri],
             $authToken
         );
-        exit;   // close current script execution after redirect
     }
 }

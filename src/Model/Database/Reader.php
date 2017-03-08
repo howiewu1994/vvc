@@ -73,6 +73,54 @@ class Reader extends Connection
     }
 
     /**
+     * Returns array with all users, full details
+     * @return array of Users, empty or not
+     */
+    public function getAllUsers() : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        // TODO
+        $users = [];
+
+        return $users;
+    }
+
+    /**
+     * Returns array with all drugs, full details
+     * @return array of Drugs, empty or not
+     */
+    public function getAllDrugs() : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        // TODO
+        $drugs = [];
+
+        return $drugs;
+    }
+
+    /**
+     * Returns array with all payments, full details
+     * @return array of Payments, empty or not
+     */
+    public function getAllPayments() : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        // TODO
+        $payments = [];
+
+        return $payments;
+    }
+
+    /**
      * Returns all illnesses collection
      * Only basic info is needed, no steps array
      * @return IllnessCollection, empty or not
@@ -346,7 +394,6 @@ class Reader extends Connection
     // getAllClasses
 
     // getDrugById ?
-    // getAllDrugs
 
     // getPaymentById ?
     // getAllPayments
