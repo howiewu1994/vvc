@@ -1,4 +1,8 @@
 CREATE DATABASE IF NOT EXISTS vvc DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE mysql;
+
+DELETE FROM user WHERE password = '' AND user != 'root';
+
 USE vvc;
 
 CREATE USER IF NOT EXISTS vvc_admin@localhost identified by '123';

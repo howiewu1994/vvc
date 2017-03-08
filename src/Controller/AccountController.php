@@ -54,7 +54,7 @@ class AccountController extends BaseController
                 return $this->showChangePasswordFailPage();
             }
 
-            if (!password_verify($curPassword, $user['password'])) {
+            if (!password_verify($curPassword, $user->getPassword())) {
                 $this->flash('fail', 'Incorrect current password');
                 return $this->showChangePasswordFailPage();
             }

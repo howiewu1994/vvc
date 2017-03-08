@@ -7,8 +7,8 @@ date_default_timezone_set("Asia/Shanghai");
  * TESTING FLAGS
  *
  * Fake database connection
- * Use to login as admin or user with details below
- * Only works for logging in and logging out
+ * You can login as admin or user using details below
+ * This is read-only mode, can't modify data
  */
 const NO_DATABASE = true;
 

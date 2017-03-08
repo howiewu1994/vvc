@@ -2,12 +2,15 @@
 
 {% block title %}Catalog{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container">
     <div class="well">
         <h2>病例目录</h2>
         <p>Browse the catalog and learn all about pet illnesses.</p>
     </div>
+    {% for class, illnesses in catalog %}
+        {% include "inc/catalog_class.twig" %}
+    {% endfor %}
     <div style="margin: 50px auto">
         <img src="/img/catalog.jpg">
     </div>

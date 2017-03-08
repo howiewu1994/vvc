@@ -21,16 +21,16 @@ class Router
 
         $get = $req->query->all();
         $post = $req->request->all();
-        $uri = $req->getPathInfo();
+        $route = self::getPath();
 
-        switch ($uri) {
-            case '/' :
+        switch ($route['base']) {
+            case '' :
 
                 $controller = new BaseController();
                 $controller->showHomepage();
                 break;
 
-            case '/login' :
+            case 'login' :
                 $controller = new LoginController();
 
                 if (empty($post)) {
@@ -40,7 +40,7 @@ class Router
                 }
                 break;
 
-            case '/registration' :
+            case 'registration' :
 
                 $controller = new RegistrationController();
 
@@ -51,13 +51,13 @@ class Router
                 }
                 break;
 
-            case '/logout' :
+            case 'logout' :
 
                 Auth::requireAuth();
                 Auth::logout();
                 break;
 
-            case '/account' :
+            case 'account' :
 
                 Auth::requireAuth();
                 $controller = new AccountController();
@@ -69,30 +69,67 @@ class Router
                 }
                 break;
 
-            case '/admin' :
+            case 'admin' :
 
                 Auth::requireAdmin();
                 $controller = new DashboardController();
                 $controller->showDashboardPage();
                 break;
 
-            case '/3d' :
+            case '3d' :
 
                 Auth::requireAuth();
                 $controller = new NavigationController();
                 $controller->showSelectRolePage();
                 break;
 
-            case '/catalog' :
+            case 'catalog' :
 
                 Auth::requireAuth();
                 $controller = new CatalogController();
-                $controller->showCatalogPage();
+
+                if (empty($route['page'])) {
+                    $controller->showCatalogPage();
+                } else {
+                    $controller->showIllnessPage($route['page']);
+                }
                 break;
 
             default:
                 // 404 NOT_FOUND
         }
+    }
+
+    /**
+     *               uri                   action              tepmlate
+     * -------------------------------------------------------------------------
+     * /                                homepage            homepage.twig
+     * /login                           login               login.twig
+     * /catalog/1                       show illness        illness.twig
+     * /catalog?s=                      search              catalog.twig
+     * /admin/accounts                  manage accounts     admin_acc.twig
+     * /admin/accounts/1                view account 1      view_acc.twig
+     *
+     */
+
+    public static function getPath()
+    {
+        global $req;
+
+        $route = [];
+        $uri = explode('/', $req->getPathInfo());
+        $count = count($uri);
+
+        $route['base'] = $uri[1];
+        if ($count > 2) {
+            $route['section'] = $uri[2];
+            $route['page'] = $uri[$count-1];
+        }
+        // print_r($uri);
+        // print_r($route);
+        // exit;
+
+        return $route;
     }
 
     /**
