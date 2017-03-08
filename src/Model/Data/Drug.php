@@ -10,12 +10,26 @@ class Drug
     private $picture = null;
     private $cost = null;
 
-    public function getId() : int
+    public function __construct(
+        string  $id,
+        string  $name,
+        string  $text,
+        string  $picture,
+        float   $cost
+    ) {
+        $this->setId($id);
+        $this->setName($name);
+        $this->setText($text);
+        $this->setPicture($picture);
+        $this->setCost($cost);
+    }
+
+    public function getId() : string
     {
         return $this->id;
     }
 
-    public function setId(int $id)
+    public function setId(string $id)
     {
         $this->id = $id;
     }

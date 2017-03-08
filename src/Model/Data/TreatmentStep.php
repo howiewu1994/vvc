@@ -13,6 +13,16 @@ class TreatmentStep
     private $drugs = [];
     private $payments = [];
 
+    public function __construct(
+        int     $seqNum,
+        string  $name,
+        string  $text
+    ) {
+        $this->setSeqNum($seqNum);
+        $this->setName($name);
+        $this->setText($text);
+    }
+
     public function getSeqNum() : int
     {
         return $this->seqNum;
@@ -53,6 +63,18 @@ class TreatmentStep
         $this->pictures = $pictures;
     }
 
+    public function addPictures(array $pictures)
+    {
+        foreach ($pictures as $picture) {
+            $this->addPicture($picture);
+        }
+    }
+
+    public function addPicture(string $pathToPicture)
+    {
+        $this->pictures[] = $pathToPicture;
+    }
+
     public function getVideos() : array
     {
         return $this->videos;
@@ -61,6 +83,18 @@ class TreatmentStep
     public function setVideos(array $videos)
     {
         $this->videos = $videos;
+    }
+
+    public function addVideos(array $videos)
+    {
+        foreach ($videos as $video) {
+            $this->addVideo($video);
+        }
+    }
+
+    public function addVideo(string $pathToVideo)
+    {
+        $this->videos[] = $pathToVideo;
     }
 
     public function getDrugs() : array
@@ -73,6 +107,20 @@ class TreatmentStep
         $this->drugs = $drugs;
     }
 
+    public function addDrugs(array $drugs)
+    {
+        foreach ($drugs as $drug) {
+            $this->addDrug($drug);
+        }
+    }
+
+    public function addDrug(Drug $drug)
+    {
+        $drugId = $drug->getId();
+        $this->drugs[$drugId] = $drug;
+        ksort($this->drugs);
+    }
+
     public function getPayments() : array
     {
         return $this->payments;
@@ -81,6 +129,20 @@ class TreatmentStep
     public function setPayments(array $payments)
     {
         $this->payments = $payments;
+    }
+
+    public function addPayments(array $payments)
+    {
+        foreach ($payments as $payment) {
+            $this->addPayment($payment);
+        }
+    }
+
+    public function addPayment(Payment $payment)
+    {
+        $paymentId = $payment->getId();
+        $this->payments[$paymentId] = $payment;
+        ksort($this->payments);
     }
 
 }

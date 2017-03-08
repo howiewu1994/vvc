@@ -16,4 +16,14 @@ class CatalogController extends BaseController
         $this->render();
     }
 
+    public function showIllnessPage(int $illnessId)
+    {
+        $this->setTemplate('illness.twig');
+        
+        $dbReader = new Reader();
+        $illness = $dbReader->getFullIllnessById($illnessId);
+
+        $this->addTwigVar('ill', $illness);
+        $this->render();
+    }
 }

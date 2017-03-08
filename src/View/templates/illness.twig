@@ -1,0 +1,16 @@
+{% extends 'base.twig' %}
+
+{% block title %}{{ ill.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h2>Name: {{ ill.name }}</h2>
+        <p>Class: {{ ill.class }}</p>
+        <p>Description: {{ ill.description }}</p>
+        {% for step in ill.steps %}
+            {% include "inc/illness_step.twig" %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

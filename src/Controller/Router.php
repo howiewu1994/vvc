@@ -87,7 +87,12 @@ class Router
 
                 Auth::requireAuth();
                 $controller = new CatalogController();
-                $controller->showCatalogPage();
+
+                if (empty($route['page'])) {
+                    $controller->showCatalogPage();
+                } else {
+                    $controller->showIllnessPage($route['page']);
+                }
                 break;
 
             default:

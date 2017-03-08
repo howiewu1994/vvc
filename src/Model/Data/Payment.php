@@ -3,9 +3,16 @@ namespace VVC\Model\Data;
 
 class Payment
 {
-    private id = 0;
+    private $id = 0;
     private $name = 'Payment';
     private $amount = null;
+
+    public function __construct(int $id, string $name, float $amount)
+    {
+        $this->setId($id);
+        $this->setName($name);
+        $this->setAmount($amount);
+    }
 
     public function getId() : int
     {

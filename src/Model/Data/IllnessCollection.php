@@ -44,12 +44,21 @@ class IllnessCollection
         $this->records = $records;
     }
 
-    public function add(IllnessRecord $record)
+    public function addRecords(array $records)
+    {
+        foreach ($records as $record) {
+            $this->addRecord($record);
+        }
+    }
+
+    public function addRecord(IllnessRecord $record)
     {
         $class = $record->getClass();
         $id = $record->getId();
 
         $this->records[$class][$id] = $record;
+        // TODO sorting.
+        //ksort($this->records[$class]);
     }
 
     public function getClasses() : array

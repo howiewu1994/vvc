@@ -4,9 +4,9 @@ namespace VVC\Model\Data;
 class IllnessRecord
 {
     private $id = 0;
-    public $name = 'Illness';
+    private $name = 'Illness';
     private $class = 'General';
-    public $description = 'Very basic pet illness.';
+    private $description = 'Very basic pet illness.';
     // how many days - 0 OR 1,2,3..
     private $stay = 0;
 
@@ -84,6 +84,20 @@ class IllnessRecord
     public function setSteps(array $steps)
     {
         $this->steps = $steps;
+    }
+
+    public function addSteps(array $steps)
+    {
+        foreach ($steps as $step) {
+            $this->addStep($step);
+        }
+    }
+
+    public function addStep(TreatmentStep $step)
+    {
+        $seqNum = $step->getSeqNum();
+        $this->steps[$seqNum] = $step;
+        ksort($this->steps);
     }
 
 }
