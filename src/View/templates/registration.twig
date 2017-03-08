@@ -2,15 +2,13 @@
 
 {% block title %}Registration{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container">
     <div class="well col-sm-6 col-sm-offset-3">
         <form class="form-signin" method="post" action="/registration">
             <h2 class="form-signin-heading">Registration</h2>
-            {% block flash_messages %}
-                {# display error message if registration failed #}
-                {% include "inc/flash_messages.twig" %}
-            {% endblock %}
+            {# display error message if registration failed #}
+            {% include "inc/flash_messages.twig" %}
             <input type="text" id="input_username" name="username"
                 class="form-control" placeholder="Username"
                 {% if username %}
