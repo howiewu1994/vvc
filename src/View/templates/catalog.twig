@@ -6,6 +6,8 @@
 <div class="container">
     <div class="well">
         <h2>病例目录</h2>
+        {# display error message if login failed #}
+        {% include "inc/flash_messages.twig" %}
         <p>Browse the catalog and learn all about pet illnesses.</p>
     </div>
     {% for class, illnesses in catalog %}

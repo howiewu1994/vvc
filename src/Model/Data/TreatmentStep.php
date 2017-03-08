@@ -13,11 +13,8 @@ class TreatmentStep
     private $drugs = [];
     private $payments = [];
 
-    public function __construct(
-        int     $seqNum,
-        string  $name,
-        string  $text
-    ) {
+    public function __construct(int $seqNum, string $name, string $text)
+    {
         $this->setSeqNum($seqNum);
         $this->setName($name);
         $this->setText($text);

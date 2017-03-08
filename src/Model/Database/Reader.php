@@ -119,7 +119,7 @@ class Reader extends Connection
                 $row['name'],
                 $row['class'],
                 $row['description'],
-                $row['stay']
+                $row['stay']    // hospitalization
             ));
         }
 
@@ -135,7 +135,7 @@ class Reader extends Connection
     public function getFullIllnessById($id)
     {
         if (NO_DATABASE) {
-            if ($id <= 10) {    // just for tests
+            if ($id <= 3) {    // just for tests
                 $illness = new IllnessRecord(
                     $id,
                     "Illness $id",
