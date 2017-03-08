@@ -7,10 +7,8 @@
     <div class="well col-sm-6 col-sm-offset-3">
         <form class="form-signin" method="post" action="/account">
             <h2 class="form-signin-heading">My Account</h2>
-            {% block flash_messages %}
-                {# display error message if could not change password #}
-                {% include "inc/flash_messages.twig" %}
-            {% endblock %}
+            {# display error message if could not change password #}
+            {% include "inc/flash_messages.twig" %}
             <br>
             <h4>Change Password</h4>
             <input type="password" id="cur_password" name="cur_password"
