@@ -19,7 +19,7 @@ class Auth
         global $req;
 
         try {
-            $expireTime = time() + 24 * 60 * 60;    // cookie lives for one hour
+            $expireTime = time() + 24 * 60 * 60;    // cookie lives for one day
 
             $jwt = \Firebase\JWT\JWT::encode([
                 'iss'   =>  $req->getBaseUrl(),     // issuer (domain)
@@ -100,8 +100,7 @@ class Auth
         global $req;
 
         if (!$req->cookies->has('auth_token')) {
-            // TODO log this, might be a bug,
-            // but probably that's cookie running out of time (1 hour)
+            // TODO refreshing page quickly loses cookie
             return false;
         }
 

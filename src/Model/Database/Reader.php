@@ -20,7 +20,7 @@ class Reader extends Connection
      * @param  string $username
      * @return User OR false
      */
-    public function findUserByUsername($username)
+    public function findUserByUsername(string $username)
     {
         // test stub
         if (NO_DATABASE) {
@@ -49,7 +49,7 @@ class Reader extends Connection
      * @param  int $userId
      * @return User OR false
      */
-    public function findUserById($userId)
+    public function findUserById(int $userId)
     {
         // test stub
         if (NO_DATABASE) {
@@ -146,7 +146,7 @@ class Reader extends Connection
      * @param  int  $id     - illness id
      * @return IllnessRecord OR false if not found
      */
-    public function getFullIllnessById($id)
+    public function getFullIllnessById(int $id)
     {
         if (NO_DATABASE) {
             if ($id <= 3) {    // just for tests
@@ -191,7 +191,7 @@ class Reader extends Connection
      * @param  int $illnessId
      * @return array of steps, empty or not
      */
-    public function getStepsByIllnessId($illnessId) : array
+    public function getStepsByIllnessId(int $illnessId) : array
     {
         if (NO_DATABASE) {
             $steps = [];
@@ -277,7 +277,7 @@ class Reader extends Connection
      * @param  int $stepNum
      * @return string
      */
-    public function getStepText($illnessId, $stepNum) : string
+    public function getStepText(int $illnessId, int $stepNum) : string
     {
         if (NO_DATABASE) {
             return "Description of step $stepNum for illness $illnessId";;
@@ -296,7 +296,7 @@ class Reader extends Connection
      * @param  int  $stepNum
      * @return array of pictures, empty or not
      */
-    public function getStepPictures($illnessId, $stepNum) : array
+    public function getStepPictures(int $illnessId, int $stepNum) : array
     {
         if (NO_DATABASE) {
             return ["/img/step$stepNum.png"];
@@ -322,7 +322,7 @@ class Reader extends Connection
      * @param  int  $stepNum
      * @return array of videos, empty or not
      */
-    public function getStepVideos($illnessId, $stepNum) : array
+    public function getStepVideos(int $illnessId, int $stepNum) : array
     {
         if (NO_DATABASE) {
             return [];
@@ -347,7 +347,7 @@ class Reader extends Connection
      * @param  int  $illnessId
      * @return array of drugs, empty or not
      */
-    public function getDrugsByIllnessId($illnessId) : array
+    public function getDrugsByIllnessId(int $illnessId) : array
     {
         if (NO_DATABASE) {
             return [new Drug(
@@ -378,7 +378,7 @@ class Reader extends Connection
      * @param  int  $illnessId
      * @return array of payments, empty or not
      */
-    public function getPaymentsByIllnessId($illnessId) : array
+    public function getPaymentsByIllnessId(int $illnessId) : array
     {
         if (NO_DATABASE) {
             return [new Payment(
@@ -405,7 +405,7 @@ class Reader extends Connection
      * @param  int  $illnessId
      * @return int  days OR false
      */
-    public function getStayByIllnessId($illnessId)
+    public function getStayByIllnessId(int $illnessId)
     {
         if (NO_DATABASE) {
             return rand(0, 5);
@@ -439,7 +439,7 @@ class Reader extends Connection
      * @param  string $drugId
      * @return array of IllnessRecords OR false
      */
-    public function findIllnessesByDrugId($drugId)
+    public function findIllnessesByDrugId(string $drugId)
     {
         if (NO_DATABASE) {
             return false;

@@ -63,10 +63,9 @@ class Router
                 Auth::requireAuth();
                 $controller = new AccountController();
 
-                if (empty($route['section'])) {
+                if (empty($post)) {
                     $controller->showChangePasswordPage();
                 } else {
-                    if (empty($route))
                     $controller->changePassword($post);
                 }
                 break;
@@ -81,8 +80,6 @@ class Router
                 }
 
                 switch ($route['section']) {
-                    case 'accounts' :
-
                     case 'illnesses' :
                         if (!empty($route['page'])
                             && is_numeric($route['page'])) {
@@ -91,18 +88,15 @@ class Router
                             $controller->showIllnessListPage();
                         }
                         break;
+
+                    case 'accounts' :
+
                     case 'drugs' :
 
                     case 'payments' :
 
                     default :
                         $controller->showDashboardPage();
-                }
-
-                if (empty($route['page'])) {
-                    $controller->showCatalogPage();
-                } else {
-                    $controller->showIllnessPage($route['page']);
                 }
                 break;
 

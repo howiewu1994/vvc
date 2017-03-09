@@ -3,15 +3,15 @@
         <h4 class="media-heading">{{ step.num }}. {{ step.name }}</h4>
         {% if step.text is not empty %}
             <h5>Description</h5>
-            <p>{{ step.text }}</p>
+            <ul>
+                <li><p>{{ step.text }}</p></li>
+            </ul>
         {% endif %}
         {% if step.pictures is not empty %}
           <h5>Pictures</h5>
           <ul>
               {% for pic in step.pictures %}
-              <li>
-                  <img src="{{ pic }}">
-              </li>
+                  <li><img src="{{ pic }}"></li>
               {% endfor %}
           </ul>
         {% endif %}
@@ -19,9 +19,7 @@
           <h5>Videos</h5>
           <ul>
               {% for vid in step.videos %}
-              <li>
-                  <img src="{{ vid }}">
-              </li>
+                  <li><img src="{{ vid }}"></li>
               {% endfor %}
           </ul>
         {% endif %}
@@ -47,6 +45,16 @@
                   <li>
                       <p>Reason: {{ payment.name }}</p>
                       <p>Amount: {{ payment.amount }}元</p>
+                  </li>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+            {% if step.stay is not empty %}
+              <h5>Hospitalization</h5>
+              <ul>
+                  {% for payment in step.payments %}
+                  <li>
+                      <p>Need to stay in clinic for {{ step.stay.days }} days</p>
                   </li>
                   {% endfor %}
               </ul>

@@ -8,21 +8,39 @@ class Updater extends Connection
 {
     /**
      * Changes user password
-     * @param  int $userId      
+     * @param  int $userId
      * @param  string $password - already hashed
-     * @return true
+     * @return void
      */
-    public function changePassword($userId, $password)
+    public function changePassword($userId, $password) : void
     {
         // test stub
         if (NO_DATABASE) {
-            return false;
+            return;
         }
 
         $sql = "UPDATE users SET password = ? where id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$password, $userId]);
-        return true;
+    }
+
+    /**
+     * Rewrite user details based on id
+     * @param  int    $id
+     * @param  string $username
+     * @param  string $password
+     * @param  int    $roleId
+     * @param  string $createdAt
+     * @return void
+     */
+    public function updateUser(
+        int     $id,
+        string  $username,
+        string  $password,
+        int     $roleId,
+        string  $createdAt
+    ) : void {
+
     }
 
 }

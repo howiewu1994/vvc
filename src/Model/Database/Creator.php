@@ -17,27 +17,28 @@ class Creator extends Connection
      * @return User OR false
      */
     public function createUser(
-        $username,
-        $password,
-        $role_id = 2,
-        $created_at = null)
-    {
+        string  $username,
+        string  $password,
+                $roleId = 2,
+        string  $createdAt = null
+    ) {
         // test stub
         if (NO_DATABASE) {
             return $this->createUser_stub($username, $password);
         }
 
-        if ($created_at == null) {
-            $created_at = date("Y-m-d H:i:s");
+        if ($createdAt == null) {
+            $createdAt = date("Y-m-d H:i:s");
         }
 
         $sql = "INSERT INTO
             users(username, password, role_id, created_at)
             VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$username, $password, $role_id, $created_at]);
+        $stmt->execute([$username, $password, $roleId, $createdAt]);
         return (new Reader())->findUserByUsername($username);
     }
+
 
     public function createUser_stub($username, $password) : array
     {
