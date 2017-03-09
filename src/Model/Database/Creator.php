@@ -39,6 +39,28 @@ class Creator extends Connection
         return (new Reader())->findUserByUsername($username);
     }
 
+    /**
+     * Links a picture path together with a step
+     * @param  int    $stepNum 
+     * @param  string $path
+     * @return void
+     */
+    public function addPictureToStep(int $stepNum, string $path)
+    {
+
+    }
+
+    /**
+     * Links a video path together with a step
+     * @param  int    $stepNum
+     * @param  string $path
+     * @return void
+     */
+    public function addVideoToStep(int $stepNum, string $path)
+    {
+
+    }
+
 
     public function createUser_stub($username, $password) : array
     {
