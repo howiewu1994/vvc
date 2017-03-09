@@ -1,28 +1,32 @@
 <div class="media well">
     <div class="media-body">
-        <h4 class="media-heading">{{ step.seqNum }}. {{ step.name }}</h4>
-        <p>Description: {{ step.text }}</p>
-          {% if step.pictures is not empty %}
-              <h5>Pictures</h5>
-              <ul>
-                  {% for pic in step.pictures %}
-                  <li>
-                      <img src="{{ pic }}">
-                  </li>
-                  {% endfor %}
-              </ul>
-          {% endif %}
-          {% if step.videos is not empty %}
-              <h5>Videos</h5>
-              <ul>
-                  {% for vid in step.videos %}
-                  <li>
-                      <img src="{{ vid }}">
-                  </li>
-                  {% endfor %}
-              </ul>
-          {% endif %}
-          {% if step.drugs is not empty %}
+        <h4 class="media-heading">{{ step.num }}. {{ step.name }}</h4>
+        {% if step.text is not empty %}
+            <h5>Description</h5>
+            <p>{{ step.text }}</p>
+        {% endif %}
+        {% if step.pictures is not empty %}
+          <h5>Pictures</h5>
+          <ul>
+              {% for pic in step.pictures %}
+              <li>
+                  <img src="{{ pic }}">
+              </li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        {% if step.videos is not empty %}
+          <h5>Videos</h5>
+          <ul>
+              {% for vid in step.videos %}
+              <li>
+                  <img src="{{ vid }}">
+              </li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        {% if loop.last %}
+            {% if step.drugs is not empty %}
               <h5>Drugs</h5>
               <ul>
                   {% for drug in step.drugs %}
@@ -31,11 +35,12 @@
                       <p>Name: {{ drug.name }}</p>
                       <p>Usage: {{ drug.text }}</p>
                       <p>Cost: {{ drug.cost }}元</p>
+                      <img src="{{ drug.picture }}">
                   </li>
                   {% endfor %}
               </ul>
-          {% endif %}
-          {% if step.payments is not empty %}
+            {% endif %}
+            {% if step.payments is not empty %}
               <h5>Payments</h5>
               <ul>
                   {% for payment in step.payments %}
@@ -45,6 +50,7 @@
                   </li>
                   {% endfor %}
               </ul>
-          {% endif %}
+            {% endif %}
+        {% endif %}
     </div>
 </div>
