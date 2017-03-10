@@ -2,7 +2,7 @@
 namespace VVC\Model\Database;
 
 /**
- * Processes SELECT queries
+ * Processes UPDATE queries
  */
 class Updater extends Connection
 {
@@ -14,11 +14,6 @@ class Updater extends Connection
      */
     public function changePassword(int $userId, string $password) : void
     {
-        // test stub
-        if (NO_DATABASE) {
-            return;
-        }
-
         $sql = "UPDATE users SET password = ? where id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$password, $userId]);
@@ -39,8 +34,45 @@ class Updater extends Connection
         string  $password,
         int     $roleId,
         string  $createdAt
-    ) : void {
+    ) : void
+    {
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
 
+    /**
+     * Rewrites BASIC illness info based on id
+     * @param  int    $id          - not updated
+     * @param  string $name
+     * @param  string $class
+     * @param  string $description
+     * @return void
+     */
+    public function updateIllness(
+        int     $id,
+        string  $name,
+        string  $class,
+        string  $description
+    ) : void
+    {
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Rewrites step name based on step id (num)
+     * this action affects all illnesses (step name change is universal)
+     * @param  int    $num  - not updated
+     * @param  string $name
+     * @return void
+     */
+    public function updateStep(int $num, string $name) : void
+    {
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
     /**
@@ -59,8 +91,11 @@ class Updater extends Connection
         string  $text,
         string  $picture,
         float   $cost
-    ) : void {
-
+    ) : void
+    {
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
     /**
@@ -73,7 +108,9 @@ class Updater extends Connection
      */
     public function updatePayment(int $id, string $name, float $amount) : void
     {
-
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
     /**
@@ -84,77 +121,96 @@ class Updater extends Connection
      */
     public function updateStay(int $illnessId, int $days) : void
     {
-
-    }
-
-    /**
-     * Rewrites BASIC illness info based on id
-     * @param  int    $id          - not updated
-     * @param  string $name
-     * @param  string $class
-     * @param  string $description
-     * @return void
-     */
-    public function updateIllness(
-        int     $id,
-        string  $name,
-        string  $class,
-        string  $description
-    ) : void {
-
-    }
-
-    /**
-     * Rewrites step name based on step id (num)
-     * this action affects all illnesses (step name change is universal)
-     * @param  int    $num  - not updated
-     * @param  string $name
-     * @return void
-     */
-    public function updateStep(int $num, string $name) : void
-    {
-
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
     /**
      * Rewrites step text based on illness id and step id (num)
      * @param  int    $illnessId - not updated
-     * @param  int    $num       - not updated
+     * @param  int    $stepNum   - not updated
      * @param  string $text
      * @return void
      */
-    public function updateStepText(int $illnessId, int $num, string $text) : void
+    public function updateStepText(
+        int     $illnessId,
+        int     $stepNum,
+        string  $text
+    ) : void
     {
-
+        $sql = "UPDATE ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
     /**
-     * Replaces all current step pictures with new pics array
-     * @param  int    $stepNum - not updated
-     * @param  array  $pics    - may consist of only one picture
+     * Replaces all current step pictures with new vids array
+     * @param  int    $illnessId    - not updated
+     * @param  int    $stepNum      - not updated
+     * @param  array  $pics         - may consist of only one picture
      * @return void
      */
-    public function updateStepPictures(int $stepNum, array $pics) : void
+    public function updateStepPictures(
+        int   $illnessId,
+        int   $stepNum,
+        array $pics
+    ) : void
     {
-        (new Deleter())->removeAllPicturesFromStep($stepNum);
+        (new Deleter())->removeAllPicturesFromStep($illnessId, $stepNum);
 
         foreach ($pics as $pic) {
-            (new Creator())->addPictureToStep($stepNum, $pic);
+            (new Creator())->addPictureToStep($illnessId, $stepNum, $pic);
         }
     }
 
     /**
      * Replaces all current step videos with new vids array
-     * @param  int    $stepNum - not updated
-     * @param  array  $vids    - may consist of only one video
+     * @param  int    $illnessId    - not updated
+     * @param  int    $stepNum      - not updated
+     * @param  array  $vids         - may consist of only one picture
      * @return void
      */
-    public function updateStepPictures(int $stepNum, array $vids) : void
+    public function updateStepVideos(
+        int   $illnessId,
+        int   $stepNum,
+        array $vids
+    ) : void
     {
-        (new Deleter())->removeAllVideosFromStep($stepNum);
+        (new Deleter())->removeAllVideosFromStep($illnessId, $stepNum);
 
         foreach ($vids as $vid) {
-            (new Creator())->addVideoToStep($stepNum, $vid);
+            (new Creator())->addVideoToStep($illnessId, $stepNum, $vid);
+        }
+    }
+
+    /**
+     * Replaces all current illness drugs with new drugs array
+     * @param  int    $illnessId - not updated
+     * @param  array  $drugs     - contains new drug IDs
+     * @return void
+     */
+    public function updateIllnessDrugs(int $illnessId, string $vid) : void
+    {
+        (new Deleter())->removeAllDrugsFromIllness($illnessId);
+
+        foreach ($drugs as $drugId) {
+            (new Creator())->addDrugToIllness($illnessId, $drugId);
+        }
+    }
+
+    /**
+     * Replaces all current illness payments with new payments array
+     * @param  int    $illnessId - not updated
+     * @param  array  $payments  - contains new payments IDs
+     * @return void
+     */
+    public function updateIllnessPayments(int $illnessId, array $payments) : void
+    {
+        (new Deleter())->removeAllPaymentsFromIllness($illnessId);
+
+        foreach ($payments as $paymentId) {
+            (new Creator())->addPaymentToIllness($illnessId, $paymentId);
         }
     }
 

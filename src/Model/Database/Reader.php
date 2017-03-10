@@ -263,7 +263,7 @@ class Reader extends Connection
 
                 $days = $this->getStayByIllnessId($illnessId);
                 if ($days > 0) {
-                    $this->setStay(new Stay($days));
+                    $step->setStay(new Stay($days));
                 }
             }
         }

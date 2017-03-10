@@ -36,31 +36,167 @@ class Creator extends Connection
             VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt]);
+
         return (new Reader())->findUserByUsername($username);
     }
 
     /**
-     * Links a picture path together with a step
-     * @param  int    $stepNum 
-     * @param  string $path
-     * @return void
+     * Creates new illness record in the database,
+     * does NOT create any steps
+     * @param  string $name
+     * @param  string $class
+     * @param  string $description
+     * @return int  - new illness id
      */
-    public function addPictureToStep(int $stepNum, string $path)
+    public function createIllness(
+        string  $name,
+        string  $class,
+        string  $description
+    ) : int
     {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
 
+        return $this->db->lastInsertId();
     }
 
     /**
-     * Links a video path together with a step
+     * Creates new step template
+     * @param  int    $num  - id and sequential number of a step
+     * @param  string $name
+     * @return void
+     */
+    public function createStep(int $num, string $name) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Creates new drug
+     * @param  string $name
+     * @param  string $text
+     * @param  string $picture
+     * @param  float  $cost
+     * @return int  - new drug id
+     */
+    public function createDrug(
+        string  $name,
+        string  $text,
+        string  $picture,
+        float   $cost
+    ) : int
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Creates new payment
+     * @param  string $name
+     * @param  float  $amount
+     * @return int  - new payment id
+     */
+    public function createPayment(string $name, float $amount) : int
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Adds a new stay entry based on illness id
+     * @param  int  $illnessId
+     * @param  int  $days
+     * @return void
+     */
+    public function addStay(int $illnessId, int $days) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Adds text to some illness step
+     * @param  int    $illnessId
+     * @param  int    $stepNum
+     * @param  string $text
+     * @return void
+     */
+    public function addTextToStep(
+        int $illnessId, int $stepNum, string $text
+    ) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Adds picture path to some illness step
+     * @param  int    $illnessId
      * @param  int    $stepNum
      * @param  string $path
      * @return void
      */
-    public function addVideoToStep(int $stepNum, string $path)
+    public function addPictureToStep(
+        int $illnessId, int $stepNum, string $path
+    ) : void
     {
-
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
     }
 
+    /**
+     * Adds video path to some illness step
+     * @param  int    $illnessId
+     * @param  int    $stepNum
+     * @param  string $path
+     * @return void
+     */
+    public function addVideoToStep(
+        int $illnessId, int $stepNum, string $path
+    ) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Links drug to an illness
+     * @param  int    $illnessId
+     * @param  string $drugId
+     * @return void
+     */
+    public function addDrugToIllness(int $illnessId, string $drugId) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }
+
+    /**
+     * Links payment to an illness
+     * @param  int    $illnessId
+     * @param  string $paymentId
+     * @return void
+     */
+    public function addPaymentToIllness(int $illnessId, int $paymentId) : void
+    {
+        $sql = "INSERT INTO ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([/* */]);
+    }v
 
     public function createUser_stub($username, $password) : array
     {
