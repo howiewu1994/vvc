@@ -21,7 +21,7 @@ class Updater extends Connection
 
     /**
      * Rewrites user details based on id
-     * @param  int    $id
+     * @param  int    $id       - not updated
      * @param  string $username
      * @param  string $password
      * @param  int    $roleId

@@ -196,7 +196,7 @@ class Creator extends Connection
         $sql = "INSERT INTO ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([/* */]);
-    }v
+    }
 
     public function createUser_stub($username, $password) : array
     {
