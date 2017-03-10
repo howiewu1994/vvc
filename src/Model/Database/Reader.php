@@ -346,7 +346,7 @@ class Reader extends Connection
             );
         }
 
-        return $steps[];
+        return $steps;
     }
 
     /**
