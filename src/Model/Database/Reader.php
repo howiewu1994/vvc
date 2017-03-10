@@ -84,15 +84,28 @@ class Reader extends Connection
             return [];
         }
 
-        // TODO
+        $sql = "SELECT * FROM users";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
         $users = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            $users[] = new User(
+                $row['id'],
+                $row['username'],
+                $row['password'],
+                $row['role_id'],
+                $row['created_at']
+            );
+        }
 
         return $users;
     }
 
     /**
-     * Returns all illnesses collection
-     * Only basic info is needed, no steps array
+     * Returns collection of alll illnesses
+     * Only BASIC details are required, no steps array
      * @return IllnessCollection, empty or not
      */
     public function getAllIllnesses() : IllnessCollection
@@ -121,7 +134,7 @@ class Reader extends Connection
             return $collection;
         }
 
-        $sql = "SELECT * FROM illnesses";
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 
@@ -129,11 +142,10 @@ class Reader extends Connection
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
             $collection->addRecord(new IllnessRecord(
-                // TODO
-                $row['id'],
-                $row['name'],
-                $row['class'],
-                $row['description']
+                // $row['id'],
+                // $row['name'],
+                // $row['class'],
+                // $row['description']
             ));
         }
 
@@ -141,7 +153,63 @@ class Reader extends Connection
     }
 
     /**
-     * Returns full illness details,
+     * Returns array with all drugs, full details
+     * @return array of Drugs, empty or not
+     */
+    public function getAllDrugs() : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        $sql = "SELECT ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $drugs = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            $drugs[] = new Drug(
+                // $row['id'],
+                // $row['name'],
+                // $row['text'],
+                // $row['picture'],
+                // $row['cost'],
+            );
+        }
+
+        return $drugs;
+    }
+
+    /**
+     * Returns array with all payments, full details
+     * @return array of Payments, empty or not
+     */
+    public function getAllPayments() : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        $sql = "SELECT ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $payments = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            $payments[] = new Payment(
+                // $row['id'],
+                // $row['name'],
+                // $row['amount']
+            );
+        }
+
+        return $payments;
+    }
+
+    /**
+     * Returns FULL illness details,
      * including all steps and details of each step
      * @param  int  $id     - illness id
      * @return IllnessRecord OR false if not found
@@ -166,7 +234,7 @@ class Reader extends Connection
             }
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";  // TODO
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -176,8 +244,7 @@ class Reader extends Connection
         }
 
         $illness = new IllnessRecord(
-            // TODO
-            // $result[''], ..
+            // $result[''], $result[''], ...
         );
 
         $steps = getStepsByIllnessId($id);
@@ -229,18 +296,7 @@ class Reader extends Connection
             return $steps;
         }
 
-        $sql = "";  // TODO
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$illnessId]);
-
-        $steps = [];
-
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-            $steps[] = new Step(
-                // TODO
-                //$row[''], ..
-            );
-        }
+        $steps = $this->findIllnessSteps($illnessId);
 
         foreach ($steps as $step) {
             $stepNum = $step->getNum();
@@ -272,6 +328,28 @@ class Reader extends Connection
     }
 
     /**
+     * Returns illness steps BASIC details, no pictures, etc
+     * @param  int    $illnessId
+     * @return array of steps, empty or not
+     */
+    public function findIllnessSteps(int $illnessId) : array
+    {
+        $sql = "SELECT ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId]);
+
+        $steps = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            $steps[] = new Step(
+                //$row[''], $row[''], ...
+            );
+        }
+
+        return $steps[];
+    }
+
+    /**
      * Returns step text
      * @param  int $illnessId
      * @param  int $stepNum
@@ -280,14 +358,14 @@ class Reader extends Connection
     public function getStepText(int $illnessId, int $stepNum) : string
     {
         if (NO_DATABASE) {
-            return "Description of step $stepNum for illness $illnessId";;
+            return "Description of step $stepNum for illness $illnessId";
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
-        return $stmt->fetchColumn(0);
+        return $stmt->fetchColumn(0);   // if only one column was selected
     }
 
     /**
@@ -302,14 +380,13 @@ class Reader extends Connection
             return ["/img/step$stepNum.png"];
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
         $pics = [];
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-            // TODO
             //$pics[] = $row[''];
         }
 
@@ -328,14 +405,13 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
         $vids = [];
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-            // TODO
             //$vids[] = $row[''];
         }
 
@@ -359,15 +435,16 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
         $drugs = [];
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-            // TODO
-            //$drugs[] = $row[''];
+            /*$drugs[] = new Drug(
+                $row[''], $row[''], ...
+            );*/
         }
 
         return $drugs;
@@ -386,15 +463,16 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
         $payments = [];
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-            // TODO
-            //$payments[] = $row[''];
+            /*$payments[] = new Payment(
+                $row[''], $row[''], ...
+            );*/
         }
 
         return $payments;
@@ -411,57 +489,63 @@ class Reader extends Connection
             return rand(0, 5);
         }
 
-        $sql = "";  // TODO
+        $sql = "SELECT ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
-        return $stmt->fetchColumn(0);
-    }
-
-    /**
-     * Returns array with all drugs, full details
-     * @return array of Drugs, empty or not
-     */
-    public function getAllDrugs() : array
-    {
-        if (NO_DATABASE) {
-            return [];
-        }
-
-        // TODO
-        $drugs = [];
-
-        return $drugs;
+        return $stmt->fetchColumn(0);   // returns false if no columns
     }
 
     /**
      * Returns all illnesses associated with the drug
      * @param  string $drugId
-     * @return array of IllnessRecords OR false
+     * @return array of illnesses, empty or not
      */
-    public function findIllnessesByDrugId(string $drugId)
-    {
-        if (NO_DATABASE) {
-            return false;
-        }
-
-        // TODO
-    }
-
-    /**
-     * Returns array with all payments, full details
-     * @return array of Payments, empty or not
-     */
-    public function getAllPayments() : array
+    public function findIllnessesByDrugId(string $drugId) : array
     {
         if (NO_DATABASE) {
             return [];
         }
 
-        // TODO
-        $payments = [];
+        $sql = "SELECT ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$drugId]);
 
-        return $payments;
+        $illnesses = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            /*$illnesses[] = new IllnessRecord(
+                $row[''], $row[''], ...
+            );*/
+        }
+
+        return $illnesses;
+    }
+
+    /**
+     * Returns all illnesses associated with the payment
+     * @param  string $paymentId
+     * @return array of illnesses, empty or not
+     */
+    public function findIllnessesByPaymentId(string $paymentId) : array
+    {
+        if (NO_DATABASE) {
+            return [];
+        }
+
+        $sql = "SELECT ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$paymentId]);
+
+        $illnesses = [];
+
+        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+            /*$illnesses[] = new IllnessRecord(
+                $row[''], $row[''], ...
+            );*/
+        }
+
+        return $illnesses;
     }
 
 

@@ -130,7 +130,7 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeAllDrugsFromIllness(int $illnessId)
+    public function removeAllDrugsFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM ";
         $stmt = $this->db->prepare($sql);
@@ -144,7 +144,7 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeAllPaymentsFromIllness(int $illnessId)
+    public function removeAllPaymentsFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM ";
         $stmt = $this->db->prepare($sql);
@@ -158,11 +158,59 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeStayFromIllness(int $illnessId)
+    public function removeStayFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
+    }
+
+    /**
+     * Deletes picture from all steps AND from all drugs
+     *
+     * If any of deletions fail, roll back transaction
+     *
+     * @param  string $path
+     * @return true if successful OR false if rolled back
+     */
+    public function deletePicture(string $path) : bool
+    {
+        // Turn autocommit off
+        $this->db->beginTransaction();
+
+        try {
+            // Delete from illnesses
+            $sql = "DELETE FROM ill_pic";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$path]);
+
+            // Delete from drugs
+            $sql = "DELETE FROM drug_pic";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$path]);
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            // TODO logError $e
+            // If any step fails, roll back
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Deletes video from all steps
+     * @param  string $path
+     * @return true if successful OR false if rolled back
+     */
+    public function deleteVideo(string $path) : void
+    {
+        $sql = "DELETE FROM ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$path]);
     }
 
     /**
@@ -180,7 +228,7 @@ class Deleter extends Connection
 
         try {
             // Remove drug from all illnesses
-            $illnesses = (new Reader())->findIllnessByDrugId($drugId);
+            $illnesses = (new Reader())->findIllnessesByDrugId($drugId);
             foreach ($illnesses as $illness) {
                 $illnessId = $illness->getId();
                 $this->removeDrugFromIllness($illnessId, $drugId);

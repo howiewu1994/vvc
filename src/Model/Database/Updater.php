@@ -214,4 +214,54 @@ class Updater extends Connection
         }
     }
 
+    /**
+     * Updates picture for all steps AND for all drugs
+     * This action is provoked because of changing real picture on file system
+     *
+     * If any of updates fail, roll back transaction
+     *
+     * @param  string $path
+     * @return true if successful OR false if rolled back
+     */
+    public function updatePicture(string $path) : bool
+    {
+        // Turn autocommit off
+        $this->db->beginTransaction();
+
+        try {
+            // Update for illnesses
+            $sql = "UPDATE ill_pic";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$path]);
+
+            // Update for drugs
+            $sql = "UPDATE drug_pic";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$path]);
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            // TODO logError $e
+            // If any step fails, roll back
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Updates picture for all steps
+     * This action is provoked because of changing real picture on file system
+     * @param  string $path
+     * @return void
+     */
+    public function updateVideo(string $path) : void
+    {
+        $sql = "UPDATE ill_pic";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$path]);
+    }
+
 }
