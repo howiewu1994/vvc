@@ -30,7 +30,7 @@ class IllnessCollection
     public function __construct($records = null)
     {
         if ($records) {
-            $this->setRecords($records);
+            $this->addRecords($records);
         }
     }
 

@@ -10,7 +10,7 @@ date_default_timezone_set("Asia/Shanghai");
  * You can login as admin or user using details below
  * This is read-only mode, can't modify data
  */
-const NO_DATABASE = true;
+const NO_DATABASE = false;
 
 /**
  * Access rights (privileges) :

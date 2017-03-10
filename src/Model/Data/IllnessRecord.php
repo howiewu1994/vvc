@@ -7,8 +7,6 @@ class IllnessRecord
     private $name = 'Illness';
     private $class = 'General';
     private $description = 'Very basic pet illness.';
-    // how many days - 0 OR 1,2,3..
-    private $stay = 0;
 
     private $steps = [];
 
@@ -16,14 +14,12 @@ class IllnessRecord
         int     $id,
         string  $name,
         string  $class,
-        string  $description,
-        int     $stay
+        string  $description
     ) {
         $this->setId($id);
         $this->setName($name);
         $this->setClass($class);
         $this->setDescription($description);
-        $this->setStay($stay);
     }
 
     public function getId() : int
@@ -66,15 +62,15 @@ class IllnessRecord
         $this->description = $description;
     }
 
-    public function getStay() : int
-    {
-        return $this->stay;
-    }
-
-    public function setStay(int $stay)
-    {
-        $this->stay = $stay;
-    }
+    // public function getStay() : int
+    // {
+    //     return $this->stay;
+    // }
+    //
+    // public function setStay(int $stay)
+    // {
+    //     $this->stay = $stay;
+    // }
 
     public function getSteps() : array
     {
@@ -93,9 +89,9 @@ class IllnessRecord
         }
     }
 
-    public function addStep(TreatmentStep $step)
+    public function addStep(Step $step)
     {
-        $seqNum = $step->getSeqNum();
+        $seqNum = $step->getNum();
         $this->steps[$seqNum] = $step;
         ksort($this->steps);
     }
