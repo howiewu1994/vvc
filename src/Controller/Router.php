@@ -174,7 +174,7 @@ class Router
     public static function routeAdmin(array $route, array $get, array $post)
     {
         Auth::requireAdmin();
-        $controller = new DashboardController();
+        $controller = new AdminController();
 
         switch ($route['section']) {
             case '' :
@@ -183,6 +183,8 @@ class Router
                 break;
 
             case 'accounts' :
+
+                $controller = new AccountManager();
 
                 // Check if user id in uri is valid
                 if (in_array($route['action'], [
@@ -196,7 +198,17 @@ class Router
                         $controller->showAccountListPage();
                         break;
 
-                    case 'add' :
+                    case 'add-single' :
+                        if (empty($post)) {
+                            $controller->showAddAccountPage();
+                        } else {
+                            $controller->addAccount($post);
+                        }
+
+                    case 'add-many' :
+                        $controller->showBatchAddPage();
+                        break;
+
                     case 'change' :
                         if (empty($post)) {
                             $controller->showChangeAccountPage($route['page']);
@@ -216,38 +228,16 @@ class Router
 
             case 'illnesses' :
 
-                switch ($route['page']) {
-
-                    case '' :
-                        $controller->showAccountListPage();
-                        break;
-
-                    default :
-                        if (!is_numeric($route['page'])) {
-                            self::redirect('/admin/accounts');
-                        }
-                        switch ($route['action']) {
-                            case 'change' :
-                                $controller->showChangeAccountPage(
-                                    $route['page'], $post
-                                );
-                                break;
-
-                            case 'delete' :
-                                $controller->deleteAccount($route['page']);
-                                break;
-
-                            default :
-                                $controller->showAccountPage($route['page']);
-                        }
-                }
-
             case 'drugs' :
+
+            case 'hospitalization' :
 
             case 'payments' :
 
+            case 'uploads' :
+
             default :
-                $controller->showDashboardPage();
+                self::redirect('/admin');
         }
     }
 }

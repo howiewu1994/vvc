@@ -8,7 +8,11 @@
         <h2>用户管理</h2>
         {# display error message if database search failed #}
         {% include "inc/flash_messages.twig" %}
-        <p>View, change, delete, add user accounts.</p>
+        <p>View, change, delete and add user accounts.</p>
+        <a class="btn btn btn-primary" role="button"
+            href="/admin/accounts/add-single">Add new</a>
+        <a class="btn btn btn-default" role="button"
+            href="/admin/accounts/add-many">Batch-add</a>
     </div>
     <div class="media well">
         <div class="media-body">

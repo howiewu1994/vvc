@@ -6,15 +6,11 @@ use VVC\Model\Database\Deleter;
 use VVC\Model\Database\Reader;
 use VVC\Model\Database\Updater;
 
-class DashboardController extends BaseController
+/**
+ * Admin controller for managing user accounts
+ */
+class AccountManager extends AdminController
 {
-    protected $template = 'admin.twig';
-
-    public function showDashboardPage()
-    {
-        $this->render();
-    }
-
     public function showAccountListPage()
     {
         try {
@@ -30,6 +26,51 @@ class DashboardController extends BaseController
         $this->setTemplate('admin_accs.twig');
         $this->addTwigVar('users', $users);
         $this->render();
+    }
+
+    public function showAddAccountPage(
+        string $username = null, int $roleId = null
+    ) {
+        $this->setTemplate('add_account.twig');
+        $this->addTwigVar('username', $username);
+        $this->addTwigVar('role', $roleId);
+        $this->render();
+    }
+
+    public function addAccount(array $post)
+    {
+        if (!$this->isClean($post)) {
+            $this->flash('fail', 'Username or password contain invalid characters');
+            return $this->showAddAccountPage($post['username'], $post['role_id']);
+        }
+
+        $username = $post['username'];
+        $password = $post['password'];
+        $roleId = $post['role_id'] ?? 2;
+
+        try {
+            $dbReader = new Reader();
+            $user = $dbReader->findUserByUsername($username);
+
+            if (!empty($user)) {
+                $this->flash('fail', 'This username is already registered');
+                return $this->showAddAccountPage($username, $roleId);
+            }
+
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+            $dbCreator = new Creator();
+            $user = $dbCreator->createUser($username, $hashed, $roleId);
+
+            $this->flash('success', 'Added successfully');
+            return Router::redirect('/admin/accounts');
+
+        } catch (\Exception $e) {
+            // TODO logError($e);
+            // throw $e;
+            $this->flash('fail', 'Database operation failed');
+            return $this->showAddAccountPage($username, $roleId);
+        }
     }
 
     public function showChangeAccountPage(int $userId)
@@ -125,44 +166,4 @@ class DashboardController extends BaseController
             return Router::redirect('/admin/accounts');
         }
     }
-
-    public function showIllnessListPage()
-    {
-        try {
-            $dbReader = new Reader();
-            $list = $dbReader->getAllIllnesses();
-        } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
-            $this->flash('fail', 'Database operation failed');
-            $this->showDashboardPage();
-        }
-
-        $this->setTemplate('illnesses.twig');
-        $this->addTwigVar('list', $list->getRecords());
-        $this->render();
-    }
-
-    public function showIllnessPage($illnessId)
-    {
-        try {
-            $dbReader = new Reader();
-            $illness = $dbReader->getFullIllnessById($illnessId);
-        } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
-            $this->flash('fail', 'Database operation failed');
-            $this->showIllnessListPage();
-        }
-
-        if (empty($illness)) {
-            $this->flash('fail', 'Could not find illness record');
-            $this->showIllnessListPage();
-        }
-
-        $this->setTemplate('dashboard_illness.twig');
-        $this->addTwigVar('ill', $illness);
-        $this->render();
-    }
-
 }
