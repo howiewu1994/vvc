@@ -9,13 +9,14 @@ class Deleter extends Connection
     /**
      * Deletes user based on id
      * @param  int   $userId
-     * @return void
+     * @return int  - 1 if deleted, 0 if not
      */
-    public function deleteUser(int $userId) : void
+    public function deleteUser(int $userId) : int
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM users WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
+        return $stmt->rowCount();
     }
 
     /**
@@ -204,13 +205,14 @@ class Deleter extends Connection
     /**
      * Deletes video from all steps
      * @param  string $path
-     * @return true if successful OR false if rolled back
+     * @return int  - how many rows were deleted
      */
-    public function deleteVideo(string $path) : void
+    public function deleteVideo(string $path) : int
     {
         $sql = "DELETE FROM ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
+        return $stmt->rowCount();
     }
 
     /**

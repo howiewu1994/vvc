@@ -90,7 +90,7 @@ class Reader extends Connection
 
         $users = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $users[] = new User(
                 $row['id'],
                 $row['username'],
@@ -140,7 +140,7 @@ class Reader extends Connection
 
         $collection = new IllnessCollection();
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $collection->addRecord(new IllnessRecord(
                 // $row['id'],
                 // $row['name'],
@@ -168,7 +168,7 @@ class Reader extends Connection
 
         $drugs = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $drugs[] = new Drug(
                 // $row['id'],
                 // $row['name'],
@@ -197,7 +197,7 @@ class Reader extends Connection
 
         $payments = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
                 // $row['id'],
                 // $row['name'],
@@ -340,7 +340,7 @@ class Reader extends Connection
 
         $steps = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $steps[] = new Step(
                 //$row[''], $row[''], ...
             );
@@ -386,7 +386,7 @@ class Reader extends Connection
 
         $pics = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             //$pics[] = $row[''];
         }
 
@@ -411,7 +411,7 @@ class Reader extends Connection
 
         $vids = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             //$vids[] = $row[''];
         }
 
@@ -441,7 +441,7 @@ class Reader extends Connection
 
         $drugs = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             /*$drugs[] = new Drug(
                 $row[''], $row[''], ...
             );*/
@@ -469,7 +469,7 @@ class Reader extends Connection
 
         $payments = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             /*$payments[] = new Payment(
                 $row[''], $row[''], ...
             );*/
@@ -513,7 +513,7 @@ class Reader extends Connection
 
         $illnesses = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             /*$illnesses[] = new IllnessRecord(
                 $row[''], $row[''], ...
             );*/
@@ -539,7 +539,7 @@ class Reader extends Connection
 
         $illnesses = [];
 
-        while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             /*$illnesses[] = new IllnessRecord(
                 $row[''], $row[''], ...
             );*/

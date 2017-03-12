@@ -1,0 +1,13 @@
+<tr>
+    <td>{{ user.id }}</td>
+    <td>{{ user.username }}</td>
+    <td>{{ user.createdAt }}</td>
+    <td>{{ (user.roleId == 1) ? 'admin' : 'user' }}</td>
+    <td>
+        <a class="btn btn-sm btn-primary" role="button"
+            href="/admin/accounts/change/{{user.id}}">Change</a>
+
+        <a class="btn btn-sm btn-danger" role="button"
+            href="/admin/accounts/delete/{{user.id}}">Delete</a>
+    </td>
+</tr>

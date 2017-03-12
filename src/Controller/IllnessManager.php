@@ -1,15 +1,16 @@
 <?php
 namespace VVC\Controller;
 
-class DashboardController extends BaseController
+use VVC\Model\Database\Creator;
+use VVC\Model\Database\Deleter;
+use VVC\Model\Database\Reader;
+use VVC\Model\Database\Updater;
+
+/**
+ * Admin controller to manage illnesses
+ */
+class IllnessManager extends AdminController
 {
-    protected $template = 'dashboard.twig';
-
-    public function showDashboardPage()
-    {
-        $this->render();
-    }
-
     public function showIllnessListPage()
     {
         try {
@@ -48,5 +49,4 @@ class DashboardController extends BaseController
         $this->addTwigVar('ill', $illness);
         $this->render();
     }
-
 }
