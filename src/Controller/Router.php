@@ -72,32 +72,7 @@ class Router
 
             case 'admin' :
 
-                Auth::requireAdmin();
-                $controller = new DashboardController();
-
-                if ($route['count'] == 1) {
-                    $controller->showDashboardPage();
-                }
-
-                switch ($route['section']) {
-                    case 'illnesses' :
-                        if (!empty($route['page'])
-                            && is_numeric($route['page'])) {
-                            $controller->showIllnessPage($route['page']);
-                        } else {
-                            $controller->showIllnessListPage();
-                        }
-                        break;
-
-                    case 'accounts' :
-
-                    case 'drugs' :
-
-                    case 'payments' :
-
-                    default :
-                        $controller->showDashboardPage();
-                }
+                self::routeAdmin($route, $get, $post);
                 break;
 
             case '3d' :
@@ -133,6 +108,7 @@ class Router
      * /catalog?s=                      search              catalog.twig
      * /admin/accounts                  manage accounts     admin_acc.twig
      * /admin/accounts/1                view account 1      view_acc.twig
+     * /admin/accounts/1/change         change account 1    change_acc.twig
      *
      */
 
@@ -146,10 +122,20 @@ class Router
 
         $route['count'] = count($uri);
         $route['base'] = $uri[0];
+        $route['section'] = '';
+        $route['page'] = '';
+        $route['action'] = '';
 
         if ($route['count'] > 1) {
             $route['section'] = $uri[1];
-            $route['page'] = $uri[$route['count']-1];
+
+            if ($route['count'] > 2) {
+                $route['page'] = $uri[2];
+
+                if ($route['count'] > 3) {
+                    $route['action'] = $uri[3];
+                }
+            }
         }
         // print_r($uri);
         // print_r($route);
@@ -194,5 +180,66 @@ class Router
             ['location' => $uri],
             $authToken
         );
+    }
+
+    public static function routeAdmin(array $route, array $get, array $post)
+    {
+        Auth::requireAdmin();
+        $controller = new DashboardController();
+
+        switch ($route['section']) {
+            case '' :
+
+                $controller->showDashboardPage();
+                break;
+
+            case 'accounts' :
+
+                switch ($route['page']) {
+
+                    case '' :
+                        $controller->showAccountListPage();
+                        break;
+
+                    default :
+                        if (!is_numeric($route['page'])) {
+                            $controller->showAccountListPage();
+                        }
+                        switch ($route['action']) {
+                            case '' :
+                                $controller->showAccountPage($route['page']);
+                                break;
+
+                            case 'change' :
+                                $controller->showChangeAccountPage(
+                                    $route['page'], $post
+                                );
+                                break;
+
+                            case 'delete' :
+                                $controller->deleteAccount($route['page']);
+                                break;
+
+                            default :
+                                $controller->showAccountPage($route['page']);
+                        }
+                }
+
+            case 'illnesses' :
+                if (!empty($route['page'])
+                    && is_numeric($route['page'])) {
+                    $controller->showIllnessPage($route['page']);
+                } else {
+                    $controller->showIllnessListPage();
+                }
+                break;
+
+            case 'drugs' :
+
+            case 'payments' :
+
+            default :
+                $controller->showDashboardPage();
+        }
     }
 }

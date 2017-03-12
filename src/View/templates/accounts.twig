@@ -1,0 +1,34 @@
+{% extends 'base.twig' %}
+
+{% block title %}Manage accounts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h2>用户管理</h2>
+        {# display error message if database search failed #}
+        {% include "inc/flash_messages.twig" %}
+        <p>View, change, delete, add user accounts.</p>
+    </div>
+    <div class="media well">
+        <div class="media-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Registered at</th>
+                        <th>Privileges</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        {% include "inc/admin_account.twig" %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

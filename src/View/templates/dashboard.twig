@@ -6,9 +6,11 @@
 <div class="container">
     <div class="well">
         <h2>管理仪表板</h2>
+        {# display error message if login failed #}
+        {% include "inc/flash_messages.twig" %}
         <p>From this dashboard you can manage:
             <ul>
-                <li>User accounts</li>
+                <li><a href='/admin/accounts'>User accounts</a></li>
                 <li>Illness Records</li>
                 <li>Drug Details</li>
                 <li>住院管理</li>

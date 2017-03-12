@@ -204,7 +204,6 @@ class Deleter extends Connection
     /**
      * Deletes video from all steps
      * @param  string $path
-     * @return true if successful OR false if rolled back
      */
     public function deleteVideo(string $path) : void
     {

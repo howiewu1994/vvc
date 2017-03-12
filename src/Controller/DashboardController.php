@@ -1,12 +1,31 @@
 <?php
 namespace VVC\Controller;
 
+use VVC\Model\Database\Reader;
+
 class DashboardController extends BaseController
 {
     protected $template = 'dashboard.twig';
 
     public function showDashboardPage()
     {
+        $this->render();
+    }
+
+    public function showAccountListPage()
+    {
+        try {
+            $dbReader = new Reader();
+            $users = $dbReader->getAllUsers();
+        } catch (\Exception $e) {
+            // TODO logError($e);
+            // throw $e;
+            $this->flash('fail', 'Database operation failed');
+            $this->showDashboardPage();
+        }
+
+        $this->setTemplate('accounts.twig');
+        $this->addTwigVar('users', $users);
         $this->render();
     }
 
