@@ -36,9 +36,11 @@ class Updater extends Connection
         string  $createdAt
     ) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE users SET
+            username = ?, password = ?, role_id = ?, created_at = ?
+            WHERE id = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$username, $password, $roleId, $createdAt, $id]);
     }
 
     /**

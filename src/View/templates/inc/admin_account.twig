@@ -4,19 +4,10 @@
     <td>{{ user.createdAt }}</td>
     <td>{{ (user.roleId == 1) ? 'admin' : 'user' }}</td>
     <td>
-        <button type="button" class="btn btn-sm btn-default">
-            <a href="/admin/accounts/{{user.id}}"
-                style="text-decoration: none">View</a>
-        </button>
+        <a class="btn btn-sm btn-primary" role="button"
+            href="/admin/accounts/change/{{user.id}}">Change</a>
 
-        <button type="button" class="btn btn-sm btn-primary">
-            <a href="/admin/accounts/{{user.id}}/change"
-                style="text-decoration: none">Change</a>
-        </button>
-
-        <button type="button" class="btn btn-sm btn-danger">
-            <a href="/admin/accounts/{{user.id}}/delete"
-                style="text-decoration: none">Delete</a>
-        </button>
+        <a class="btn btn-sm btn-danger" role="button"
+            href="/admin/accounts/delete/{{user.id}}">Delete</a>
     </td>
 </tr>

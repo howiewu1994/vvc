@@ -4,7 +4,7 @@
       <ul>
           {% for illness in illnesses %}
           <li>
-              {% include "inc/catalog_illness.twig" %}
+              <p><a href="/catalog/{{ illness.id }}">{{ illness.name }}</a></p>
           </li>
           {% endfor %}
       </ul>

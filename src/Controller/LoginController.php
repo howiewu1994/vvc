@@ -56,9 +56,7 @@ class LoginController extends BaseController
             $this->flash('fail', 'Password is incorrect');
             return $this->showLoginFailPage($username);
         }
-
-        global $session;
-
+        
         $this->flash('success', "Welcome back, $username");
         $authToken = Auth::encodeToken($user->getId(), $user->getRoleId());
         return Router::redirect('/', $authToken);

@@ -87,7 +87,7 @@ class Router
                 Auth::requireAuth();
                 $controller = new CatalogController();
 
-                if (!empty($route['page']) && is_numeric($route['page'])) {
+                if (is_numeric($route['page'])) {
                     $controller->showIllnessPage($route['page']);
                 } else {
                     $controller->showCatalogPage();
@@ -106,9 +106,9 @@ class Router
      * /login                           login               login.twig
      * /catalog/1                       show illness        illness.twig
      * /catalog?s=                      search              catalog.twig
-     * /admin/accounts                  manage accounts     admin_acc.twig
-     * /admin/accounts/1                view account 1      view_acc.twig
-     * /admin/accounts/1/change         change account 1    change_acc.twig
+     * /admin/illnesses                 manage illnesses    admin_ill.twig
+     * /admin/illnesses/1               view illness 1      view_ill.twig
+     * /admin/illnesses/1/change        change illness 1    change_ill.twig
      *
      */
 
@@ -120,23 +120,12 @@ class Router
         $uri = trim($req->getPathInfo(), '/');
         $uri = explode('/', $uri);
 
-        $route['count'] = count($uri);
+        // $route['count'] = count($uri);
         $route['base'] = $uri[0];
-        $route['section'] = '';
-        $route['page'] = '';
-        $route['action'] = '';
+        $route['section'] = empty($uri[1]) ? '' : $uri[1];
+        $route['action'] = empty($uri[2]) ? '' : $uri[2];
+        $route['page'] = $uri[count($uri)-1];
 
-        if ($route['count'] > 1) {
-            $route['section'] = $uri[1];
-
-            if ($route['count'] > 2) {
-                $route['page'] = $uri[2];
-
-                if ($route['count'] > 3) {
-                    $route['action'] = $uri[3];
-                }
-            }
-        }
         // print_r($uri);
         // print_r($route);
         // exit;
@@ -195,6 +184,38 @@ class Router
 
             case 'accounts' :
 
+                // Check if user id in uri is valid
+                if (in_array($route['action'], [
+                    'change', 'delete'
+                ]) && !is_numeric($route['page'])) {
+                    self::redirect('/admin/accounts');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showAccountListPage();
+                        break;
+
+                    case 'add' :
+                    case 'change' :
+                        if (empty($post)) {
+                            $controller->showChangeAccountPage($route['page']);
+                        } else {
+                            $controller->changeAccount($route['page'], $post);
+                        }
+                        break;
+
+                    case 'delete' :
+                        $controller->deleteAccount($route['page']);
+                        break;
+
+                    default :
+                        self::redirect('/admin/accounts');
+                }
+                break;
+
+            case 'illnesses' :
+
                 switch ($route['page']) {
 
                     case '' :
@@ -203,13 +224,9 @@ class Router
 
                     default :
                         if (!is_numeric($route['page'])) {
-                            $controller->showAccountListPage();
+                            self::redirect('/admin/accounts');
                         }
                         switch ($route['action']) {
-                            case '' :
-                                $controller->showAccountPage($route['page']);
-                                break;
-
                             case 'change' :
                                 $controller->showChangeAccountPage(
                                     $route['page'], $post
@@ -224,15 +241,6 @@ class Router
                                 $controller->showAccountPage($route['page']);
                         }
                 }
-
-            case 'illnesses' :
-                if (!empty($route['page'])
-                    && is_numeric($route['page'])) {
-                    $controller->showIllnessPage($route['page']);
-                } else {
-                    $controller->showIllnessListPage();
-                }
-                break;
 
             case 'drugs' :
 

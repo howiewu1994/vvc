@@ -6,7 +6,7 @@ use VVC\Model\Database\Updater;
 
 class AccountController extends BaseController
 {
-    protected $template = 'account.twig';
+    protected $template = 'my_account.twig';
 
     public function showChangePasswordPage()
     {
