@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <div class="well col-sm-6 col-sm-offset-3">
-        <form method="post" action="/admin/accounts/{{ user.id }}/change">
+        <form method="post" action="/admin/accounts/change/{{ user.id }}">
             <h2>Change Account</h2>
             {# display error message if could not change password #}
             {% include "inc/flash_messages.twig" %}

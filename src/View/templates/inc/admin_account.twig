@@ -3,11 +3,15 @@
     <td>{{ user.username }}</td>
     <td>{{ user.createdAt }}</td>
     <td>{{ (user.roleId == 1) ? 'admin' : 'user' }}</td>
-    <td>
+    <td class="col-sm-1">
         <a class="btn btn-sm btn-primary" role="button"
             href="/admin/accounts/change/{{user.id}}">Change</a>
-
-        <a class="btn btn-sm btn-danger" role="button"
-            href="/admin/accounts/delete/{{user.id}}">Delete</a>
+    </td>
+    <td class="col-sm-1">
+        <form action="/admin/accounts/delete" method="post">
+            <input type="hidden" name="user_id" value="{{user.id}}">
+            <button class="btn btn-sm btn-danger" type="submit"
+                name="delete_user">Delete</button>
+        </form>
     </td>
 </tr>

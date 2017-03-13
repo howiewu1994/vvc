@@ -1,0 +1,11 @@
+    # Users
+-
+    username    : user1
+    password    : 123
+    roleId      : 2
+
+#     # Admins
+-
+    username    : admin1
+    password    : 123
+    roleId      : 1
