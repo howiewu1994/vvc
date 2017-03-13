@@ -24,42 +24,50 @@ class IllnessRecord
 
     public function getId() : int
     {
-        return $this->id;
+        return $this->ill_id;
+        //return $this->id;
     }
 
     public function setId(int $id)
     {
-        $this->id = $id;
+        $this->ill_id=$id;
+        //$this->id = $id;
     }
 
     public function getName() : string
     {
-        return $this->name;
+        return $this->ill_name;
+        //return $this->name;
     }
 
     public function setName(string $name)
     {
-        $this->name = $name;
+        $this->ill_name=$name;
+        //$this->name = $name;
     }
 
     public function getClass() : string
     {
-        return $this->class;
+        return $this->class_name;
+        //return $this->class;
     }
 
     public function setClass(string $class)
     {
-        $this->class = $class;
+        $this->class_name=$class;
+        //$this->class = $class;
     }
 
     public function getDescription() : string
     {
-        return $this->description;
+        return $this->ill_describe;
+        //return $this->description;
     }
 
     public function setDescription(string $description)
     {
-        $this->description = $description;
+        $this->ill_describe=$description;
+        //$this->description = $description;
     }
 
     // public function getStay() : int
@@ -72,7 +80,7 @@ class IllnessRecord
     //     $this->stay = $stay;
     // }
 
-    public function getSteps() : array
+    /*public function getSteps() : array
     {
         return $this->steps;
     }
@@ -94,6 +102,6 @@ class IllnessRecord
         $seqNum = $step->getNum();
         $this->steps[$seqNum] = $step;
         ksort($this->steps);
-    }
+    }*/
 
 }

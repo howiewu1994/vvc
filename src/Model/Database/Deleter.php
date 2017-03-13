@@ -13,7 +13,7 @@ class Deleter extends Connection
      */
     public function deleteUser(int $userId) : int
     {
-        $sql = "DELETE FROM users WHERE id = ?";
+        $sql = "DELETE FROM users WHERE user_id ='$userId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->rowCount();
@@ -47,7 +47,8 @@ class Deleter extends Connection
             $this->removeStayFromIllness($illnessId);
 
             // In the end delete illness
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM illness
+            		WHERE ill_id='$illnessId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$illnessId]);
 
@@ -89,9 +90,10 @@ class Deleter extends Connection
      */
     public function removeTextFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM steps 
+        		WHERE ill_id='$illnessId' AND step_num='$stepNum' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -133,7 +135,10 @@ class Deleter extends Connection
      */
     public function removeAllDrugsFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM drug
+        		WHERE drug_id=(
+        		      SELECT drug_id FROM illdrug
+        		             WHERE ill_id='$illnessId' )";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -147,7 +152,8 @@ class Deleter extends Connection
      */
     public function removeAllPaymentsFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM payments
+        		WHERE ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -159,12 +165,13 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeStayFromIllness(int $illnessId) : void
+   /* public function removeStayFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
-    }
+    }*/
+    //we treat 'stay' as one of the payment
 
     /**
      * Deletes picture from all steps AND from all drugs
@@ -237,7 +244,8 @@ class Deleter extends Connection
             }
 
             // Delete drug
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM drug 
+            		WHERE drug_id='$drugId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$drugId]);
 
@@ -275,7 +283,8 @@ class Deleter extends Connection
             }
 
             // Delete payment
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM payment
+            		WHERE pay_id='$paymentId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$paymentId]);
 
