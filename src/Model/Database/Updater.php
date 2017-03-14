@@ -41,7 +41,7 @@ class Updater extends Connection
         		SET user_name='$username',
                     password='$password',
                     role_id='$roleId',
-                    created_at='$createdAt'
+                    createdAt='$createdAt'
                 WHERE user_id='$id' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt, $id]);
@@ -68,7 +68,7 @@ class Updater extends Connection
                     ill_describe='$description'
                 WHERE ill_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$class,$description]);
     }
 
     /**
@@ -82,9 +82,9 @@ class Updater extends Connection
     {
         $sql = "UPDATE stepname
         		SET step_name='$name'
-                WHERE step_num='$num' ";
+                WHERE step_id='$num' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name]);
     }
 
     /**
@@ -112,26 +112,29 @@ class Updater extends Connection
                     drug_cost='$cost'
                 WHERE drug_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$text,$picture,$cost]);
     }
 
     /**
      * Rewrites payment details based on id,
      * this action affects all corresponding illness records
      * @param  int    $id     - not updated
+     * @param  int    $illnessId
      * @param  string $name
-     * @param  float  $amount
+     * @param  float  $cost
+     * @param  int    $number
      * @return void
      */
-    public function updatePayment(int $id, string $name, float $amount) : void
+    public function updatePayment(int $id, int $illnessId, string $name, float $cost,int $number) : void
     {
         $sql = "UPDATE payments 
-        		SET pay_name='$name',
-        		    ill_id='$illnessId',
-        		    pay_cost='$amount'
+        		SET ill_id='$illnessId', 
+        		    pay_name='$name',       		    
+        		    pay_cost='$cost'
+        		    number='$number'
         		WHERE pay_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$name,$cost,$number]);
     }
 
     /**
@@ -140,12 +143,12 @@ class Updater extends Connection
      * @param  int  $days
      * @return void
      */
-    public function updateStay(int $illnessId, int $days) : void
+   /* public function updateStay(int $illnessId, int $days) : void
     {
         $sql = "UPDATE ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
-    }
+        $stmt->execute([]);
+    }*/
 
     /**
      * Rewrites step text based on illness id and step id (num)
