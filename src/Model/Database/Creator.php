@@ -33,7 +33,7 @@ class Creator extends Connection
 
         $sql = "INSERT INTO
             users(user_name, password, role_id, createdAt)
-            VALUES ('$username', '$password', '$roleId', '$createdAt')";
+            VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt]);
 
@@ -55,7 +55,7 @@ class Creator extends Connection
     ) : int
     {
         $sql = "INSERT INTO illness(ill_name,class_name,ill_describe)
-        		        VALUES('$name','$class','$description') ";
+        		        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$class,$description]);
 
@@ -70,8 +70,8 @@ class Creator extends Connection
      */
     public function createStep(int $num, string $name) : void
     {
-        $sql = "INSERT INTO stepname(step_id,step_name)
-        		VALUES ('$num','$name') ";
+        $sql = "INSERT INTO stepname(step_num,step_name)
+        		VALUES (?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$num,$name]);
     }
@@ -92,7 +92,7 @@ class Creator extends Connection
     ) : int
     {
         $sql = "INSERT INTO drug(drug_name,drug_text,drug_picture,drug_cost)
-        		VALUES('$name','$text','$picture','$cost') ";
+        		VALUES(?,?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$text,$picture,$cost]);
 
@@ -107,10 +107,10 @@ class Creator extends Connection
      * @param  int    $illnessId
      * @return int  - new payment id
      */
-    public function createPayment(int $illnessId,string $name, float $cost,int $num,int $illnessId) : int
+    public function createPayment(int $illnessId,string $name, float $cost,int $num) : int
     {
         $sql = "INSERT INTO payments(ill_id,pay_name,pay_cost,number)
-        		VALUES('$illnessId',$name','$cost','$num')";
+        		VALUES(?,?,?,?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$name,$cost,$num]);
 
@@ -143,7 +143,7 @@ class Creator extends Connection
     ) : void
     {
         $sql = "INSERT INTO steps (ill_id,step_num,step_text)
-        		VALUES('$illnessId','$stepNum','$text') ";
+        		VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum,$text]);
     }
@@ -159,8 +159,8 @@ class Creator extends Connection
         int $illnessId, int $stepNum, string $path
     ) : void
     {
-        $sql = "INSERT INTO steps (ill_id,step_num,step_picture)
-    	        VALUES('$illnessId','$stepNum','$path') ";
+        $sql = "INSERT INTO illpic (ill_id,step_num,pic_path)
+    	        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum,$path]);
     }
@@ -176,8 +176,8 @@ class Creator extends Connection
         int $illnessId, int $stepNum, string $path
     ) : void
     {
-        $sql = "INSERT INTO steps (ill_id,step_num,step_video)
-    	        VALUES('$illnessId','$stepNum','$path') ";
+        $sql = "INSERT INTO illvid (ill_id,step_num,vid_path)
+    	        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum,$path]);
     }
@@ -191,7 +191,7 @@ class Creator extends Connection
     public function addDrugToIllness(int $illnessId, string $drugId) : void
     {
         $sql = "INSERT INTO illdrug(ill_id,drug_id)
-        		VALUES('$illnessId','$drugId') ";
+        		VALUES(?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$drugId]);
     }

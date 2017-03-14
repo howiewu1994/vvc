@@ -143,12 +143,14 @@ class Updater extends Connection
      * @param  int  $days
      * @return void
      */
-   /* public function updateStay(int $illnessId, int $days) : void
+    public function updateStay(int $illnessId, int $days) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE payments 
+        		SET number='$days'
+                WHERE pay_name='stay' AND ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([]);
-    }*/
+        $stmt->execute([$days]);
+    }
 
     /**
      * Rewrites step text based on illness id and step id (num)
@@ -167,7 +169,7 @@ class Updater extends Connection
         		SET step_text='$text'
                 WHERE step_num='$stepNum' AND ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$text]);
     }
 
     /**
@@ -246,22 +248,27 @@ class Updater extends Connection
      *
      * If any of updates fail, roll back transaction
      *
-     * @param  string $path
+     * @param  string $newpath
+     * @param  string $oldpath
      * @return true if successful OR false if rolled back
      */
-    public function updatePicture(string $path) : bool
+    public function updatePicture(string $newpath,string $oldpath) : bool
     {
         // Turn autocommit off
         $this->db->beginTransaction();
 
         try {
             // Update for illnesses
-            $sql = "UPDATE ill_pic";
+            $sql = "UPDATE illpic
+            		SET pic_path='$newpath'
+                    WHERE pic_path='$oldpath'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
             // Update for drugs
-            $sql = "UPDATE drug_pic";
+            $sql = "UPDATE drug
+            		SET drug_picture='$newpath'
+                    WHERE drug_picture='$oldpath'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
@@ -280,12 +287,15 @@ class Updater extends Connection
     /**
      * Updates picture for all steps
      * This action is provoked because of changing real picture on file system
-     * @param  string $path
+     * @param  string $newpath
+     * @param  string $oldpath
      * @return void
      */
-    public function updateVideo(string $path) : void
+    public function updateVideo(string $newpath,string $oldpath) : void
     {
-        $sql = "UPDATE ill_pic";
+        $sql = "UPDATE illvid
+        		SET vid_path='$newpath'
+                WHERE vid_path='$oldpath'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
     }

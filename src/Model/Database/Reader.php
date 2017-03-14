@@ -200,6 +200,7 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
                  $row['pay_id'],
+            	 $row['ill_id'],
                  $row['pay_name'],
                  $row['pay_cost'],
             	 $row['number']
@@ -337,7 +338,7 @@ class Reader extends Connection
      */
     public function findIllnessSteps(int $illnessId) : array
     {
-        $sql = "SELECT s.step_num,n.step_name,s.step_text,s.step_picture,s.step_video
+        $sql = "SELECT s.step_num,n.step_name,s.step_text
                 FROM steps s INNER JOIN stepname n
                 ON ill_id='$illnessId' AND s.step_num=n.step_id ";
         $stmt = $this->db->prepare($sql);
@@ -349,9 +350,7 @@ class Reader extends Connection
             $steps[] = new Step(
                 $row['step_num'],
             	$row['step_name'], 
-            	$row['step_text'],
-            	$row['step_picture'],
-            	$row['step_video']
+            	$row['step_text']
             );
         }
 
@@ -390,7 +389,7 @@ class Reader extends Connection
             return ["/img/step$stepNum.png"];
         }
 
-        $sql = "SELECT step_picture FROM steps 
+        $sql = "SELECT pic_path FROM illpic 
                 WHERE step_num='$stepNum' And ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
@@ -398,7 +397,7 @@ class Reader extends Connection
         $pics = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            //$pics[] = $row[''];
+            $pics[] = $row['pic_path'];
         }
 
         return $pics;
@@ -416,7 +415,7 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT step_video FROM steps 
+        $sql = "SELECT vid_path FROM illvid
                 WHERE step_num='$stepNum' And ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
@@ -424,7 +423,7 @@ class Reader extends Connection
         $vids = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            //$vids[] = $row[''];
+            $vids[] = $row['vid_path'];
         }
 
         return $vids;
@@ -506,19 +505,19 @@ class Reader extends Connection
      * @param  int  $illnessId
      * @return int  days OR false
      */
-    /*public function getStayByIllnessId(int $illnessId)
+    public function getStayByIllnessId(int $illnessId)
     {
         if (NO_DATABASE) {
             return rand(0, 5);
         }
 
-        $sql = "SELECT stay FROM illness WHERE ill_id='$illnessId' ";
+        $sql = "SELECT number FROM payments 
+                WHERE ill_id='$illnessId' AND pay_name='stay' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
         return $stmt->fetchColumn(0);   // returns false if no columns
-    }*/
-    //put stay in payment
+    }
 
     /**
      * Returns all illnesses associated with the drug

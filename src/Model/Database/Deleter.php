@@ -106,9 +106,10 @@ class Deleter extends Connection
      */
     public function removeAllPicturesFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illpic
+        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -121,9 +122,10 @@ class Deleter extends Connection
      */
     public function removeAllVideosFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illvid
+        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -135,10 +137,8 @@ class Deleter extends Connection
      */
     public function removeAllDrugsFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM drug
-        		WHERE drug_id=(
-        		      SELECT drug_id FROM illdrug
-        		             WHERE ill_id='$illnessId' )";
+        $sql = "DELETE FROM illdrug
+        		WHERE ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -165,13 +165,13 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-   /* public function removeStayFromIllness(int $illnessId) : void
+    public function removeStayFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM payments
+        		WHERE ill_id='$illnessId' AND pay_name='stay'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
-    }*/
-    //we treat 'stay' as one of the payment
+    }
 
     /**
      * Deletes picture from all steps AND from all drugs
@@ -188,12 +188,15 @@ class Deleter extends Connection
 
         try {
             // Delete from illnesses
-            $sql = "DELETE FROM ill_pic";
+            $sql = "DELETE FROM illpic
+            		WHERE pic_path='$path'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
             // Delete from drugs
-            $sql = "DELETE FROM drug_pic";
+            $sql = "UPDATE drug
+            		SET drug_picture='null'
+                    WHERE drug_picture='$path'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
@@ -216,7 +219,8 @@ class Deleter extends Connection
      */
     public function deleteVideo(string $path) : int
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illvid
+        		WHERE vid_path='$path'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
         return $stmt->rowCount();
