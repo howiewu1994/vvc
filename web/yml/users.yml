@@ -1,11 +1,31 @@
-    # Users
+####### Users ########
 -
     username    : user1
     password    : 123
     roleId      : 2
+-
+    username    : user2
+    password    : 123
+    roleId      : 2
+-
+    username    : user3
+    password    : 123
+    roleId      : 2
+-
+    username    : user4
+    password    : 123
+    roleId      : 2
+-
+    username    : user5
+    password    : 123
+    roleId      : 2
 
-#     # Admins
+####### Admins ########
 -
     username    : admin1
+    password    : 123
+    roleId      : 1
+-
+    username    : admin2
     password    : 123
     roleId      : 1

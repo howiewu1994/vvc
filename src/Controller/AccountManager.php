@@ -253,17 +253,21 @@ class AccountManager extends AdminController
         }
     }
 
-    public function deleteAccount(array $post)
+    public function deleteAccount(int $userId)
     {
         try {
             $dbDeleter = new Deleter();
-            $result = $dbDeleter->deleteUser($post['user_id']);
-            if (!$result) {
-                $this->flash('fail', 'Could not delete this user, try again');
+            $deletedUser = $dbDeleter->deleteUser($userId);
+            if (!$deletedUser) {
+                $this->flash('fail',
+                    "Could not delete user <b>$userId</b>, try again"
+                );
                 return Router::redirect('/admin/accounts');
             }
 
-            $this->flash('success', 'Account Deleted');
+            $name = $deletedUser->getUsername();
+
+            $this->flash('success', "User <b>$name</b> deleted");
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
@@ -272,5 +276,29 @@ class AccountManager extends AdminController
             $this->flash('fail', 'Database operation failed');
             return Router::redirect('/admin/accounts');
         }
+    }
+
+    public function deleteAccounts(array $users)
+    {
+        foreach ($users as $userId) {
+            try {
+                $dbDeleter = new Deleter();
+                $deletedUser = $dbDeleter->deleteUser($userId);
+
+                if (!$deletedUser) {
+                    $this->flash('fail',
+                        "Could not delete user <b>$userId</b>, try again"
+                    );
+                }
+
+                $name = $deletedUser->getUsername();
+                $this->flash('success', "User <b>$name</b> deleted");
+            } catch (\Exception $e) {
+                // TODO logError($e);
+                // throw $e;
+                $this->flash('fail', 'Database operation failed');
+            }
+        }
+        return Router::redirect('/admin/accounts');
     }
 }

@@ -12,7 +12,7 @@ class Uploader
         return $file->move(YML_DIRECTORY, $filename);
     }
 
-    public static function uploadAccounts(
+    public static function readAccountsFromYml(
         AccountManager $controller, array $files
     ) {
         if (empty($files['acc_file'])) {

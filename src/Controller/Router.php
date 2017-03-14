@@ -231,8 +231,8 @@ class Router
                         }
 
                     case 'add-many' :
-                        $file = Uploader::uploadAccounts($controller, $files);
-                        $controller->batchAddAccounts($file);
+                        $accs = Uploader::readAccountsFromYml($controller, $files);
+                        $controller->batchAddAccounts($accs);
                         break;
 
                     case 'change' :
@@ -244,10 +244,13 @@ class Router
                         break;
 
                     case 'delete' :
-                        if (empty($post)) {
+                        // print_r($post);exit;
+                        if (empty($post['id'])) {
                             $controller->showAccountListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteAccount($post['id'][0]);
                         } else {
-                            $controller->deleteAccount($post);
+                            $controller->deleteAccounts($post['id']);
                         }
                         break;
 

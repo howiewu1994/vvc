@@ -9,14 +9,21 @@ class Deleter extends Connection
     /**
      * Deletes user based on id
      * @param  int   $userId
-     * @return int  - 1 if deleted, 0 if not
+     * @return deleted user OR false
      */
-    public function deleteUser(int $userId) : int
+    public function deleteUser(int $userId)
     {
+        $oldUser = (new Reader())->findUserById($userId);
+
         $sql = "DELETE FROM users WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
-        return $stmt->rowCount();
+
+        if ($stmt->rowCount() == 0) {
+            return false;
+        }
+
+        return $oldUser;
     }
 
     /**

@@ -8,10 +8,10 @@
             href="/admin/accounts/change/{{user.id}}">Change</a>
     </td>
     <td class="col-sm-1">
-        <form action="/admin/accounts/delete" method="post">
-            <input type="hidden" name="user_id" value="{{user.id}}">
-            <button class="btn btn-sm btn-danger" type="submit"
-                name="delete_user">Delete</button>
-        </form>
+        <input class="btn btn-sm btn-danger" type="submit"
+            name="delete_user" value="Delete">
+    </td>
+    <td class="col-sm-1 checkable" style="text-align:center">
+        <input type="checkbox" name="id[]" value="{{ user.id }}">
     </td>
 </tr>
