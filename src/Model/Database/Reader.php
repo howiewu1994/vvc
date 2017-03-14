@@ -530,7 +530,7 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT i.ill_name,i.class_name
+        $sql = "SELECT id.ill_id,i.ill_name,i.class_name
         		    FROM illness i INNER JOIN illdrug id
                 ON id.drug_id='$drugId' AND i.ill_id=id.ill_id ";
         $stmt = $this->db->prepare($sql);
@@ -540,6 +540,7 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $illnesses[] = new IllnessRecord(
+            	$row['ill_id'],
                 $row['ill_name'],
             	$row['class_name']
             );
