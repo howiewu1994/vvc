@@ -4,9 +4,11 @@
             {% set css = 'danger' %}
         {% elseif message_type == 'success' %}
             {% set css = 'success' %}
+        {% elseif message_type == 'warning' %}
+            {% set css = 'warning' %}
         {% endif %}
         <div class="alert alert-{{ css }} alert-dismissable">
-            {{ message }}
+            {{ message|raw|nl2br }}
         </div>
     {% endfor %}
 {% endfor %}

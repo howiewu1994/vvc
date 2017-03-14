@@ -73,6 +73,113 @@ class AccountManager extends AdminController
         }
     }
 
+    public function batchAddAccounts(array $users)
+    {
+        try {
+            $dbReader = new Reader();
+            $dbCreator = new Creator();
+        } catch (\Exception $e) {
+            // TODO logError($e);
+            // throw $e;
+            $this->flash('fail', 'Database connection failed');
+            return Router::redirect('/admin/accounts');
+        }
+
+        $good = [];
+        $bad = [];
+
+        foreach ($users as $user) {
+            if (!$this->isClean($user)) {
+                $bad['data'][] = $user;
+                continue;
+            }
+
+            try {
+                $duplicate = $dbReader->findUserByUsername($user['username']);
+
+                if ($duplicate) {
+                    $bad['duplicate'][] = $user;
+                    continue;
+                }
+
+                $password = password_hash($user['password'], PASSWORD_DEFAULT);
+                $newUser = $dbCreator->createUser(
+                    $user['username'], $password, $user['roleId']
+                );
+
+                $good[] = $newUser;
+
+            } catch (\Exception $e) {
+                // TODO logError($e);
+                // throw $e;
+                $bad['db'][] = $user;
+                continue;
+            }
+        }
+        // print_r($good);
+        // print_r($bad);
+        // exit;
+
+        $total = count($users);
+
+        if (!empty($good)) {
+            $goodOut = "Completed additions: " . count($good) . "/$total\n\n";
+            $goodOut .= "[id] - [username]\n";
+
+            foreach ($good as $user) {
+                $goodOut .=
+                    $user->getId() . " - " . $user->getUsername() . "\n";
+            }
+
+            $this->flash('success', $goodOut);
+        }
+
+
+        if (!empty($bad)) {
+            $badCount = 0;
+            foreach ($bad as $reason) {
+                foreach ($reason as $users) {
+                    $badCount++;
+                }
+            }
+
+            $badOut = "Not added: " . $badCount . "/$total\n";
+
+            foreach ($bad as $reason => $users) {
+                switch ($reason) {
+
+                    case 'data' :
+                        $badOut .= "\nBad input data:\n";
+                        $badOut .= "[username]\n";
+                        foreach ($users as $user) {
+                            $badOut .= $user['username'] . "\n";
+                        }
+                        break;
+
+                    case 'duplicate' :
+                        $badOut .= "\nDuplicates:\n";
+                        $badOut .= "[username]\n";
+                        foreach ($users as $user) {
+                            $badOut .= $user['username'] . "\n";
+                        }
+                        break;
+
+                    case 'db' :
+                        $badOut .= "\nDatabase failure:\n";
+                        $badOut .= "[username]\n";
+                        foreach ($users as $user) {
+                            $badOut .= $user['username'] . "\n";
+                        }
+                        break;
+                }
+            }
+
+            $this->flash('warning', $badOut);
+        }
+
+        return Router::redirect('/admin/accounts');
+    }
+
     public function showChangeAccountPage(int $userId)
     {
         try {
@@ -146,17 +253,21 @@ class AccountManager extends AdminController
         }
     }
 
-    public function deleteAccount($userId)
+    public function deleteAccount(int $userId)
     {
         try {
             $dbDeleter = new Deleter();
-            $result = $dbDeleter->deleteUser($userId);
-            if (!$result) {
-                $this->flash('fail', 'Could not delete this user, try again');
+            $deletedUser = $dbDeleter->deleteUser($userId);
+            if (!$deletedUser) {
+                $this->flash('fail',
+                    "Could not delete user <b>$userId</b>, try again"
+                );
                 return Router::redirect('/admin/accounts');
             }
 
-            $this->flash('success', 'Account Deleted');
+            $name = $deletedUser->getUsername();
+
+            $this->flash('success', "User <b>$name</b> deleted");
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
@@ -165,5 +276,29 @@ class AccountManager extends AdminController
             $this->flash('fail', 'Database operation failed');
             return Router::redirect('/admin/accounts');
         }
+    }
+
+    public function deleteAccounts(array $users)
+    {
+        foreach ($users as $userId) {
+            try {
+                $dbDeleter = new Deleter();
+                $deletedUser = $dbDeleter->deleteUser($userId);
+
+                if (!$deletedUser) {
+                    $this->flash('fail',
+                        "Could not delete user <b>$userId</b>, try again"
+                    );
+                }
+
+                $name = $deletedUser->getUsername();
+                $this->flash('success', "User <b>$name</b> deleted");
+            } catch (\Exception $e) {
+                // TODO logError($e);
+                // throw $e;
+                $this->flash('fail', 'Database operation failed');
+            }
+        }
+        return Router::redirect('/admin/accounts');
     }
 }
