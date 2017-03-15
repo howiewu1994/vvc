@@ -115,7 +115,7 @@ class Router
      * /catalog?s=                      search              catalog.twig
      * /admin/illnesses                 manage illnesses    admin_ill.twig
      * /admin/illnesses/1               view illness 1      view_ill.twig
-     * /admin/illnesses/1/change        change illness 1    change_ill.twig
+     * /admin/illnesses/change/1        change illness 1    change_ill.twig
      *
      */
 
