@@ -36,7 +36,7 @@ class Creator extends Connection
         }
 
         $sql = "INSERT INTO
-            users(username, password, role_id, created_at)
+            users(user_name, password, role_id, createdAt)
             VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt]);
@@ -58,9 +58,10 @@ class Creator extends Connection
         string  $description
     ) : int
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO illness(ill_name,class_name,ill_describe)
+        		        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$class,$description]);
 
         return $this->db->lastInsertId();
     }
@@ -73,9 +74,10 @@ class Creator extends Connection
      */
     public function createStep(int $num, string $name) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO stepname(step_num,step_name)
+        		VALUES (?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$num,$name]);
     }
 
     /**
@@ -93,9 +95,10 @@ class Creator extends Connection
         float   $cost
     ) : int
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO drug(drug_name,drug_text,drug_picture,drug_cost)
+        		VALUES(?,?,?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$text,$picture,$cost]);
 
         return $this->db->lastInsertId();
     }
@@ -103,14 +106,17 @@ class Creator extends Connection
     /**
      * Creates new payment
      * @param  string $name
-     * @param  float  $amount
+     * @param  float  $cost
+     * @param  int    $num
+     * @param  int    $illnessId
      * @return int  - new payment id
      */
-    public function createPayment(string $name, float $amount) : int
+    public function createPayment(int $illnessId,string $name, float $cost,int $num) : int
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO payments(ill_id,pay_name,pay_cost,number)
+        		VALUES(?,?,?,?)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$name,$cost,$num]);
 
         return $this->db->lastInsertId();
     }
@@ -121,12 +127,13 @@ class Creator extends Connection
      * @param  int  $days
      * @return void
      */
-    public function addStay(int $illnessId, int $days) : void
+   /* public function addStay(int $illnessId, int $days) : void
     {
         $sql = "INSERT INTO ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([]);
     }
+    */
 
     /**
      * Adds text to some illness step
@@ -139,9 +146,10 @@ class Creator extends Connection
         int $illnessId, int $stepNum, string $text
     ) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO steps (ill_id,step_num,step_text)
+        		VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum,$text]);
     }
 
     /**
@@ -155,9 +163,10 @@ class Creator extends Connection
         int $illnessId, int $stepNum, string $path
     ) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO illpic (ill_id,step_num,pic_path)
+    	        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum,$path]);
     }
 
     /**
@@ -171,9 +180,10 @@ class Creator extends Connection
         int $illnessId, int $stepNum, string $path
     ) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO illvid (ill_id,step_num,vid_path)
+    	        VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum,$path]);
     }
 
     /**
@@ -184,9 +194,10 @@ class Creator extends Connection
      */
     public function addDrugToIllness(int $illnessId, string $drugId) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO illdrug(ill_id,drug_id)
+        		VALUES(?,?) ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$drugId]);
     }
 
     /**
@@ -195,12 +206,13 @@ class Creator extends Connection
      * @param  string $paymentId
      * @return void
      */
-    public function addPaymentToIllness(int $illnessId, int $paymentId) : void
+    /*public function addPaymentToIllness(int $illnessId, int $paymentId) : void
     {
-        $sql = "INSERT INTO ";
+        $sql = "INSERT INTO payments(ill_id,pay_id,pay_name,pay_cost)
+        		VALUES('$illnessId','$paymentId','$paymentname','$paymentcost') ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
-    }
+        $stmt->execute([]);
+    }*/
 
     public function createUser_stub($username, $password) : array
     {

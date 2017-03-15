@@ -54,7 +54,8 @@ class Deleter extends Connection
             $this->removeStayFromIllness($illnessId);
 
             // In the end delete illness
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM illness
+            		WHERE ill_id='$illnessId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$illnessId]);
 
@@ -96,9 +97,10 @@ class Deleter extends Connection
      */
     public function removeTextFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM steps 
+        		WHERE ill_id='$illnessId' AND step_num='$stepNum' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -111,9 +113,10 @@ class Deleter extends Connection
      */
     public function removeAllPicturesFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illpic
+        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -126,9 +129,10 @@ class Deleter extends Connection
      */
     public function removeAllVideosFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illvid
+        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$stepNum]);
     }
 
     /**
@@ -140,7 +144,8 @@ class Deleter extends Connection
      */
     public function removeAllDrugsFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illdrug
+        		WHERE ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -154,7 +159,8 @@ class Deleter extends Connection
      */
     public function removeAllPaymentsFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM payments
+        		WHERE ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -168,7 +174,8 @@ class Deleter extends Connection
      */
     public function removeStayFromIllness(int $illnessId) : void
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM payments
+        		WHERE ill_id='$illnessId' AND pay_name='stay'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -188,12 +195,15 @@ class Deleter extends Connection
 
         try {
             // Delete from illnesses
-            $sql = "DELETE FROM ill_pic";
+            $sql = "DELETE FROM illpic
+            		WHERE pic_path='$path'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
             // Delete from drugs
-            $sql = "DELETE FROM drug_pic";
+            $sql = "UPDATE drug
+            		SET drug_picture='null'
+                    WHERE drug_picture='$path'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
@@ -216,7 +226,8 @@ class Deleter extends Connection
      */
     public function deleteVideo(string $path) : int
     {
-        $sql = "DELETE FROM ";
+        $sql = "DELETE FROM illvid
+        		WHERE vid_path='$path'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
         return $stmt->rowCount();
@@ -244,7 +255,8 @@ class Deleter extends Connection
             }
 
             // Delete drug
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM drug 
+            		WHERE drug_id='$drugId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$drugId]);
 
@@ -282,7 +294,8 @@ class Deleter extends Connection
             }
 
             // Delete payment
-            $sql = "DELETE FROM ";
+            $sql = "DELETE FROM payment
+            		WHERE pay_id='$paymentId' ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$paymentId]);
 

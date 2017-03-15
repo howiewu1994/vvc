@@ -6,7 +6,6 @@ class Drug
     private $id = 'AB-123';
     private $name = 'Basic drug';
     private $text = 'Best drug for...';
-
     private $picture = null;
     private $cost = null;
 
@@ -26,52 +25,62 @@ class Drug
 
     public function getId() : string
     {
-        return $this->id;
+    	return $this->drug_id;
+    	//return $this->id;
     }
 
     public function setId(string $id)
     {
-        $this->id = $id;
+        $this->drug_id=$id;
+    	//$this->id = $id;
     }
 
     public function getName() : string
     {
-        return $this->name;
+    	return $this->drug_name;
+    	//return $this->name;
     }
 
     public function setName(string $name)
     {
-        $this->name = $name;
+    	$this->drug_name = $name;
+    	//$this->name = $name;
     }
 
     public function getText() : string
     {
-        return $this->text;
+    	return $this->drug_text;
+    	//return $this->text;
     }
 
     public function setText(string $text)
     {
-        $this->text = $text;
+    	$this->drug_text = $text;
+        //$this->text = $text;
     }
 
     public function getPicture() : string
     {
-        return $this->picture;
+    	return $this->drug_picture;
+        //return $this->picture;
     }
 
     public function setPicture(string $picture)
     {
-        $this->picture = $picture;
+    	$this->drug_picture = $picture;
+        //$this->picture = $picture;
     }
 
     public function getCost() : float
     {
-        return $this->cost;
+        return $this->drug_cost;
+    	//return $this->cost;
     }
 
     public function setCost(float $cost)
     {
-        $this->cost = $cost;
+        $this->drug_cost=$cost;
+    	//$this->cost = $cost;
     }
 
 

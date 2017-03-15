@@ -27,7 +27,7 @@ class Reader extends Connection
             return $this->findUserByUsername_stub($username);
         }
 
-        $sql = "SELECT * FROM users WHERE username = ?";
+        $sql = "SELECT * FROM users WHERE user_name = '$username' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -36,11 +36,11 @@ class Reader extends Connection
         }
 
         return new User(
-            $result['id'],
-            $result['username'],
+            $result['user_id'],
+            $result['user_name'],
             $result['password'],
             $result['role_id'],
-            $result['created_at']
+            $result['createdAt']
         );
     }
 
@@ -56,7 +56,7 @@ class Reader extends Connection
             return false;
         }
 
-        $sql = "SELECT * FROM users WHERE id = ?";
+        $sql = "SELECT * FROM users WHERE user_id = '$userId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -66,11 +66,11 @@ class Reader extends Connection
         }
 
         return new User(
-            $result['id'],
-            $result['username'],
+            $result['user_id'],
+            $result['user_name'],
             $result['password'],
             $result['role_id'],
-            $result['created_at']
+            $result['createdAt']
         );
     }
 
@@ -92,11 +92,11 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $users[] = new User(
-                $row['id'],
-                $row['username'],
+                $row['user_id'],
+                $row['user_name'],
                 $row['password'],
                 $row['role_id'],
-                $row['created_at']
+                $row['createdAt']
             );
         }
 
@@ -134,7 +134,7 @@ class Reader extends Connection
             return $collection;
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT * FROM illness ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 
@@ -142,10 +142,10 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $collection->addRecord(new IllnessRecord(
-                // $row['id'],
-                // $row['name'],
-                // $row['class'],
-                // $row['description']
+                 $row['ill_id'],
+                 $row['ill_name'],
+                 $row['class_name'],
+                 $row['ill_describe']
             ));
         }
 
@@ -162,7 +162,7 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT * FROM drug ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 
@@ -170,11 +170,11 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $drugs[] = new Drug(
-                // $row['id'],
-                // $row['name'],
-                // $row['text'],
-                // $row['picture'],
-                // $row['cost'],
+                 $row['drug_id'],
+                 $row['drug_name'],
+                 $row['drug_text'],
+                 $row['drug_picture'],
+                 $row['drug_cost']
             );
         }
 
@@ -191,7 +191,7 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT * FROM payments ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
 
@@ -199,9 +199,11 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
-                // $row['id'],
-                // $row['name'],
-                // $row['amount']
+                 $row['pay_id'],
+            	 $row['ill_id'],
+                 $row['pay_name'],
+                 $row['pay_cost'],
+            	 $row['number']
             );
         }
 
@@ -234,7 +236,7 @@ class Reader extends Connection
             }
         }
 
-        $sql = "SELECT ";  // TODO
+        $sql = "SELECT * FROM illness WHERE ill_id='$id'";  // TODO
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -244,7 +246,9 @@ class Reader extends Connection
         }
 
         $illness = new IllnessRecord(
-            // $result[''], $result[''], ...
+                $result['ill_name'],
+        	    $result['class_name'],
+        		$result['ill_describe']
         );
 
         $steps = getStepsByIllnessId($id);
@@ -262,10 +266,10 @@ class Reader extends Connection
     {
         if (NO_DATABASE) {
             $steps = [];
-            $steps[] = new Step(1, '接诊');
-            $steps[] = new Step(2, '检查');;
-            $steps[] = new Step(3, '诊断');
-            $steps[] = new TherapyStep(4, '治疗方案');
+            $steps[] = new Step(1, '鎺ヨ瘖');
+            $steps[] = new Step(2, '妫�鏌�');
+            $steps[] = new Step(3, '璇婃柇');
+            $steps[] = new TherapyStep(4, '娌荤枟鏂规');
 
             foreach ($steps as $step) {
                 $stepNum = $step->getNum();
@@ -334,7 +338,9 @@ class Reader extends Connection
      */
     public function findIllnessSteps(int $illnessId) : array
     {
-        $sql = "SELECT ";
+        $sql = "SELECT s.step_num,n.step_name,s.step_text
+                FROM steps s INNER JOIN stepname n
+                ON ill_id='$illnessId' AND s.step_num=n.step_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -342,7 +348,9 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $steps[] = new Step(
-                //$row[''], $row[''], ...
+                $row['step_num'],
+            	$row['step_name'], 
+            	$row['step_text']
             );
         }
 
@@ -361,7 +369,8 @@ class Reader extends Connection
             return "Description of step $stepNum for illness $illnessId";
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT step_text FROM steps 
+                WHERE step_num='$stepNum' And ill_id='$illnessId'  ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
@@ -380,14 +389,15 @@ class Reader extends Connection
             return ["/img/step$stepNum.png"];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT pic_path FROM illpic 
+                WHERE step_num='$stepNum' And ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
         $pics = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            //$pics[] = $row[''];
+            $pics[] = $row['pic_path'];
         }
 
         return $pics;
@@ -405,14 +415,15 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT vid_path FROM illvid
+                WHERE step_num='$stepNum' And ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
         $vids = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            //$vids[] = $row[''];
+            $vids[] = $row['vid_path'];
         }
 
         return $vids;
@@ -435,16 +446,21 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT d.name,d.text,d.picture,d.cost
+        		    FROM drug d INNER JOIN illdrug i
+                    ON i.ill_id='$illnessId' AND d.drug_id=i.drug_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
         $drugs = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            /*$drugs[] = new Drug(
-                $row[''], $row[''], ...
-            );*/
+        	$drugs[] = new Drug(
+        			$row['drug_name'],
+        			$row['drug_text'],
+        			$row['drug_picutre'],
+        			$row['drug_cost']
+        			);
         }
 
         return $drugs;
@@ -463,16 +479,22 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT p.pay_id,p.pay_name,p.pay_cost,p.number
+                FROM  payments p
+                WHERE ill_id='$illnessId' ";
+        //$sql="SELECT SUM(pay_cost) FROM payments WHERE ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
         $payments = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            /*$payments[] = new Payment(
-                $row[''], $row[''], ...
-            );*/
+            $payments[] = new Payment(
+                $row['pay_id'],
+            	$row['pay_name'], 
+            	$row['pay_cost'], 
+            	$row['number']
+            );
         }
 
         return $payments;
@@ -489,7 +511,8 @@ class Reader extends Connection
             return rand(0, 5);
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT number FROM payments 
+                WHERE ill_id='$illnessId' AND pay_name='stay' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -507,16 +530,20 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT id.ill_id,i.ill_name,i.class_name
+        		    FROM illness i INNER JOIN illdrug id
+                ON id.drug_id='$drugId' AND i.ill_id=id.ill_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$drugId]);
 
         $illnesses = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            /*$illnesses[] = new IllnessRecord(
-                $row[''], $row[''], ...
-            );*/
+            $illnesses[] = new IllnessRecord(
+            	$row['ill_id'],
+                $row['ill_name'],
+            	$row['class_name']
+            );
         }
 
         return $illnesses;
@@ -533,16 +560,19 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT ";
+        $sql = "SELECT i.ill_name,i.class_name
+        		    FROM illness i INNER JOIN payments p
+                 ON p.pay_id='$paymentId' AND i.ill_id=p.ill_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$paymentId]);
 
         $illnesses = [];
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            /*$illnesses[] = new IllnessRecord(
-                $row[''], $row[''], ...
-            );*/
+        	$illnesses[] = new IllnessRecord(
+        			$row['ill_name'],
+        			$row['class_name']
+        			);
         }
 
         return $illnesses;

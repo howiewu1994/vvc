@@ -14,7 +14,8 @@ class Updater extends Connection
      */
     public function changePassword(int $userId, string $password) : void
     {
-        $sql = "UPDATE users SET password = ? where id = ?";
+        $sql = "UPDATE users SET password = '$password' 
+                WHERE user_id = '$userId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$password, $userId]);
     }
@@ -36,9 +37,12 @@ class Updater extends Connection
         string  $createdAt
     ) : void
     {
-        $sql = "UPDATE users SET
-            username = ?, password = ?, role_id = ?, created_at = ?
-            WHERE id = ?";
+        $sql = "UPDATE users
+        		SET user_name='$username',
+                    password='$password',
+                    role_id='$roleId',
+                    createdAt='$createdAt'
+                WHERE user_id='$id' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt, $id]);
     }
@@ -58,9 +62,13 @@ class Updater extends Connection
         string  $description
     ) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE illness
+        		SET ill_name='$name',
+                    class_name='$class',
+                    ill_describe='$description'
+                WHERE ill_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$class,$description]);
     }
 
     /**
@@ -72,9 +80,11 @@ class Updater extends Connection
      */
     public function updateStep(int $num, string $name) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE stepname
+        		SET step_name='$name'
+                WHERE step_id='$num' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name]);
     }
 
     /**
@@ -95,24 +105,36 @@ class Updater extends Connection
         float   $cost
     ) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE drug
+        		SET drug_name='$name',
+                    drug_text='$text',
+                    drug_picture='$picture',
+                    drug_cost='$cost'
+                WHERE drug_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$name,$text,$picture,$cost]);
     }
 
     /**
      * Rewrites payment details based on id,
      * this action affects all corresponding illness records
      * @param  int    $id     - not updated
+     * @param  int    $illnessId
      * @param  string $name
-     * @param  float  $amount
+     * @param  float  $cost
+     * @param  int    $number
      * @return void
      */
-    public function updatePayment(int $id, string $name, float $amount) : void
+    public function updatePayment(int $id, int $illnessId, string $name, float $cost,int $number) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE payments 
+        		SET ill_id='$illnessId', 
+        		    pay_name='$name',       		    
+        		    pay_cost='$cost'
+        		    number='$number'
+        		WHERE pay_id='$id' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$illnessId,$name,$cost,$number]);
     }
 
     /**
@@ -123,9 +145,11 @@ class Updater extends Connection
      */
     public function updateStay(int $illnessId, int $days) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE payments 
+        		SET number='$days'
+                WHERE pay_name='stay' AND ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$days]);
     }
 
     /**
@@ -141,9 +165,11 @@ class Updater extends Connection
         string  $text
     ) : void
     {
-        $sql = "UPDATE ";
+        $sql = "UPDATE steps
+        		SET step_text='$text'
+                WHERE step_num='$stepNum' AND ill_id='$illnessId' ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([/* */]);
+        $stmt->execute([$text]);
     }
 
     /**
@@ -222,22 +248,27 @@ class Updater extends Connection
      *
      * If any of updates fail, roll back transaction
      *
-     * @param  string $path
+     * @param  string $newpath
+     * @param  string $oldpath
      * @return true if successful OR false if rolled back
      */
-    public function updatePicture(string $path) : bool
+    public function updatePicture(string $newpath,string $oldpath) : bool
     {
         // Turn autocommit off
         $this->db->beginTransaction();
 
         try {
             // Update for illnesses
-            $sql = "UPDATE ill_pic";
+            $sql = "UPDATE illpic
+            		SET pic_path='$newpath'
+                    WHERE pic_path='$oldpath'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
             // Update for drugs
-            $sql = "UPDATE drug_pic";
+            $sql = "UPDATE drug
+            		SET drug_picture='$newpath'
+                    WHERE drug_picture='$oldpath'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
@@ -256,12 +287,15 @@ class Updater extends Connection
     /**
      * Updates picture for all steps
      * This action is provoked because of changing real picture on file system
-     * @param  string $path
+     * @param  string $newpath
+     * @param  string $oldpath
      * @return void
      */
-    public function updateVideo(string $path) : void
+    public function updateVideo(string $newpath,string $oldpath) : void
     {
-        $sql = "UPDATE ill_pic";
+        $sql = "UPDATE illvid
+        		SET vid_path='$newpath'
+                WHERE vid_path='$oldpath'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
     }
