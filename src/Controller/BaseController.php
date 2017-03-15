@@ -47,6 +47,10 @@ class BaseController
 
         $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
         $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
+
+        $this->twig->addFilter(new \Twig_Filter(
+            'short', [$this, 'short']
+        ));
     }
 
     /**
@@ -151,18 +155,40 @@ class BaseController
     public function cleanupVars(array &$vars)
     {
         foreach ($vars as $key => $val) {
-            switch ($key) {
-                case 'password' :
-                    $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
-                    $vars[$key] = str_replace(' ', '', $val);
-                    break;
-                case 'username' :
-                    $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
-                    $vars[$key] = str_replace(' ', '', $val);
-                    break;
-                default :
-                    $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));
+            if (is_array($val)) {
+                // p($val);
+                $this->cleanupVars($val);
+            } else {
+                // p($val); n();
+                switch ($key) {
+                    case 'password' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'username' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    default :
+                        $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                }
             }
+        }
+    }
+
+    /**
+     * Returns first 40 characters of a string
+     * @param  string $full
+     * @return string
+     */
+    public function short(string $full) : string
+    {
+        $limit = 55;
+
+        if (strlen($full) >= $limit) {
+            return substr($full, 0, $limit-1) . "...";
+        } else {
+            return substr($full, 0, $limit);
         }
     }
 }

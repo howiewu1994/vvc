@@ -22,7 +22,8 @@ namespace VVC\Model\Data;
  */
 class IllnessCollection
 {
-    private $records = [];
+    private $records = [];          // organized as above
+    private $justIllnesses = [];    // not organized
 
     public function __construct($records = null)
     {
@@ -50,6 +51,8 @@ class IllnessCollection
 
     public function addRecord(IllnessRecord $record)
     {
+        $this->justIllnesses[] = $record;
+
         $class = $record->getClass();
         $id = $record->getId();
 
@@ -61,6 +64,11 @@ class IllnessCollection
     public function getClasses() : array
     {
         return array_keys($this->records);
+    }
+
+    public function getJustIllnesses() : array
+    {
+        return $this->justIllnesses;
     }
 
 }

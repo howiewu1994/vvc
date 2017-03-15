@@ -1,5 +1,5 @@
 // Confirm delete user dialogue
-$('input[name="delete_user"]').on('click', function(e) {
+$('input[name="delete"]').on('click', function(e) {
 	var $btn = $(this);
 	var $form = $btn.closest('form');
 	e.preventDefault();

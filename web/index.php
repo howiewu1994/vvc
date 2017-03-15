@@ -45,6 +45,23 @@ const USER_PASSWORD  = '123';
 // Default password when creating users from a batch file
 const BATCH_USER_PASSWORD = '123';
 
+// Debug global helper-shortcuts
+function p($obj)
+{
+    print_r($obj);
+}
+
+function e($obj)
+{
+    print_r($obj);
+    exit;
+}
+
+function n()
+{
+    echo "\n";
+}
+
 // Environment init
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();

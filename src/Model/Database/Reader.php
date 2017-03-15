@@ -128,7 +128,7 @@ class Reader extends Connection
                 3,
                 'Illness 3',
                 'Class 2',
-                'Illness 3 description.'
+                'Illness 3 very long description that goes on and on and on and yet it goes on still on'
             ));
 
             return $collection;
@@ -226,6 +226,12 @@ class Reader extends Connection
                     'Class ' . ($illnessId < 3) ? 1 : 2,
                     "Illness $illnessId description."
                 );
+
+                if ($illnessId == 3) {
+                    $illness->setDescription(
+                        'Illness 3 very long description that goes on and on and on and yet it goes on still on'
+                    );
+                }
 
                 $steps = $this->getStepsByIllnessId($illnessId);
                 $illness->addSteps($steps);
@@ -562,6 +568,29 @@ class Reader extends Connection
         }
 
         return $illnesses;
+    }
+
+    /**
+     * Returns illness by its name
+     * @param  string $username
+     * @return User OR false
+     */
+    public function findIllnessByName(string $name)
+    {
+        $sql = "SELECT * FROM illness WHERE ill_name = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$name]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new IllnessRecord(
+            $result['ill_id'],
+            $result['ill_name'],
+            $result['class_name'],
+            $result['ill_describe']
+        );
     }
 
 

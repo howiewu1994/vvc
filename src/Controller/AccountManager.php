@@ -121,7 +121,7 @@ class AccountManager extends AdminController
         $total = count($users);
 
         if (!empty($good)) {
-            $goodOut = "Completed additions: " . count($good) . "/$total\n\n";
+            $goodOut = "Successful: " . count($good) . "/$total\n\n";
             $goodOut .= "[id] - [username]\n";
 
             foreach ($good as $user) {
@@ -141,7 +141,7 @@ class AccountManager extends AdminController
                 }
             }
 
-            $badOut = "Not added: " . $badCount . "/$total\n";
+            $badOut = "Failed: " . $badCount . "/$total\n";
 
             foreach ($bad as $reason => $users) {
                 switch ($reason) {

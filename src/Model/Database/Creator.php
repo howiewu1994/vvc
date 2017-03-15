@@ -2,6 +2,7 @@
 namespace VVC\Model\Database;
 
 use VVC\Model\Data\User;
+use VVC\Controller\Logger;
 
 /**
  * Processes INSERT queries
@@ -44,6 +45,76 @@ class Creator extends Connection
         return (new Reader())->findUserByUsername($username);
     }
 
+    public function createFullIllness(
+        string $name,
+        string $class,
+        string $description,
+        array  $steps,
+        array  $drugs,
+        //int    $stay,
+        array  $payments
+    ) {
+        // Turn autocommit off
+        $this->db->beginTransaction();
+
+        try {
+            // Init illness
+            $illnessId = $this->createIllness($name, $class, $description);
+
+            // Add all step details
+            foreach ($steps as $stepNum => $step) {
+                $this->addTextToStep($illnessId, $stepNum, $step['text']);
+
+                foreach ($step['pictures'] as $pic) {
+                    $this->addPictureToStep($illnessId, $stepNum, $pic);
+                }
+
+                foreach ($step['videos'] as $vid) {
+                    $this->addVideoToStep($illnessId, $stepNum, $vid);
+                }
+            }
+
+            // Add drugs
+            foreach ($drugs as $drug) {
+                if (empty($drug['id'])) {
+                    $drugId = $this->createDrug(
+                        $drug['name'],
+                        $drug['text'],
+                        $drug['picture'],
+                        $drug['cost']
+                    );
+                } else {
+                    $drugId = $drug['id'];
+                }
+                print_r($drugId);exit;
+                $this->addDrugToIllness($illnessId, $drugId);
+            }
+
+            // Add payments
+            foreach ($payments as $payment) {
+                $this->createPayment(
+                    $illnessId,
+                    $payment['name'],
+                    $payment['cost'],
+                    $payment['number']
+                );
+            }
+
+            // Commit transaction
+            $this->db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            Logger::log(
+                'db', 'error',
+                "Failed to create full illness $illnessId, rolled back transaction",
+                $e
+            );
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
     /**
      * Creates new illness record in the database,
      * does NOT create any steps
@@ -56,7 +127,7 @@ class Creator extends Connection
         string  $name,
         string  $class,
         string  $description
-    ) : int
+    )
     {
         $sql = "INSERT INTO illness(ill_name,class_name,ill_describe)
                 VALUES(?,?,?) ";
@@ -93,7 +164,7 @@ class Creator extends Connection
         string  $text,
         string  $picture,
         float   $cost
-    ) : int
+    )
     {
         $sql = "INSERT INTO drug(drug_name,drug_text,drug_picture,drug_cost)
         		VALUES(?,?,?,?) ";
@@ -113,7 +184,7 @@ class Creator extends Connection
      */
     public function createPayment(
         int $illnessId, string $name, float $cost, int $num
-    ) : int
+    )
     {
         $sql = "INSERT INTO payments(ill_id,pay_name,pay_cost,number)
         		VALUES(?,?,?,?)";

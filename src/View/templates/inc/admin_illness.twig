@@ -1,0 +1,21 @@
+<tr>
+    <td>{{ ill.id }}</td>
+    <td>{{ ill.name }}</td>
+    <td>{{ ill.class }}</td>
+    <td>{{ ill.description|short }}</td>
+    <td class="col-sm-1" style="text-align:right">
+        <a class="btn btn-sm btn-info" role="button" style="min-width: 60px"
+            href="/admin/illnesses/view/{{ill.id}}">View</a>
+
+    <td class="col-sm-1">
+        <a class="btn btn-sm btn-primary" role="button" style="min-width: 60px"
+            href="/admin/illnesses/change/{{ill.id}}" disabled>Change</a>
+    </td>
+    <td class="col-sm-1">
+        <input class="btn btn-sm btn-danger" type="submit" style="min-width: 60px"
+            name="delete" value="Delete">
+    </td>
+    <td class="col-sm-1 checkable" style="text-align:center">
+        <input type="checkbox" name="id[]" value="{{ ill.id }}">
+    </td>
+</tr>

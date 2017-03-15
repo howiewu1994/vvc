@@ -231,7 +231,8 @@ class Router
 
                 // Check if user id in uri is valid
                 if (in_array($route['action'], ['change'])
-                    && !is_numeric($route['page'])) {
+                    && (empty($route['page'])
+                    || !is_numeric($route['page']))) {
                     self::redirect('/admin/accounts');
                 }
 
@@ -277,6 +278,55 @@ class Router
                 break;
 
             case 'illnesses' :
+
+                $controller = new IllnessManager();
+
+                // Check if illness id in uri is valid
+                if (in_array($route['action'], ['view', 'change'])
+                    && (empty($route['page'])
+                    || !is_numeric($route['page']))) {
+                    self::redirect('/admin/illnesses');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showIllnessListPage();
+                        break;
+
+                    case 'view' :
+                        $controller->showIllnessPage($route['page']);
+                        break;
+
+                    case 'add-single' :
+                        // TODO
+                        Router::redirect('/admin/illnesses');
+                        break;
+
+                    case 'add-many' :
+                        $ills = Uploader::readIllnessesFromYml($controller, $files);
+                        $controller->batchAddIllnesses($ills);
+                        break;
+
+                    case 'change' :
+                        // TODO
+                        Router::redirect('/admin/illnesses');
+                        break;
+
+                    case 'delete' :
+                        // print_r($post);exit;
+                        if (empty($post['id'])) {
+                            $controller->showAccountListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteAccount($post['id'][0]);
+                        } else {
+                            $controller->deleteAccounts($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/accounts');
+                }
+                break;
 
             case 'drugs' :
 

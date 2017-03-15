@@ -15,12 +15,12 @@ class Uploader
     public static function readAccountsFromYml(
         AccountManager $controller, array $files
     ) {
-        if (empty($files['acc_file'])) {
+        if (empty($files['batch_file'])) {
             $controller->flash('fail', 'No file selected');
             Router::redirect('/admin/accounts');
         }
 
-        $upload = $files['acc_file'];
+        $upload = $files['batch_file'];
         $ext = $upload->getClientOriginalExtension();
         $mime = $upload->getMimeType();
 
@@ -40,6 +40,37 @@ class Uploader
             Logger::log('auth', 'error', 'Failed to parse users YML', $e);
             $controller->flash('fail', 'Could not parse data, check the file');
             Router::redirect('/admin/accounts');
+        }
+    }
+
+    public static function readIllnessesFromYml(
+        IllnessManager $controller, array $files
+    ) {
+        if (empty($files['batch_file'])) {
+            $controller->flash('fail', 'No file selected');
+            Router::redirect('/admin/illnesses');
+        }
+
+        $upload = $files['batch_file'];
+        $ext = $upload->getClientOriginalExtension();
+        $mime = $upload->getMimeType();
+
+        if ($mime != 'text/plain' && $ext != 'yml') {
+            $controller->flash('fail',
+                "<b>yml</b> file expected, <b>$ext</b> file given"
+            );
+            Router::redirect('/admin/illnesses');
+        }
+
+        try {
+            $users = \Symfony\Component\Yaml\Yaml::parse(
+                file_get_contents($upload)
+            );
+            return $users;
+        } catch (\Exception $e) {
+            Logger::log('auth', 'error', 'Failed to parse illnesses YML', $e);
+            $controller->flash('fail', 'Could not parse data, check the file');
+            Router::redirect('/admin/illnesses');
         }
     }
 
