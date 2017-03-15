@@ -14,7 +14,7 @@ const TEMPLATES_DIR = __DIR__ . '/../View/templates';
  * adding variables to twig, adding flash messages to twig,
  * cleaning up input variables
  */
-class BaseController extends Auth
+class BaseController
 {
     protected $twig;
     protected $template = 'home.twig';

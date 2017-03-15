@@ -18,13 +18,17 @@ class Creator extends Connection
      */
     public function createUser(
         string  $username,
-        string  $password,
+        string  $password = null,
                 $roleId = 2,
         string  $createdAt = null
     ) {
         // test stub
         if (NO_DATABASE) {
             return $this->createUser_stub($username, $password);
+        }
+
+        if ($password == null) {
+            $password = password_hash(BATCH_USER_PASSWORD, PASSWORD_DEFAULT);
         }
 
         if ($createdAt == null) {

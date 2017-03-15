@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class Router
 {
+    public static $cookies = [];
     /**
      * Finds appropriate controller based on request uri
      * and decides what method to call based on get&post data
@@ -21,6 +22,12 @@ class Router
 
         $get = $req->query->all();
         $post = $req->request->all();
+        $files = $req->files->all();
+
+        if (!empty($req->cookies->get('file_to_overwrite'))) {
+            print_r($req->cookies->get('file_to_overwrite'));
+        }
+
         $route = self::getRoute();
 
         switch ($route['base']) {
@@ -72,7 +79,7 @@ class Router
 
             case 'admin' :
 
-                self::routeAdmin($route, $get, $post);
+                self::routeAdmin($route, $get, $post, $files);
                 break;
 
             case '3d' :
@@ -108,7 +115,7 @@ class Router
      * /catalog?s=                      search              catalog.twig
      * /admin/illnesses                 manage illnesses    admin_ill.twig
      * /admin/illnesses/1               view illness 1      view_ill.twig
-     * /admin/illnesses/1/change        change illness 1    change_ill.twig
+     * /admin/illnesses/change/1        change illness 1    change_ill.twig
      *
      */
 
@@ -133,6 +140,14 @@ class Router
         return $route;
     }
 
+    public static function addCookie(string $name, $value)
+    {
+        self::$cookies[] = [
+            'name'  => $name,
+            'value' => $value
+        ];
+    }
+
     /**
      * Prepares and sends http response
      * @param  [type] $html     - rendered twig output
@@ -144,12 +159,22 @@ class Router
         $html,
         $httpCode = Response::HTTP_FOUND,
         array $headers = [],
-        $authToken = null)
-    {
+        $authToken = null
+    ) {
         $response = new Response($html, $httpCode, $headers);
+
+        $response->headers->clearCookie('file_to_overwrite');
 
         if ($authToken) {
             $response->headers->setCookie($authToken);
+        }
+
+        foreach (self::$cookies as $cookie) {
+            $newCookie = new \Symfony\Component\HttpFoundation\Cookie(
+                $cookie['name'], $cookie['value']
+            );
+
+            $response->headers->setCookie($newCookie);
         }
 
         $response->send();
@@ -171,7 +196,8 @@ class Router
         );
     }
 
-    public static function routeAdmin(array $route, array $get, array $post)
+    public static function routeAdmin(
+        array $route, array $get, array $post, array $files)
     {
         Auth::requireAdmin();
         $controller = new AdminController();
@@ -187,9 +213,8 @@ class Router
                 $controller = new AccountManager();
 
                 // Check if user id in uri is valid
-                if (in_array($route['action'], [
-                    'change', 'delete'
-                ]) && !is_numeric($route['page'])) {
+                if (in_array($route['action'], ['change'])
+                    && !is_numeric($route['page'])) {
                     self::redirect('/admin/accounts');
                 }
 
@@ -206,7 +231,8 @@ class Router
                         }
 
                     case 'add-many' :
-                        $controller->showBatchAddPage();
+                        $accs = Uploader::readAccountsFromYml($controller, $files);
+                        $controller->batchAddAccounts($accs);
                         break;
 
                     case 'change' :
@@ -218,7 +244,14 @@ class Router
                         break;
 
                     case 'delete' :
-                        $controller->deleteAccount($route['page']);
+                        // print_r($post);exit;
+                        if (empty($post['id'])) {
+                            $controller->showAccountListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteAccount($post['id'][0]);
+                        } else {
+                            $controller->deleteAccounts($post['id']);
+                        }
                         break;
 
                     default :
@@ -235,6 +268,10 @@ class Router
             case 'payments' :
 
             case 'uploads' :
+
+                // $controller = new UploadManager();
+                // $controller->showUploadsPage();
+                // break;
 
             default :
                 self::redirect('/admin');

@@ -32,6 +32,10 @@ const ADMIN_PASSWORD = '123';
 const USER_NAME      = 'user';
 const USER_PASSWORD  = '123';
 
+// Default password when creating users from a batch file
+const BATCH_USER_PASSWORD = '123';
+
+
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
