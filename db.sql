@@ -26,8 +26,6 @@ CREATE TABLE `drug` (
 
 /*Data for the table `drug` */
 
-insert  into `drug`(`drug_id`,`drug_name`,`drug_text`,`drug_picture`,`drug_cost`) values (1,'金开灵注射液','用于治疗犬瘟热','web\\img\\jkl.jpg',5.5),(2,'口服补盐液','补充水分电解质和营养','web\\img\\kfby.jpg',6.2);
-
 /*Table structure for table `illdrug` */
 
 DROP TABLE IF EXISTS `illdrug`;
@@ -126,12 +124,10 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(12) DEFAULT NULL,
-  `password` varchar(12) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
-  `createdAt` int(11) DEFAULT NULL,
+  `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Data for the table `users` */
-
-insert  into `users`(`user_id`,`user_name`,`password`,`role_id`,`createdAt`) values (1,'user1','123',2,0),(2,'admin1','123',1,0);

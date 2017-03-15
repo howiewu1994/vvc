@@ -63,8 +63,7 @@ class RegistrationController extends BaseController
             return Router::redirect('/', $authToken);
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to register new user', $e);
             $this->flash('fail', 'Registration failed, please try again');
             return $this->showRegistrationFailPage($username);
         }

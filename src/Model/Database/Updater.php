@@ -14,8 +14,8 @@ class Updater extends Connection
      */
     public function changePassword(int $userId, string $password) : void
     {
-        $sql = "UPDATE users SET password = '$password' 
-                WHERE user_id = '$userId'";
+        $sql = "UPDATE users SET password = ?
+                WHERE user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$password, $userId]);
     }
@@ -38,11 +38,11 @@ class Updater extends Connection
     ) : void
     {
         $sql = "UPDATE users
-        		SET user_name='$username',
-                    password='$password',
-                    role_id='$roleId',
-                    createdAt='$createdAt'
-                WHERE user_id='$id' ";
+        		SET user_name=?,
+                    password=?,
+                    role_id=?,
+                    createdAt=?
+                WHERE user_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt, $id]);
     }
@@ -63,10 +63,10 @@ class Updater extends Connection
     ) : void
     {
         $sql = "UPDATE illness
-        		SET ill_name='$name',
-                    class_name='$class',
-                    ill_describe='$description'
-                WHERE ill_id='$id' ";
+        		SET ill_name=?,
+                    class_name=?,
+                    ill_describe=?
+                WHERE ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$class,$description]);
     }
@@ -81,8 +81,8 @@ class Updater extends Connection
     public function updateStep(int $num, string $name) : void
     {
         $sql = "UPDATE stepname
-        		SET step_name='$name'
-                WHERE step_id='$num' ";
+        		SET step_name=?
+                WHERE step_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name]);
     }
@@ -106,11 +106,11 @@ class Updater extends Connection
     ) : void
     {
         $sql = "UPDATE drug
-        		SET drug_name='$name',
-                    drug_text='$text',
-                    drug_picture='$picture',
-                    drug_cost='$cost'
-                WHERE drug_id='$id' ";
+        		SET drug_name=?,
+                    drug_text=?,
+                    drug_picture=?,
+                    drug_cost=?
+                WHERE drug_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$text,$picture,$cost]);
     }
@@ -127,12 +127,12 @@ class Updater extends Connection
      */
     public function updatePayment(int $id, int $illnessId, string $name, float $cost,int $number) : void
     {
-        $sql = "UPDATE payments 
-        		SET ill_id='$illnessId', 
-        		    pay_name='$name',       		    
-        		    pay_cost='$cost'
-        		    number='$number'
-        		WHERE pay_id='$id' ";
+        $sql = "UPDATE payments
+        		SET ill_id=?,
+        		    pay_name=?,
+        		    pay_cost=?
+        		    number=?
+        		WHERE pay_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$name,$cost,$number]);
     }
@@ -145,9 +145,9 @@ class Updater extends Connection
      */
     public function updateStay(int $illnessId, int $days) : void
     {
-        $sql = "UPDATE payments 
-        		SET number='$days'
-                WHERE pay_name='stay' AND ill_id='$illnessId'";
+        $sql = "UPDATE payments
+        		SET number=?
+                WHERE pay_name='stay' AND ill_id=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$days]);
     }
@@ -166,8 +166,8 @@ class Updater extends Connection
     ) : void
     {
         $sql = "UPDATE steps
-        		SET step_text='$text'
-                WHERE step_num='$stepNum' AND ill_id='$illnessId' ";
+        		SET step_text=?
+                WHERE step_num=? AND ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$text]);
     }
@@ -252,7 +252,7 @@ class Updater extends Connection
      * @param  string $oldpath
      * @return true if successful OR false if rolled back
      */
-    public function updatePicture(string $newpath,string $oldpath) : bool
+    public function updatePicture(string $newpath, string $oldpath) : bool
     {
         // Turn autocommit off
         $this->db->beginTransaction();
@@ -260,25 +260,28 @@ class Updater extends Connection
         try {
             // Update for illnesses
             $sql = "UPDATE illpic
-            		SET pic_path='$newpath'
-                    WHERE pic_path='$oldpath'";
+            		SET pic_path='?'
+                    WHERE pic_path=?";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$path]);
+            $stmt->execute([$newpath, $oldpath]);
 
             // Update for drugs
             $sql = "UPDATE drug
-            		SET drug_picture='$newpath'
-                    WHERE drug_picture='$oldpath'";
+            		SET drug_picture=?
+                    WHERE drug_picture=?";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$path]);
+            $stmt->execute([$newpath, $oldpath]);
 
             // Commit transaction
             $this->db->commit();
             return true;
 
         } catch (\Exception $e) {
-            // TODO logError $e
-            // If any step fails, roll back
+            Logger::log(
+                'db', 'error',
+                "Failed to update picture $oldpath to $newpath, rolled back transaction",
+                $e
+            );
             $this->db->rollBack();
             return false;
         }
@@ -291,13 +294,13 @@ class Updater extends Connection
      * @param  string $oldpath
      * @return void
      */
-    public function updateVideo(string $newpath,string $oldpath) : void
+    public function updateVideo(string $newpath, string $oldpath) : void
     {
         $sql = "UPDATE illvid
-        		SET vid_path='$newpath'
-                WHERE vid_path='$oldpath'";
+        		SET vid_path=?
+                WHERE vid_path=?";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$path]);
+        $stmt->execute([$newpath, $oldpath]);
     }
 
 }

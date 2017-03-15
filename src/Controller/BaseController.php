@@ -21,8 +21,13 @@ class BaseController
     protected $httpCode = Response::HTTP_FOUND;
     protected $vars = [];
 
+    protected $logger;
+
     public function __construct()
     {
+        global $logger;
+        $this->logger = $logger;
+
         $this->loadTwig();
     }
 

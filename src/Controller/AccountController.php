@@ -68,8 +68,7 @@ class AccountController extends BaseController
             return Router::redirect('/account');   // auth token?
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to change user password', $e);
             $this->flash('fail', 'Operation failed, please try again');
             return $this->showChangePasswordFailPage();
         }

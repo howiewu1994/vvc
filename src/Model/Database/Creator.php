@@ -59,7 +59,7 @@ class Creator extends Connection
     ) : int
     {
         $sql = "INSERT INTO illness(ill_name,class_name,ill_describe)
-        		        VALUES(?,?,?) ";
+                VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$class,$description]);
 
@@ -105,13 +105,15 @@ class Creator extends Connection
 
     /**
      * Creates new payment
+     * @param  int    $illnessId
      * @param  string $name
      * @param  float  $cost
      * @param  int    $num
-     * @param  int    $illnessId
      * @return int  - new payment id
      */
-    public function createPayment(int $illnessId,string $name, float $cost,int $num) : int
+    public function createPayment(
+        int $illnessId, string $name, float $cost, int $num
+    ) : int
     {
         $sql = "INSERT INTO payments(ill_id,pay_name,pay_cost,number)
         		VALUES(?,?,?,?)";
@@ -214,7 +216,7 @@ class Creator extends Connection
         $stmt->execute([]);
     }*/
 
-    public function createUser_stub($username, $password) : array
+    public function createUser_stub($username, $password) : User
     {
         return new User(
             1,

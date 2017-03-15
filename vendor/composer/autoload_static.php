@@ -29,6 +29,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\HttpFoundation\\' => 33,
         ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -68,6 +76,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
         'Firebase\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
@@ -87,6 +103,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
     );
 
     public static $prefixesPsr0 = array (
+        'p' => 
+        array (
+            'phpDocumentor' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpdocumentor/graphviz/src',
+                1 => __DIR__ . '/..' . '/phpdocumentor/graphviz/tests/unit',
+            ),
+        ),
         'T' => 
         array (
             'Twig_' => 

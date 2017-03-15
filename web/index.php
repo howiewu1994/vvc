@@ -1,4 +1,14 @@
 <?php
+/**
+ * This is entry point for every page of the application (Front Controller)
+ *
+ * Here we register autoloader for all classes and libraries,
+ * define constants and globals
+ *
+ * Whenever server receives a request, Router is responsible for serving it
+ * and sending back response
+ */
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 date_default_timezone_set("Asia/Shanghai");
@@ -35,7 +45,7 @@ const USER_PASSWORD  = '123';
 // Default password when creating users from a batch file
 const BATCH_USER_PASSWORD = '123';
 
-
+// Environment init
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
@@ -44,4 +54,5 @@ $session->start();
 
 $req = Symfony\Component\HttpFoundation\Request::createFromGlobals();
 
+VVC\Controller\Logger::init();
 VVC\Controller\Router::run();

@@ -15,7 +15,7 @@ class Deleter extends Connection
     {
         $oldUser = (new Reader())->findUserById($userId);
 
-        $sql = "DELETE FROM users WHERE id = ?";
+        $sql = "DELETE FROM users WHERE user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
 
@@ -55,7 +55,7 @@ class Deleter extends Connection
 
             // In the end delete illness
             $sql = "DELETE FROM illness
-            		WHERE ill_id='$illnessId' ";
+            		WHERE ill_id=? ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$illnessId]);
 
@@ -64,8 +64,11 @@ class Deleter extends Connection
             return true;
 
         } catch (\Exception $e) {
-            // TODO logError $e
-            // If any step fails, roll back
+            Logger::log(
+                'db', 'error',
+                "Failed to delete illness $illnessId, rolled back transaction",
+                $e
+            );
             $this->db->rollBack();
             return false;
         }
@@ -97,8 +100,8 @@ class Deleter extends Connection
      */
     public function removeTextFromStep(int $illnessId, int $stepNum) : void
     {
-        $sql = "DELETE FROM steps 
-        		WHERE ill_id='$illnessId' AND step_num='$stepNum' ";
+        $sql = "DELETE FROM steps
+        		WHERE ill_id=? AND step_num=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum]);
     }
@@ -114,7 +117,7 @@ class Deleter extends Connection
     public function removeAllPicturesFromStep(int $illnessId, int $stepNum) : void
     {
         $sql = "DELETE FROM illpic
-        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
+        		WHERE ill_id=? AND step_num=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum]);
     }
@@ -130,7 +133,7 @@ class Deleter extends Connection
     public function removeAllVideosFromStep(int $illnessId, int $stepNum) : void
     {
         $sql = "DELETE FROM illvid
-        		WHERE ill_id='$illnessId'AND step_num='$stepNum'";
+        		WHERE ill_id=? AND step_num=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum]);
     }
@@ -145,7 +148,7 @@ class Deleter extends Connection
     public function removeAllDrugsFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM illdrug
-        		WHERE ill_id='$illnessId'";
+        		WHERE ill_id=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -160,7 +163,7 @@ class Deleter extends Connection
     public function removeAllPaymentsFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM payments
-        		WHERE ill_id='$illnessId' ";
+        		WHERE ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -175,7 +178,7 @@ class Deleter extends Connection
     public function removeStayFromIllness(int $illnessId) : void
     {
         $sql = "DELETE FROM payments
-        		WHERE ill_id='$illnessId' AND pay_name='stay'";
+        		WHERE ill_id=? AND pay_name='stay'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
     }
@@ -196,14 +199,14 @@ class Deleter extends Connection
         try {
             // Delete from illnesses
             $sql = "DELETE FROM illpic
-            		WHERE pic_path='$path'";
+            		WHERE pic_path=?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
             // Delete from drugs
             $sql = "UPDATE drug
-            		SET drug_picture='null'
-                    WHERE drug_picture='$path'";
+            		SET drug_picture=''
+                    WHERE drug_picture=?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$path]);
 
@@ -212,8 +215,11 @@ class Deleter extends Connection
             return true;
 
         } catch (\Exception $e) {
-            // TODO logError $e
-            // If any step fails, roll back
+            Logger::log(
+                'db', 'error',
+                "Failed to delete picture $path, rolled back transaction",
+                $e
+            );
             $this->db->rollBack();
             return false;
         }
@@ -227,7 +233,7 @@ class Deleter extends Connection
     public function deleteVideo(string $path) : int
     {
         $sql = "DELETE FROM illvid
-        		WHERE vid_path='$path'";
+        		WHERE vid_path=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$path]);
         return $stmt->rowCount();
@@ -255,8 +261,8 @@ class Deleter extends Connection
             }
 
             // Delete drug
-            $sql = "DELETE FROM drug 
-            		WHERE drug_id='$drugId' ";
+            $sql = "DELETE FROM drug
+            		WHERE drug_id=? ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$drugId]);
 
@@ -265,8 +271,11 @@ class Deleter extends Connection
             return true;
 
         } catch (\Exception $e) {
-            // TODO logError $e
-            // If any step fails, roll back
+            Logger::log(
+                'db', 'error',
+                "Failed to delete drug $drugId, rolled back transaction",
+                $e
+            );
             $this->db->rollBack();
             return false;
         }
@@ -295,7 +304,7 @@ class Deleter extends Connection
 
             // Delete payment
             $sql = "DELETE FROM payment
-            		WHERE pay_id='$paymentId' ";
+            		WHERE pay_id=? ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$paymentId]);
 
@@ -304,8 +313,11 @@ class Deleter extends Connection
             return true;
 
         } catch (\Exception $e) {
-            // TODO logError $e
-            // If any step fails, roll back
+            Logger::log(
+                'db', 'error',
+                "Failed to delete payment $paymentId, rolled back transaction",
+                $e
+            );
             $this->db->rollBack();
             return false;
         }

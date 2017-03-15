@@ -23,8 +23,3 @@ $('input[name="delete_selected"]').on('click', function(e) {
 		$form.trigger('submit');
 	});
 });
-
-// Autofocus confirm button
-// $('#confirm_delete').on('shown.bs.modal', function () {
-//   $('#confirm_button').focus()
-// })

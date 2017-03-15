@@ -6,14 +6,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Processes htpp request and sends http response
+ * Processes http request and sends http response
  */
 class Router
 {
     public static $cookies = [];
+
     /**
      * Finds appropriate controller based on request uri
      * and decides what method to call based on get&post data
+     * @return void
      */
     public static function run()
     {
@@ -119,6 +121,10 @@ class Router
      *
      */
 
+    /**
+     * Extracts route from the request uri
+     * @return array - processed route
+     */
     public static function getRoute()
     {
         global $req;
@@ -127,19 +133,20 @@ class Router
         $uri = trim($req->getPathInfo(), '/');
         $uri = explode('/', $uri);
 
-        // $route['count'] = count($uri);
         $route['base'] = $uri[0];
         $route['section'] = empty($uri[1]) ? '' : $uri[1];
         $route['action'] = empty($uri[2]) ? '' : $uri[2];
         $route['page'] = $uri[count($uri)-1];
 
-        // print_r($uri);
-        // print_r($route);
-        // exit;
-
         return $route;
     }
 
+    /**
+     * Adds cookie to put in the response
+     * @param  string $name
+     * @param  any $value
+     * @return void
+     */
     public static function addCookie(string $name, $value)
     {
         self::$cookies[] = [
@@ -149,11 +156,12 @@ class Router
     }
 
     /**
-     * Prepares and sends http response
+     * Prepares and sends http response and exits script
      * @param  [type] $html     - rendered twig output
      * @param  int $httpCode    - HTTP_FOUND, HTTP_NOT_FOUND, etc
      * @param  array $headers   - optional http headers
      * @param  array $authToken - optional authentication token
+     * @return void
      */
     public static function sendResponse(
         $html,
@@ -185,6 +193,7 @@ class Router
      * Internal redirect to process request at another Location
      * @param  string $uri
      * @param  Cookie Object $authToken
+     * @return void
      */
     public static function redirect(string $uri, $authToken = null)
     {
@@ -196,6 +205,14 @@ class Router
         );
     }
 
+    /**
+     * Handles routing inside Admin Dashboard
+     * @param  array  $route
+     * @param  array  $get   - GET data
+     * @param  array  $post  - POST data
+     * @param  array  $files - file uploads
+     * @return void
+     */
     public static function routeAdmin(
         array $route, array $get, array $post, array $files)
     {

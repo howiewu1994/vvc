@@ -2,26 +2,23 @@
 namespace VVC\Model\Data;
 
 /**
- * [                IllnessCollection                    ]
- * [class => [              IllnessRecord                ]
- *           [id => [id, name, class, description, stay]]]
+ * [               IllnessCollection                ]
+ * [class => [           IllnessRecord             ]
+ *           [id => [id, name, class, description]]]
  *
  *
  * Example :    Class 1 -- id 1 -- id 1
  *                       |       - name 1
  *                       |       - class 1
  *                       |       - description 1
- *                       |       - 2 days
  *                       - id 2 -- id 2
  *                               - name 2
  *                               - class 1
  *                               - description 2
- *                               - 0 days
  *              Class 2 -- id 3 -- id 3
  *                               - name 3
  *                               - class 2
  *                               - description 3
- *                               - 1 day
  */
 class IllnessCollection
 {

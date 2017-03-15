@@ -37,8 +37,7 @@ class Uploader
             );
             return $users;
         } catch (\Exception $e) {
-            // TODO logError $e;
-            // throw $e;
+            Logger::log('auth', 'error', 'Failed to parse users YML', $e);
             $controller->flash('fail', 'Could not parse data, check the file');
             Router::redirect('/admin/accounts');
         }

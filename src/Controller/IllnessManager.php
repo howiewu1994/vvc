@@ -17,8 +17,7 @@ class IllnessManager extends AdminController
             $dbReader = new Reader();
             $list = $dbReader->getAllIllnesses();
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to get all illnesses', $e);
             $this->flash('fail', 'Database operation failed');
             $this->showDashboardPage();
         }
@@ -34,8 +33,7 @@ class IllnessManager extends AdminController
             $dbReader = new Reader();
             $illness = $dbReader->getFullIllnessById($illnessId);
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to get full illness by id', $e);
             $this->flash('fail', 'Database operation failed');
             $this->showIllnessListPage();
         }

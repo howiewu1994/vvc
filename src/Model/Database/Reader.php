@@ -27,7 +27,7 @@ class Reader extends Connection
             return $this->findUserByUsername_stub($username);
         }
 
-        $sql = "SELECT * FROM users WHERE user_name = '$username' ";
+        $sql = "SELECT * FROM users WHERE user_name = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -56,7 +56,7 @@ class Reader extends Connection
             return false;
         }
 
-        $sql = "SELECT * FROM users WHERE user_id = '$userId'";
+        $sql = "SELECT * FROM users WHERE user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -216,19 +216,30 @@ class Reader extends Connection
      * @param  int  $id     - illness id
      * @return IllnessRecord OR false if not found
      */
-    public function getFullIllnessById(int $id)
+    public function getFullIllnessById(int $illnessId)
     {
         if (NO_DATABASE) {
-            if ($id <= 3) {    // just for tests
+            if ($illnessId <= 3) {    // just for tests
                 $illness = new IllnessRecord(
-                    $id,
-                    "Illness $id",
-                    'Class ' . ($id < 3) ? 1 : 2,
-                    "Illness $id description."
+                    $illnessId,
+                    "Illness $illnessId",
+                    'Class ' . ($illnessId < 3) ? 1 : 2,
+                    "Illness $illnessId description."
                 );
 
-                $steps = $this->getStepsByIllnessId($id);
+                $steps = $this->getStepsByIllnessId($illnessId);
                 $illness->addSteps($steps);
+
+                $drugs = $this->getDrugsByIllnessId($illnessId);
+                $illness->addDrugs($drugs);
+
+                $payments = $this->getPaymentsByIllnessId($illnessId);
+                $illness->addPayments($payments);
+
+                $days = $this->getStayByIllnessId($illnessId);
+                if ($days > 0) {
+                    $illness->setStay(new Stay($days));
+                }
 
                 return $illness;
             } else {
@@ -236,9 +247,9 @@ class Reader extends Connection
             }
         }
 
-        $sql = "SELECT * FROM illness WHERE ill_id='$id'";  // TODO
+        $sql = "SELECT * FROM illness WHERE ill_id=?";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
+        $stmt->execute([$illnessId]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$result) {
@@ -251,8 +262,21 @@ class Reader extends Connection
         		$result['ill_describe']
         );
 
-        $steps = getStepsByIllnessId($id);
+        // Find and add all steps
+        $steps = getStepsByIllnessId($illnessId);
         $illness->addSteps($steps);
+
+        // Add everything else
+        $drugs = $this->getDrugsByIllnessId($illnessId);
+        $illness->addDrugs($drugs);
+
+        $payments = $this->getPaymentsByIllnessId($illnessId);
+        $illness->addPayments($payments);
+
+        $days = $this->getStayByIllnessId($illnessId);
+        if ($days > 0) {
+            $illness->setStay(new Stay($days));
+        }
 
         return $illness;
     }
@@ -266,41 +290,13 @@ class Reader extends Connection
     {
         if (NO_DATABASE) {
             $steps = [];
-            $steps[] = new Step(1, '鎺ヨ瘖');
-            $steps[] = new Step(2, '妫�鏌�');
-            $steps[] = new Step(3, '璇婃柇');
-            $steps[] = new TherapyStep(4, '娌荤枟鏂规');
-
-            foreach ($steps as $step) {
-                $stepNum = $step->getNum();
-
-                $text = $this->getStepText($illnessId, $stepNum);
-                $step->setText($text);
-
-                $pictures = $this->getStepPictures($illnessId, $stepNum);
-                $step->addPictures($pictures);
-
-                $videos = $this->getStepVideos($illnessId, $stepNum);
-                $step->addVideos($videos);
-
-                if ($step instanceof TherapyStep) {
-                    $drugs = $this->getDrugsByIllnessId($illnessId);
-                    $step->addDrugs($drugs);
-
-                    $payments = $this->getPaymentsByIllnessId($illnessId);
-                    $step->addPayments($payments);
-
-                    $days = $this->getStayByIllnessId($illnessId);
-                    if ($days > 0) {
-                        $step->setStay(new Stay($days));
-                    }
-                }
-            }
-
-            return $steps;
+            $steps[] = new Step(1, '接诊');
+            $steps[] = new Step(2, '检查');
+            $steps[] = new Step(3, '诊断');
+            $steps[] = new Step(4, '治疗方案');
+        } else {
+            $steps = $this->findIllnessSteps($illnessId);
         }
-
-        $steps = $this->findIllnessSteps($illnessId);
 
         foreach ($steps as $step) {
             $stepNum = $step->getNum();
@@ -313,19 +309,6 @@ class Reader extends Connection
 
             $videos = $this->getStepVideos($illnessId, $stepNum);
             $step->addVideos($videos);
-
-            if ($step instanceof TherapyStep) {
-                $drugs = $this->getDrugsByIllnessId($illnessId);
-                $step->addDrugs($drugs);
-
-                $payments = $this->getPaymentsByIllnessId($illnessId);
-                $step->addPayments($payments);
-
-                $days = $this->getStayByIllnessId($illnessId);
-                if ($days > 0) {
-                    $step->setStay(new Stay($days));
-                }
-            }
         }
 
         return $steps;
@@ -340,7 +323,7 @@ class Reader extends Connection
     {
         $sql = "SELECT s.step_num,n.step_name,s.step_text
                 FROM steps s INNER JOIN stepname n
-                ON ill_id='$illnessId' AND s.step_num=n.step_id ";
+                ON ill_id=? AND s.step_num=n.step_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -349,7 +332,7 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $steps[] = new Step(
                 $row['step_num'],
-            	$row['step_name'], 
+            	$row['step_name'],
             	$row['step_text']
             );
         }
@@ -369,10 +352,10 @@ class Reader extends Connection
             return "Description of step $stepNum for illness $illnessId";
         }
 
-        $sql = "SELECT step_text FROM steps 
-                WHERE step_num='$stepNum' And ill_id='$illnessId'  ";
+        $sql = "SELECT step_text FROM steps
+                WHERE step_num=? And ill_id=?  ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$illnessId, $stepNum]);
+        $stmt->execute([$stepNum, $illnessId]);
 
         return $stmt->fetchColumn(0);   // if only one column was selected
     }
@@ -389,8 +372,8 @@ class Reader extends Connection
             return ["/img/step$stepNum.png"];
         }
 
-        $sql = "SELECT pic_path FROM illpic 
-                WHERE step_num='$stepNum' And ill_id='$illnessId' ";
+        $sql = "SELECT pic_path FROM illpic
+                WHERE step_num=? And ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
@@ -416,7 +399,7 @@ class Reader extends Connection
         }
 
         $sql = "SELECT vid_path FROM illvid
-                WHERE step_num='$stepNum' And ill_id='$illnessId' ";
+                WHERE step_num=? And ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId, $stepNum]);
 
@@ -446,9 +429,12 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "SELECT d.name,d.text,d.picture,d.cost
-        		    FROM drug d INNER JOIN illdrug i
-                    ON i.ill_id='$illnessId' AND d.drug_id=i.drug_id";
+        $sql = "SELECT d.name as drug_name,
+            d.text as drug_text,
+            d.picture as drug_picutre,
+            d.cost as drug_cost
+		    FROM drug d INNER JOIN illdrug i
+            ON i.ill_id=? AND d.drug_id=i.drug_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -475,13 +461,13 @@ class Reader extends Connection
     {
         if (NO_DATABASE) {
             return [new Payment(
-                1, 'Payment for something', rand(25, 50)
+                1, 'Payment for drugs', rand(25, 50), rand(1,3)
             )];
         }
 
         $sql = "SELECT p.pay_id,p.pay_name,p.pay_cost,p.number
                 FROM  payments p
-                WHERE ill_id='$illnessId' ";
+                WHERE ill_id=? ";
         //$sql="SELECT SUM(pay_cost) FROM payments WHERE ill_id='$illnessId'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
@@ -491,8 +477,8 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
                 $row['pay_id'],
-            	$row['pay_name'], 
-            	$row['pay_cost'], 
+            	$row['pay_name'],
+            	$row['pay_cost'],
             	$row['number']
             );
         }
@@ -508,11 +494,11 @@ class Reader extends Connection
     public function getStayByIllnessId(int $illnessId)
     {
         if (NO_DATABASE) {
-            return rand(0, 5);
+            return rand(1, 5);
         }
 
-        $sql = "SELECT number FROM payments 
-                WHERE ill_id='$illnessId' AND pay_name='stay' ";
+        $sql = "SELECT number FROM payments
+                WHERE ill_id=? AND pay_name='stay' ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -532,7 +518,7 @@ class Reader extends Connection
 
         $sql = "SELECT id.ill_id,i.ill_name,i.class_name
         		    FROM illness i INNER JOIN illdrug id
-                ON id.drug_id='$drugId' AND i.ill_id=id.ill_id ";
+                ON id.drug_id=? AND i.ill_id=id.ill_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$drugId]);
 
@@ -562,7 +548,7 @@ class Reader extends Connection
 
         $sql = "SELECT i.ill_name,i.class_name
         		    FROM illness i INNER JOIN payments p
-                 ON p.pay_id='$paymentId' AND i.ill_id=p.ill_id ";
+                 ON p.pay_id=? AND i.ill_id=p.ill_id ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$paymentId]);
 

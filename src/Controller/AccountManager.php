@@ -17,8 +17,7 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $users = $dbReader->getAllUsers();
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to get all users', $e);
             $this->flash('fail', 'Database operation failed');
             $this->showDashboardPage();
         }
@@ -66,8 +65,7 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to create new user', $e);
             $this->flash('fail', 'Database operation failed');
             return $this->showAddAccountPage($username, $roleId);
         }
@@ -79,8 +77,7 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $dbCreator = new Creator();
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to open connection', $e);
             $this->flash('fail', 'Database connection failed');
             return Router::redirect('/admin/accounts');
         }
@@ -110,8 +107,9 @@ class AccountManager extends AdminController
                 $good[] = $newUser;
 
             } catch (\Exception $e) {
-                // TODO logError($e);
-                // throw $e;
+                Logger::log(
+                    'db', 'error', 'Failed to create user from batch file', $e
+                );
                 $bad['db'][] = $user;
                 continue;
             }
@@ -186,8 +184,7 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $user = $dbReader->findUserById($userId);
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to find user by id', $e);
             $this->flash('fail', 'Database operation failed');
             Router::redirect('/admin/accounts');
         }
@@ -246,8 +243,7 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to change user account', $e);
             $this->flash('fail', 'Database operation failed');
             return $this->showChangeAccountPage($userId);
         }
@@ -271,8 +267,7 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to delete user account', $e);
             $this->flash('fail', 'Database operation failed');
             return Router::redirect('/admin/accounts');
         }
@@ -294,8 +289,9 @@ class AccountManager extends AdminController
                 $name = $deletedUser->getUsername();
                 $this->flash('success', "User <b>$name</b> deleted");
             } catch (\Exception $e) {
-                // TODO logError($e);
-                // throw $e;
+                Logger::log('db', 'error',
+                    'Failed to delete user account from batch', $e
+                );
                 $this->flash('fail', 'Database operation failed');
             }
         }

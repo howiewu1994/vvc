@@ -25,26 +25,26 @@ class User
 
     public function getId() : int
     {
-        return $this->user_id;
-        //return $this->id;
+        // return $this->user_id;
+        return $this->id;
     }
 
     public function setId(int $id)
     {
-    	$this->user_id = $id;
-        //$this->id = $id;
+    	// $this->user_id = $id;
+        $this->id = $id;
     }
 
     public function getUsername() : string
     {
-    	return $this->user_name;
-    	//return $this->username;
+    	// return $this->user_name;
+    	return $this->username;
     }
 
     public function setUsername(string $username)
     {
-    	$this->use_rname = $username;
-    	//$this->username = $username;
+    	// $this->use_rname = $username;
+    	$this->username = $username;
     }
 
     public function getPassword() : string
@@ -59,14 +59,14 @@ class User
 
     public function getRoleId() : int
     {
-    	return $this->role_id;
-    	//return $this->roleId;
+    	// return $this->role_id;
+    	return $this->roleId;
     }
 
     public function setRoleId(int $roleId)
     {
-    	$this->role_id = $roleId;
-    	//$this->roleId = $roleId;
+    	// $this->role_id = $roleId;
+    	$this->roleId = $roleId;
     }
 
     public function getCreatedAt() : string

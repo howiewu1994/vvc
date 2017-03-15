@@ -3,6 +3,9 @@
         "symfony/http-foundation" : "~3.2",
         "twig/twig" : "~2.0",
 
+        "phpdocumentor/graphviz" : "~1.0",
+        "monolog/monolog" : "~1.0",
+
         "firebase/php-jwt" : ">=4.0.0",
         "vlucas/phpdotenv" : "^2.4",
 
