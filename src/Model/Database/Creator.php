@@ -86,7 +86,7 @@ class Creator extends Connection
                 } else {
                     $drugId = $drug['id'];
                 }
-                print_r($drugId);exit;
+                // pe($drugId);;
                 $this->addDrugToIllness($illnessId, $drugId);
             }
 

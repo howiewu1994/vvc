@@ -33,7 +33,10 @@ class IllnessManager extends AdminController
             $dbReader = new Reader();
             $illness = $dbReader->getFullIllnessById($illnessId);
         } catch (\Exception $e) {
-            Logger::log('db', 'error', 'Failed to get full illness by id', $e);
+            Logger::log('db', 'error',
+                'Failed to get full illness by id', $e, [
+                'ill id' => $illnessId
+            ]);
             $this->flash('fail', 'Database operation failed');
             $this->showIllnessListPage();
         }
@@ -61,6 +64,7 @@ class IllnessManager extends AdminController
 
         $good = [];
         $bad = [];
+
         foreach ($ills as $ill) {
             if (!$this->isClean($ill)) {
                 $bad['data'][] = $ill;
@@ -87,72 +91,75 @@ class IllnessManager extends AdminController
             if (!$newIll) {
                 Logger::log(
                     'db', 'error',
-                    'Failed to create illness from batch file',
-                    $e
-                );
+                    'Failed to create illness from batch file', $e, [
+                    'ill name' => $ill['name']
+                ]);
                 $bad['db'][] = $ill;
                 continue;
             } else {
-                $good[] = $ill;
+                $good[] = $newIll;
             }
         }
 
-        $total = count($ills);
+        $this->prepareGoodBatchResults($good, $ills, ['id', 'name']);
+        $this->prepareBadBatchResults($bad, $ills, ['name']);
 
-        if (!empty($good)) {
-            $goodOut = "Successful: " . count($good) . "/$total\n\n";
-            $goodOut .= "[id] - [name]\n";
+        return Router::redirect('/admin/illnesses');
+    }
 
-            foreach ($good as $ill) {
-                $goodOut .=
-                    $ill['id'] . " - " . $ill['name'] . "\n";
+    public function deleteIllness(int $illnessId)
+    {
+        try {
+            $dbDeleter = new Deleter();
+            $deleted = $dbDeleter->deleteIllness($illnessId);
+            if (!$deleted) {
+                $this->flash('fail',
+                    "Could not delete illness <b>$illnessId</b>, try again"
+                );
+                return Router::redirect('/admin/illnesses');
             }
 
-            $this->flash('success', $goodOut);
+            $name = $deleted->getName();
+
+            $this->flash('success', "Illness <b>$name</b> deleted");
+            return Router::redirect('/admin/illnesses');
+
+        } catch (\Exception $e) {
+            Logger::log('db', 'error',
+                "Failed to delete illness (single)", $e,
+                ['ill id' => $illnessId]
+            );
+            $this->flash('fail', 'Database operation failed');
+            return Router::redirect('/admin/illnesses');
         }
+    }
 
+    public function deleteIllnesses(array $ills)
+    {
+        $good = [];
+        $bad = [];
 
-        if (!empty($bad)) {
-            $badCount = 0;
-            foreach ($bad as $reason) {
-                foreach ($reason as $ills) {
-                    $badCount++;
+        foreach ($ills as $illnessId) {
+            try {
+                $dbDeleter = new Deleter();
+                $deleted = $dbDeleter->deleteIllness($illnessId);
+
+                if (!$deleted) {
+                    $bad['db'][] = $illnessId;
+                } else {
+                    $good[] = $deleted;
                 }
+            } catch (\Exception $e) {
+                Logger::log('db', 'error',
+                    "Failed to delete illness (batch)", $e,
+                    ['ill id' => $illnessId]
+                );
+                $bad['db'][] = $illnessId;
             }
-
-            $badOut = "Failed: " . $badCount . "/$total\n";
-
-            foreach ($bad as $reason => $ills) {
-                switch ($reason) {
-
-                    case 'data' :
-                        $badOut .= "\nBad input data:\n";
-                        $badOut .= "[name]\n";
-                        foreach ($ills as $ill) {
-                            $badOut .= $ill['name'] . "\n";
-                        }
-                        break;
-
-                    case 'duplicate' :
-                        $badOut .= "\nDuplicates:\n";
-                        $badOut .= "[name]\n";
-                        foreach ($ills as $ill) {
-                            $badOut .= $ill['name'] . "\n";
-                        }
-                        break;
-
-                    case 'db' :
-                        $badOut .= "\nDatabase failure:\n";
-                        $badOut .= "[name]\n";
-                        foreach ($ills as $ill) {
-                            $badOut .= $ill['name'] . "\n";
-                        }
-                        break;
-                }
-            }
-
-            $this->flash('warning', $badOut);
         }
+
+        $this->prepareGoodBatchResults($good, $ills, ['id', 'name']);
+        $this->prepareBadBatchResults($bad, $ills, ['id']);
 
         return Router::redirect('/admin/illnesses');
     }

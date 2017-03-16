@@ -313,18 +313,18 @@ class Router
                         break;
 
                     case 'delete' :
-                        // print_r($post);exit;
+                        // pe($post);
                         if (empty($post['id'])) {
-                            $controller->showAccountListPage();
+                            $controller->showIllnessListPage();
                         } elseif (count($post['id']) == 1){
-                            $controller->deleteAccount($post['id'][0]);
+                            $controller->deleteIllness($post['id'][0]);
                         } else {
-                            $controller->deleteAccounts($post['id']);
+                            $controller->deleteIllnesses($post['id']);
                         }
                         break;
 
                     default :
-                        self::redirect('/admin/accounts');
+                        self::redirect('/admin/illnesses');
                 }
                 break;
 

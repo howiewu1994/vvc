@@ -46,17 +46,20 @@ const USER_PASSWORD  = '123';
 const BATCH_USER_PASSWORD = '123';
 
 // Debug global helper-shortcuts
+// print $obj
 function p($obj)
 {
     print_r($obj);
 }
 
-function e($obj)
+// print $obj and exit
+function pe($obj)
 {
     print_r($obj);
     exit;
 }
 
+// print new line
 function n()
 {
     echo "\n";

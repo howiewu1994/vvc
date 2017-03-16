@@ -263,13 +263,14 @@ class Reader extends Connection
         }
 
         $illness = new IllnessRecord(
+                $result['ill_id'],
                 $result['ill_name'],
         	    $result['class_name'],
         		$result['ill_describe']
         );
 
         // Find and add all steps
-        $steps = getStepsByIllnessId($illnessId);
+        $steps = $this->getStepsByIllnessId($illnessId);
         $illness->addSteps($steps);
 
         // Add everything else
@@ -329,7 +330,7 @@ class Reader extends Connection
     {
         $sql = "SELECT s.step_num,n.step_name,s.step_text
                 FROM steps s INNER JOIN stepname n
-                ON ill_id=? AND s.step_num=n.step_id ";
+                ON ill_id=? AND s.step_num=n.step_num ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -338,8 +339,7 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $steps[] = new Step(
                 $row['step_num'],
-            	$row['step_name'],
-            	$row['step_text']
+            	$row['step_name']
             );
         }
 
@@ -568,6 +568,29 @@ class Reader extends Connection
         }
 
         return $illnesses;
+    }
+
+    /**
+     * Returns illness by its id
+     * @param  int $illnessId
+     * @return IllnessRecord OR false
+     */
+    public function findIllnessById(int $illnessId)
+    {
+        $sql = "SELECT * FROM illness WHERE ill_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new IllnessRecord(
+            $result['ill_id'],
+            $result['ill_name'],
+            $result['class_name'],
+            $result['ill_describe']
+        );
     }
 
     /**

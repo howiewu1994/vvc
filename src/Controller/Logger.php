@@ -53,7 +53,7 @@ class Logger
         }
 
         foreach ($extra as $key => $val) {
-            $out .= "\n  [\"$key\"]    =>    $val";
+            $out .= "\n$key:  $val";
         }
 
         self::$logger[$logType]->$errType($out);

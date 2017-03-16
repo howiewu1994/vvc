@@ -33,10 +33,12 @@ class Deleter extends Connection
      * If any of deletions fail, roll back transaction
      *
      * @param  int   $illnessId
-     * @return true if successful OR false if rolled back
+     * @return deleted illness if successful OR false if rolled back
      */
     public function deleteIllness(int $illnessId) : bool
     {
+        $oldIll = (new Reader())->findIllnessById($illnessId);
+
         // Turn autocommit off
         $this->db->beginTransaction();
 
@@ -61,8 +63,8 @@ class Deleter extends Connection
 
             // Commit transaction
             $this->db->commit();
-            return true;
-
+            return $oldIll;
+            
         } catch (\Exception $e) {
             Logger::log(
                 'db', 'error',

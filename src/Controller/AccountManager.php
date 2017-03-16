@@ -65,7 +65,7 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            Logger::log('db', 'error', 'Failed to create new user', $e);
+            Logger::log('db', 'error', 'Failed to create user (single)', $e);
             $this->flash('fail', 'Database operation failed');
             return $this->showAddAccountPage($username, $roleId);
         }
@@ -108,72 +108,15 @@ class AccountManager extends AdminController
 
             } catch (\Exception $e) {
                 Logger::log(
-                    'db', 'error', 'Failed to create user from batch file', $e
+                    'db', 'error', 'Failed to create user (batch)', $e
                 );
                 $bad['db'][] = $user;
                 continue;
             }
         }
-        // print_r($good);
-        // print_r($bad);
-        // exit;
 
-        $total = count($users);
-
-        if (!empty($good)) {
-            $goodOut = "Successful: " . count($good) . "/$total\n\n";
-            $goodOut .= "[id] - [username]\n";
-
-            foreach ($good as $user) {
-                $goodOut .=
-                    $user->getId() . " - " . $user->getUsername() . "\n";
-            }
-
-            $this->flash('success', $goodOut);
-        }
-
-
-        if (!empty($bad)) {
-            $badCount = 0;
-            foreach ($bad as $reason) {
-                foreach ($reason as $users) {
-                    $badCount++;
-                }
-            }
-
-            $badOut = "Failed: " . $badCount . "/$total\n";
-
-            foreach ($bad as $reason => $users) {
-                switch ($reason) {
-
-                    case 'data' :
-                        $badOut .= "\nBad input data:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-
-                    case 'duplicate' :
-                        $badOut .= "\nDuplicates:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-
-                    case 'db' :
-                        $badOut .= "\nDatabase failure:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-                }
-            }
-
-            $this->flash('warning', $badOut);
-        }
+        $this->prepareGoodBatchResults($good, $users, ['id', 'username']);
+        $this->prepareBadBatchResults($bad, $users, ['username']);
 
         return Router::redirect('/admin/accounts');
     }
@@ -243,7 +186,11 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            Logger::log('db', 'error', 'Failed to change user account', $e);
+            Logger::log('db', 'error',
+                'Failed to change user account', $e, [
+                'user id' => $userId,
+                'username' => $username,
+            ]);
             $this->flash('fail', 'Database operation failed');
             return $this->showChangeAccountPage($userId);
         }
@@ -267,7 +214,10 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            Logger::log('db', 'error', 'Failed to delete user account', $e);
+            Logger::log('db', 'error',
+                "Failed to delete user (single)", $e,
+                ['user id' => $userId]
+            );
             $this->flash('fail', 'Database operation failed');
             return Router::redirect('/admin/accounts');
         }
@@ -275,26 +225,31 @@ class AccountManager extends AdminController
 
     public function deleteAccounts(array $users)
     {
+        $good = [];
+        $bad = [];
+
         foreach ($users as $userId) {
             try {
                 $dbDeleter = new Deleter();
                 $deletedUser = $dbDeleter->deleteUser($userId);
 
                 if (!$deletedUser) {
-                    $this->flash('fail',
-                        "Could not delete user <b>$userId</b>, try again"
-                    );
+                    $bad['db'][] = $userId;
+                } else {
+                    $good[] = $deletedUser;
                 }
-
-                $name = $deletedUser->getUsername();
-                $this->flash('success', "User <b>$name</b> deleted");
             } catch (\Exception $e) {
                 Logger::log('db', 'error',
-                    'Failed to delete user account from batch', $e
+                    "Failed to delete user (batch)", $e,
+                    ['user id' => $userId]
                 );
-                $this->flash('fail', 'Database operation failed');
+                $bad['db'][] = $userId;
             }
         }
+
+        $this->prepareGoodBatchResults($good, $users, ['id', 'username']);
+        $this->prepareBadBatchResults($bad, $users, ['id']);
+
         return Router::redirect('/admin/accounts');
     }
 }
