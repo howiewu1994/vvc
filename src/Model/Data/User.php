@@ -43,7 +43,7 @@ class User
 
     public function setUsername(string $username)
     {
-    	$this->use_rname = $username;
+    	$this->user_name = $username;
     	//$this->username = $username;
     }
 
