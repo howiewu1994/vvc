@@ -17,7 +17,18 @@
                     <li><a href="/registration">Registration</a></li>
                 {% else %}
                     {% if admin() %}
-                        <li><a href="/admin">Admin Dashboard</a></li>
+                    <li class="dropdown">
+                      <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                          <li><a href="/admin">Dashboard</a></li>
+                          <li><a href="/admin/accounts">Users</a></li>
+                          <li><a href="/admin/illnesses">Illnesses</a></li>
+                          <li><a href="/admin/drugs">Drugs</a></li>
+                          <!-- <li><a href="#">Hospitalization</a></li> -->
+                          <!-- <li><a href="#">Payments</a></li> -->
+                          <!-- <li><a href="#">Uploads</a></li> -->
+                      </ul>
+                    </li>
                     {% endif %}
                     <li><a href="/account">My Account</a></li>
                     <li><a href="/logout">Logout</a></li>

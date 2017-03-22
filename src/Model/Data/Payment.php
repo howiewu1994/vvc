@@ -4,72 +4,78 @@ namespace VVC\Model\Data;
 class Payment
 {
     private $id = 0;
+    private $illnessId = 0;
     private $name = 'Payment';
-    //private $amount = null;
-    private $cost=null;
-    private $number =0;
+    private $cost = 0.0;
+    private $number = 0;
 
-    public function __construct(int $id, string $name,/* float $amount*/float $cost,int $number)
-    {
+    public function __construct(
+        int $id, int $illnessId, string $name, float $cost, int $number
+    ) {
         $this->setId($id);
+        $this->setIllnessId($illnessId);
         $this->setName($name);
-        //$this->setAmount($amount);
         $this->setCost($cost);
         $this->setNumber($number);
     }
 
     public function getId() : int
     {
-        return $this->ill_id;
-        //return $this->id;
+        // return $this->ill_id;
+        return $this->id;
     }
 
     public function setId(int $id)
     {
-        $this->ill_id=$id;
-        //$this->id = $id;
+        // $this->ill_id=$id;
+        $this->id = $id;
+    }
+
+    public function setIllnessId(int $illnessId)
+    {
+        $this->illnessId = $illnessId;
+    }
+
+    public function getIllnessId() : int
+    {
+        return $this->$illnessId;
     }
 
     public function getName() : string
     {
-        return $this->pay_name;
-        //return $this->name;
+        // return $this->pay_name;
+        return $this->name;
     }
 
     public function setName(string $name)
     {
-    	$this->pay_name = $name;
-        //$this->name = $name;
+    	// $this->pay_name = $name;
+        $this->name = $name;
     }
 
-   /* public function getAmount() : float
-    {
-        return $this->amount;
-    }
-
-    public function setAmount(float $amount)
-    {
-        $this->amount = $amount;
-    }*/
-    
-    public function getCost():float
+    public function getCost() : float
     {
     	return $this->cost;
     }
-    
+
     public function setCost(float $cost)
     {
-    	$this->cost=$cost;
+    	$this->cost = $cost;
     }
-    
-    public function getNumber():int
+
+    public function getNumber() : int
     {
     	return $this->number;
     }
-    
-    public function setNumber(float $number)
+
+    public function setNumber(int $number)
     {
-    	$this->number=$number;
+    	$this->number = $number;
     }
-    
+
+    public function getTotal(string $currency = null) : float
+    {
+        $total = $this->getCost() * $this->getNumber();
+        return $total . $currency;
+    }
 }

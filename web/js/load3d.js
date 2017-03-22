@@ -1,7 +1,3 @@
-$(function(){
-
-});
-
 $("#show3d").click(function() {
     $(this).remove();
     $('#loading').show();

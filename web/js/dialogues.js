@@ -1,5 +1,5 @@
 // Confirm delete user dialogue
-$('input[name="delete_user"]').on('click', function(e) {
+$('input[name="delete"]').on('click', function(e) {
 	var $btn = $(this);
 	var $form = $btn.closest('form');
 	e.preventDefault();
@@ -23,8 +23,3 @@ $('input[name="delete_selected"]').on('click', function(e) {
 		$form.trigger('submit');
 	});
 });
-
-// Autofocus confirm button
-// $('#confirm_delete').on('shown.bs.modal', function () {
-//   $('#confirm_button').focus()
-// })

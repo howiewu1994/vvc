@@ -1,0 +1,19 @@
+{% extends 'inc/dlg/modal_base.twig' %}
+
+{% block modal_id %}select_pic{% endblock %}
+{% block modal_size %}modal-lg{% endblock %}
+{% block modal_title %}Select Picture{% endblock %}
+
+{% block modal_body %}
+<div class="row">
+    {% for pic in pics %}
+        <div class="col-md-2">
+            <p>{{ pic|name }}</p>
+            <span role="button" class="thumbnail"><img src="{{pic}}"></span>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block yes_color %}primary{% endblock %}
+{% block yes_text %}Confirm{% endblock %}

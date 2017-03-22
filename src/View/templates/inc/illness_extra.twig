@@ -1,0 +1,40 @@
+<div class="media well">
+    <div class="media-body">
+        <h3 class="media-heading">Prescriptions</h3>
+        {% if ill.drugs is not empty %}
+          <h5>Drugs</h5>
+          <ul>
+              {% for drug in ill.drugs %}
+              <li>
+                  <p>ID: {{ drug.id }}</p>
+                  <p>Name: {{ drug.name }}</p>
+                  <p>Usage: {{ drug.text }}</p>
+                  <p>Cost: {{ drug.cost }}元</p>
+                  <img src="{{ drug.picture }}">
+              </li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if ill.stay is not empty %}
+          <h5>Hospitalization</h5>
+          <ul>
+              <li>
+                  <p>Need to stay in clinic for {{ ill.stay.days }} days</p>
+              </li>
+          </ul>
+        {% endif %}
+
+        {% if ill.payments is not empty %}
+          <h5>Payments</h5>
+          <ul>
+              {% for payment in ill.payments %}
+              <li>
+                  <p>Reason: {{ payment.name }}</p>
+                  <p>Amount: {{ payment.total }}元</p>
+              </li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+    </div>
+</div>

@@ -2,6 +2,7 @@
 namespace VVC\Model\Database;
 
 use VVC\Model\Data\User;
+use VVC\Controller\Logger;
 
 /**
  * Processes INSERT queries
@@ -44,26 +45,101 @@ class Creator extends Connection
         return (new Reader())->findUserByUsername($username);
     }
 
+    public function createFullIllness(
+        string $name,
+        string $class,
+        string $description,
+        array  $steps,
+        array  $drugs,
+        //int    $stay,
+        array  $payments
+    ) {
+        // Turn autocommit off
+        $this->db->beginTransaction();
+
+        try {
+            // Init illness
+            $newIllness = $this->createIllness($name, $class, $description);
+            $illnessId = $newIllness->getId();
+
+            // Add all step details
+            foreach ($steps as $stepNum => $step) {
+                $this->addTextToStep($illnessId, $stepNum, $step['text']);
+
+                foreach ($step['pictures'] as $pic) {
+                    $this->addPictureToStep($illnessId, $stepNum, $pic);
+                }
+
+                foreach ($step['videos'] as $vid) {
+                    $this->addVideoToStep($illnessId, $stepNum, $vid);
+                }
+            }
+
+            // Add drugs
+            foreach ($drugs as $drug) {
+
+                $oldDrug = (new Reader())->findDrugByName($drug['name']);
+
+                if (empty($oldDrug)) {
+                    $newDrug = $this->createDrug(
+                        $drug['name'],
+                        $drug['text'],
+                        $drug['picture'],
+                        $drug['cost']
+                    );
+                } else {
+                    $newDrug = $oldDrug;
+                }
+                $this->addDrugToIllness($illnessId, $newDrug->getId());
+            }
+
+            // Add payments
+            foreach ($payments as $payment) {
+                $this->createPayment(
+                    $illnessId,
+                    $payment['name'],
+                    $payment['cost'],
+                    $payment['number']
+                );
+            }
+
+            // Commit transaction
+            $this->db->commit();
+            return $newIllness;
+
+        } catch (\Exception $e) {
+            Logger::log(
+                'db', 'error',
+                "Failed to create full illness $illnessId, rolled back transaction",
+                $e
+            );
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
     /**
      * Creates new illness record in the database,
      * does NOT create any steps
      * @param  string $name
      * @param  string $class
      * @param  string $description
-     * @return int  - new illness id
+     * @return new IllnessRecord OR false
      */
     public function createIllness(
         string  $name,
         string  $class,
         string  $description
-    ) : int
+    )
     {
         $sql = "INSERT INTO illness(ill_name,class_name,ill_describe)
-        		        VALUES(?,?,?) ";
+                VALUES(?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$class,$description]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findIllnessById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**
@@ -86,39 +162,45 @@ class Creator extends Connection
      * @param  string $text
      * @param  string $picture
      * @param  float  $cost
-     * @return int  - new drug id
+     * @return new Drug OR false
      */
     public function createDrug(
         string  $name,
         string  $text,
         string  $picture,
         float   $cost
-    ) : int
+    )
     {
         $sql = "INSERT INTO drug(drug_name,drug_text,drug_picture,drug_cost)
         		VALUES(?,?,?,?) ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$text,$picture,$cost]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findDrugById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**
      * Creates new payment
+     * @param  int    $illnessId
      * @param  string $name
      * @param  float  $cost
      * @param  int    $num
-     * @param  int    $illnessId
-     * @return int  - new payment id
+     * @return new Payment OR false
      */
-    public function createPayment(int $illnessId,string $name, float $cost,int $num) : int
+    public function createPayment(
+        int $illnessId, string $name, float $cost, int $num
+    )
     {
         $sql = "INSERT INTO payments(ill_id,pay_name,pay_cost,number)
         		VALUES(?,?,?,?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$name,$cost,$num]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findPaymentById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**
@@ -214,7 +296,7 @@ class Creator extends Connection
         $stmt->execute([]);
     }*/
 
-    public function createUser_stub($username, $password) : array
+    public function createUser_stub($username, $password) : User
     {
         return new User(
             1,

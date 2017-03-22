@@ -6,14 +6,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Processes htpp request and sends http response
+ * Processes http request and sends http response
  */
 class Router
 {
     public static $cookies = [];
+
     /**
      * Finds appropriate controller based on request uri
      * and decides what method to call based on get&post data
+     * @return void
      */
     public static function run()
     {
@@ -119,6 +121,10 @@ class Router
      *
      */
 
+    /**
+     * Extracts route from the request uri
+     * @return array - processed route
+     */
     public static function getRoute()
     {
         global $req;
@@ -127,19 +133,20 @@ class Router
         $uri = trim($req->getPathInfo(), '/');
         $uri = explode('/', $uri);
 
-        // $route['count'] = count($uri);
         $route['base'] = $uri[0];
         $route['section'] = empty($uri[1]) ? '' : $uri[1];
         $route['action'] = empty($uri[2]) ? '' : $uri[2];
         $route['page'] = $uri[count($uri)-1];
 
-        // print_r($uri);
-        // print_r($route);
-        // exit;
-
         return $route;
     }
 
+    /**
+     * Adds cookie to put in the response
+     * @param  string $name
+     * @param  any $value
+     * @return void
+     */
     public static function addCookie(string $name, $value)
     {
         self::$cookies[] = [
@@ -149,11 +156,12 @@ class Router
     }
 
     /**
-     * Prepares and sends http response
+     * Prepares and sends http response and exits script
      * @param  [type] $html     - rendered twig output
      * @param  int $httpCode    - HTTP_FOUND, HTTP_NOT_FOUND, etc
      * @param  array $headers   - optional http headers
      * @param  array $authToken - optional authentication token
+     * @return void
      */
     public static function sendResponse(
         $html,
@@ -185,6 +193,7 @@ class Router
      * Internal redirect to process request at another Location
      * @param  string $uri
      * @param  Cookie Object $authToken
+     * @return void
      */
     public static function redirect(string $uri, $authToken = null)
     {
@@ -196,6 +205,14 @@ class Router
         );
     }
 
+    /**
+     * Handles routing inside Admin Dashboard
+     * @param  array  $route
+     * @param  array  $get   - GET data
+     * @param  array  $post  - POST data
+     * @param  array  $files - file uploads
+     * @return void
+     */
     public static function routeAdmin(
         array $route, array $get, array $post, array $files)
     {
@@ -209,12 +226,12 @@ class Router
                 break;
 
             case 'accounts' :
-
                 $controller = new AccountManager();
 
                 // Check if user id in uri is valid
                 if (in_array($route['action'], ['change'])
-                    && !is_numeric($route['page'])) {
+                    && (empty($route['page'])
+                    || !is_numeric($route['page']))) {
                     self::redirect('/admin/accounts');
                 }
 
@@ -229,9 +246,12 @@ class Router
                         } else {
                             $controller->addAccount($post);
                         }
+                        break;
 
                     case 'add-many' :
-                        $accs = Uploader::readAccountsFromYml($controller, $files);
+                        $accs = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/accounts'
+                        );
                         $controller->batchAddAccounts($accs);
                         break;
 
@@ -261,11 +281,185 @@ class Router
 
             case 'illnesses' :
 
+                $controller = new IllnessManager();
+
+                // Check if illness id in uri is valid
+                if (in_array($route['action'], ['view', 'change'])
+                    && (empty($route['page'])
+                    || !is_numeric($route['page']))) {
+                    self::redirect('/admin/illnesses');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showIllnessListPage();
+                        break;
+
+                    case 'view' :
+                        $controller->showIllnessPage($route['page']);
+                        break;
+
+                    case 'add-single' :
+                        // TODO
+                        Router::redirect('/admin/illnesses');
+                        break;
+
+                    case 'add-many' :
+                        $ills = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/illnesses'
+                        );
+                        $controller->batchAddIllnesses($ills);
+                        break;
+
+                    case 'change' :
+                        // TODO
+                        Router::redirect('/admin/illnesses');
+                        break;
+
+                    case 'delete' :
+                        // pe($post);
+                        if (empty($post['id'])) {
+                            $controller->showIllnessListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteIllness($post['id'][0]);
+                        } else {
+                            $controller->deleteIllnesses($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/illnesses');
+                }
+                break;
+
             case 'drugs' :
+
+                $controller = new DrugManager();
+
+                // Check if drug id in uri is valid
+                if (in_array($route['action'], ['view', 'change'])
+                    && (empty($route['page']))) {
+                    self::redirect('/admin/drugs');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showDrugListPage();
+                        break;
+
+
+                    case 'add-single' :
+                        if (empty($post)) {
+                            $controller->showAddDrugPage();
+                        } else {
+                            if (!empty($files['drug_pic'])) {
+                                $pic = Uploader::uploadDrugPic(
+                                    $controller,
+                                    $files,
+                                    '/admin/drugs/add-single'
+                                );
+                                $post['picture'] = $pic;
+                            }
+                            $controller->addDrug($post);
+                        }
+                        break;
+
+                    case 'add-many' :
+                        $drugs = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/drugs'
+                        );
+                        $controller->batchAddDrugs($drugs);
+                        break;
+
+                    case 'change' :
+                        if (empty($post)) {
+                            $controller->showChangeDrugPage($route['page']);
+                        } else {
+                            if (!empty($files['drug_pic'])) {
+                                $pic = Uploader::uploadDrugPic(
+                                    $controller,
+                                    $files,
+                                    '/admin/drugs/change/' . $route['page']
+                                );
+                                $post['picture'] = $pic;
+                            }
+                            $controller->changeDrug($route['page'], $post);
+                        }
+                        break;
+
+                    case 'delete' :
+                        if (empty($post['id'])) {
+                            $controller->showDrugListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteDrug($post['id'][0]);
+                        } else {
+                            $controller->deleteDrugs($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/drugs');
+                }
+                break;
 
             case 'hospitalization' :
 
+                self::redirect('/admin');
+                break;
+
             case 'payments' :
+
+                self::redirect('/admin');
+                $controller = new PaymentManager();
+
+                // Check if payment id in uri is valid
+                if (in_array($route['action'], ['change'])
+                    && (empty($route['page']))) {
+                    self::redirect('/admin/payments');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showPaymentListPage();
+                        break;
+
+                    case 'add-single' :
+                        if (empty($post)) {
+                            $controller->showAddPaymentPage();
+                        } else {
+                            $controller->addPayment($post);
+                        }
+
+                    case 'add-many' :
+                        $payments = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/payments'
+                        );
+                        $controller->batchAddPayments($payments);
+                        break;
+
+                    case 'change' :
+                        if (empty($post)) {
+                            $controller->showChangePaymentPage($route['page']);
+                        } else {
+                            $controller->changePayment($route['page'], $post);
+                        }
+                        break;
+
+                    case 'delete' :
+                        // print_r($post);exit;
+                        if (empty($post['id'])) {
+                            $controller->showPaymentListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deletePayment($post['id'][0]);
+                        } else {
+                            $controller->deletePayments($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/payments');
+                }
+                break;
 
             case 'uploads' :
 

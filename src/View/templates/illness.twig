@@ -5,12 +5,24 @@
 {% block content %}
 <div class="container">
     <div class="well">
-        <h2>Name: {{ ill.name }}</h2>
-        <p>Class: {{ ill.class }}</p>
-        <p>Description: {{ ill.description }}</p>
+        <h2>{{ ill.name }}</h2>
+        <div class="media well">
+            <div class="media-body">
+                <h3 class="media-heading">Overview</h3>
+                <h5>Class: {{ ill.class }}</h5>
+                <h5>Description</h5>
+                <ul>
+                    <li>
+                        <p>{{ ill.description }}</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         {% for step in ill.steps %}
             {% include "inc/illness_step.twig" %}
         {% endfor %}
+        {% include "/inc/illness_extra.twig" %}
     </div>
 </div>
 {% endblock %}

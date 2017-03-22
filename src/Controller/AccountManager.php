@@ -17,11 +17,13 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $users = $dbReader->getAllUsers();
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to get all users', $e);
             $this->flash('fail', 'Database operation failed');
             $this->showDashboardPage();
         }
+
+        $ymls = Uploader::getFiles(YML_DIRECTORY, ['yml']);
+        $this->addTwigVar('files', $ymls);
 
         $this->setTemplate('admin_accs.twig');
         $this->addTwigVar('users', $users);
@@ -66,8 +68,7 @@ class AccountManager extends AdminController
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to create user (single)', $e);
             $this->flash('fail', 'Database operation failed');
             return $this->showAddAccountPage($username, $roleId);
         }
@@ -79,8 +80,7 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $dbCreator = new Creator();
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to open connection', $e);
             $this->flash('fail', 'Database connection failed');
             return Router::redirect('/admin/accounts');
         }
@@ -89,6 +89,13 @@ class AccountManager extends AdminController
         $bad = [];
 
         foreach ($users as $user) {
+            if (empty($user['username'])
+                || empty($user['roleId'])
+            ) {
+                $this->flash('fail', 'Some data is wrong or missing');
+                return Router::redirect('/admin/accounts');
+            }
+
             if (!$this->isClean($user)) {
                 $bad['data'][] = $user;
                 continue;
@@ -102,7 +109,7 @@ class AccountManager extends AdminController
                     continue;
                 }
 
-                $password = password_hash($user['password'], PASSWORD_DEFAULT);
+                $password = password_hash(BATCH_USER_PASSWORD, PASSWORD_DEFAULT);
                 $newUser = $dbCreator->createUser(
                     $user['username'], $password, $user['roleId']
                 );
@@ -110,72 +117,16 @@ class AccountManager extends AdminController
                 $good[] = $newUser;
 
             } catch (\Exception $e) {
-                // TODO logError($e);
-                // throw $e;
+                Logger::log(
+                    'db', 'error', 'Failed to create user (batch)', $e
+                );
                 $bad['db'][] = $user;
                 continue;
             }
         }
-        // print_r($good);
-        // print_r($bad);
-        // exit;
 
-        $total = count($users);
-
-        if (!empty($good)) {
-            $goodOut = "Completed additions: " . count($good) . "/$total\n\n";
-            $goodOut .= "[id] - [username]\n";
-
-            foreach ($good as $user) {
-                $goodOut .=
-                    $user->getId() . " - " . $user->getUsername() . "\n";
-            }
-
-            $this->flash('success', $goodOut);
-        }
-
-
-        if (!empty($bad)) {
-            $badCount = 0;
-            foreach ($bad as $reason) {
-                foreach ($reason as $users) {
-                    $badCount++;
-                }
-            }
-
-            $badOut = "Not added: " . $badCount . "/$total\n";
-
-            foreach ($bad as $reason => $users) {
-                switch ($reason) {
-
-                    case 'data' :
-                        $badOut .= "\nBad input data:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-
-                    case 'duplicate' :
-                        $badOut .= "\nDuplicates:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-
-                    case 'db' :
-                        $badOut .= "\nDatabase failure:\n";
-                        $badOut .= "[username]\n";
-                        foreach ($users as $user) {
-                            $badOut .= $user['username'] . "\n";
-                        }
-                        break;
-                }
-            }
-
-            $this->flash('warning', $badOut);
-        }
+        $this->prepareGoodBatchResults($good, $users, ['id', 'username']);
+        $this->prepareBadBatchResults($bad, $users, ['username']);
 
         return Router::redirect('/admin/accounts');
     }
@@ -186,8 +137,7 @@ class AccountManager extends AdminController
             $dbReader = new Reader();
             $user = $dbReader->findUserById($userId);
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to find user by id', $e);
             $this->flash('fail', 'Database operation failed');
             Router::redirect('/admin/accounts');
         }
@@ -216,21 +166,23 @@ class AccountManager extends AdminController
         try {
             $dbReader = new Reader();
 
-            $duplicateUser = $dbReader->findUserByUsername($username);
-            if (!empty($duplicateUser)
-                && $duplicateUser->getId() != $userId) {
-                $this->flash('fail', 'This username is already registered');
-                return $this->showChangeAccountPage($userId);
-            }
-
-            $oldUser = $dbReader->findUserById($userId);
-            if (empty($oldUser)) {
+            $old = $dbReader->findUserById($userId);
+            if (empty($old)) {
                 $this->flash('fail', 'Some problem occurred, please try again');
                 return $this->showChangeAccountPage($userId);
             }
 
+            if ($old->getUsername() != $username) {
+                // check for duplicate username
+                $duplicate = $dbReader->findUserByUsername($username);
+                if (!empty($duplicate)) {
+                    $this->flash('fail', 'This username is already registered');
+                    return $this->showChangeAccountPage($userId);
+                }
+            }
+
             $password = empty($password)
-                ? $oldUser->getPassword()
+                ? $old->getPassword()
                 : password_hash($password, PASSWORD_DEFAULT);
 
             $dbUpdater = new Updater();
@@ -239,15 +191,18 @@ class AccountManager extends AdminController
                 $username,
                 $password,
                 $roleId,
-                $oldUser->getCreatedAt()
+                $old->getCreatedAt()
             );
 
             $this->flash('success', 'Account Updated');
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error',
+                'Failed to change user account', $e, [
+                'user id' => $userId,
+                'username' => $username,
+            ]);
             $this->flash('fail', 'Database operation failed');
             return $this->showChangeAccountPage($userId);
         }
@@ -257,22 +212,24 @@ class AccountManager extends AdminController
     {
         try {
             $dbDeleter = new Deleter();
-            $deletedUser = $dbDeleter->deleteUser($userId);
-            if (!$deletedUser) {
+            $deleted = $dbDeleter->deleteUser($userId);
+            if (!$deleted) {
                 $this->flash('fail',
                     "Could not delete user <b>$userId</b>, try again"
                 );
                 return Router::redirect('/admin/accounts');
             }
 
-            $name = $deletedUser->getUsername();
+            $name = $deleted->getUsername();
 
             $this->flash('success', "User <b>$name</b> deleted");
             return Router::redirect('/admin/accounts');
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error',
+                "Failed to delete user (single)", $e,
+                ['user id' => $userId]
+            );
             $this->flash('fail', 'Database operation failed');
             return Router::redirect('/admin/accounts');
         }
@@ -280,25 +237,31 @@ class AccountManager extends AdminController
 
     public function deleteAccounts(array $users)
     {
+        $good = [];
+        $bad = [];
+
         foreach ($users as $userId) {
             try {
                 $dbDeleter = new Deleter();
-                $deletedUser = $dbDeleter->deleteUser($userId);
+                $deleted = $dbDeleter->deleteUser($userId);
 
-                if (!$deletedUser) {
-                    $this->flash('fail',
-                        "Could not delete user <b>$userId</b>, try again"
-                    );
+                if (!$deleted) {
+                    $bad['db'][] = $userId;
+                } else {
+                    $good[] = $deleted;
                 }
-
-                $name = $deletedUser->getUsername();
-                $this->flash('success', "User <b>$name</b> deleted");
             } catch (\Exception $e) {
-                // TODO logError($e);
-                // throw $e;
-                $this->flash('fail', 'Database operation failed');
+                Logger::log('db', 'error',
+                    "Failed to delete user (batch)", $e,
+                    ['user id' => $userId]
+                );
+                $bad['db'][] = $userId;
             }
         }
+
+        $this->prepareGoodBatchResults($good, $users, ['id', 'username']);
+        $this->prepareBadBatchResults($bad, $users, ['id']);
+
         return Router::redirect('/admin/accounts');
     }
 }

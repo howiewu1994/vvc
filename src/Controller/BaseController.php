@@ -21,8 +21,13 @@ class BaseController
     protected $httpCode = Response::HTTP_FOUND;
     protected $vars = [];
 
+    protected $logger;
+
     public function __construct()
     {
+        global $logger;
+        $this->logger = $logger;
+
         $this->loadTwig();
     }
 
@@ -42,6 +47,11 @@ class BaseController
 
         $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
         $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
+        $this->addTwigFunc('short', 'short', $this);
+
+        $this->twig->addFilter(new \Twig_Filter(
+            'name', [$this, 'name']
+        ));
     }
 
     /**
@@ -81,7 +91,7 @@ class BaseController
      * @param string $funcName     - real function name
      * @param $handle
      *        class name if using static function
-     *        object instance if using non static function
+     *        item instance if using non static function
      *        null if using standalone function
      */
     public function addTwigFunc(
@@ -139,25 +149,182 @@ class BaseController
     {
         $beforeCleanup = $vars;
         $this->cleanupVars($vars);
-
+        // pe($vars);
         return $beforeCleanup == $vars;
     }
 
     public function cleanupVars(array &$vars)
     {
         foreach ($vars as $key => $val) {
-            switch ($key) {
-                case 'password' :
-                    $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
-                    $vars[$key] = str_replace(' ', '', $val);
-                    break;
-                case 'username' :
-                    $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
-                    $vars[$key] = str_replace(' ', '', $val);
-                    break;
-                default :
-                    $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));
+            if (is_array($val)) {
+                // p($val);
+                $this->cleanupVars($val);
+            } else {
+                // p($val); n();
+                switch (strtolower($key)) {
+                    case 'password' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'username' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'roleid'  :
+                    case 'role_id' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_NUMBER_INT));
+                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    default :
+                        $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                }
             }
         }
+    }
+
+    /**
+     * Returns first $limit characters of a string
+     * @param  string  full
+     * @param  int     limit
+     * @return string
+     */
+    public function short(string $full, $limit = 55) : string
+    {
+        if (strlen($full) >= $limit) {
+            return substr($full, 0, $limit-1) . "...";
+        } else {
+            return substr($full, 0, $limit);
+        }
+    }
+
+    /**
+     * Returns only the filename in the path
+     * @param  string  $path - full path
+     * @return string
+     */
+    public function name(string $path) : string
+    {
+        $arr = explode('/', $path);
+        return $arr[count($arr) - 1];
+    }
+
+    /**
+     * Processes and adds to flashes successful batch action results
+     * @param  array  $good   - succeeded entries
+     * @param  array  $data   - all entries
+     * @param  array  $fields - column headers
+     * @param  string $msg    - e.g. Successful:
+     * @return void
+     */
+    public function prepareGoodBatchResults(
+        array $good, array $data, array $fields, $msg = "Successful: "
+    ) {
+        $total = count($data);
+        // p($data);pe($good);
+        if (!empty($good)) {
+            $goodOut = $msg . count($good) . "/$total\n\n";
+            for ($i = 0; $i < count($fields); $i++) {
+                if ($i != 0) $goodOut .= " - ";
+                $goodOut .= "[" . $fields[$i] . "]";
+            }
+
+            foreach ($good as $item) {
+                $goodOut .= $this->getBatchResultsRow($item, $fields);
+            }
+
+            $this->flash('success', $goodOut);
+        }
+    }
+
+    /**
+     * Processes and adds to flashes failed batch action results
+     * @param  array  $bad    - failed entries
+     * @param  array  $data   - all entries
+     * @param  array  $fields - column headers
+     * @param  string $msg    - e.g. Failed:
+     * @return void
+     */
+    public function prepareBadBatchResults(
+        array $bad, array $data, array $fields, $msg = "Failed: "
+    ) {
+        $total = count($data);
+        // p($data);pe($bad);
+        if (!empty($bad)) {
+            $badCount = 0;
+            foreach ($bad as $reason) {
+                foreach ($reason as $item) {
+                    $badCount++;
+                }
+            }
+
+            $badOut = $msg . $badCount . "/$total";
+
+            foreach ($bad as $reason => $items) {
+                switch ($reason) {
+
+                    case 'data' :
+                        $badOut .= "\n\nBad input data:\n";
+                        for ($i = 0; $i < count($fields); $i++) {
+                            if ($i != 0) $badOut .= " - ";
+                            $badOut .= "[" . $fields[$i] . "]";
+                        }
+                        foreach ($items as $item) {
+                            $badOut .= $this->getBatchResultsRow($item, $fields);
+                        }
+                        break;
+
+                    case 'duplicate' :
+                        $badOut .= "\n\nDuplicates:\n";
+                        for ($i = 0; $i < count($fields); $i++) {
+                            if ($i != 0) $badOut .= " - ";
+                            $badOut .= "[" . $fields[$i] . "]";
+                        }
+                        foreach ($items as $item) {
+                            $badOut .= $this->getBatchResultsRow($item, $fields);
+                        }
+                        break;
+
+                    case 'db' :
+                        $badOut .= "\n\nDatabase failure:\n";
+                        for ($i = 0; $i < count($fields); $i++) {
+                            if ($i != 0) $badOut .= " - ";
+                            $badOut .= "[" . $fields[$i] . "]";
+                        }
+                        foreach ($items as $item) {
+                            $badOut .= $this->getBatchResultsRow($item, $fields);
+                        }
+                        break;
+                }
+            }
+
+            $this->flash('warning', $badOut);
+        }
+    }
+
+    /**
+     * Returns results entry output, used both for bad and goor results
+     * @param  array OR object OR scalar $item    - entry
+     * @param  array  $fields          - array values OR class properties
+     * @return string
+     */
+    public function getBatchResultsRow($item, array $fields) : string
+    {
+        $out = "\n";
+        for ($i = 0; $i < count($fields); $i++) {
+            if ($i != 0) $out .= " - ";
+
+            if (is_array($item)) {
+                // if item is array, output uses array fields values
+                $out .= $item[$fields[$i]];
+            } elseif (is_object($item)) {
+                // if item is object, output uses class getters
+                $getter = 'get' . ucfirst($fields[$i]);
+                $out .= $item->$getter();
+            } else {
+                // if item is scalar type, just print it out
+                $out .= $item;
+            }
+        }
+        return $out;
     }
 }

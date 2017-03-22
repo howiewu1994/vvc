@@ -12,9 +12,8 @@ class CatalogController extends BaseController
         try {
             $dbReader = new Reader();
             $catalog = $dbReader->getAllIllnesses();
-        } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+        } catch (\Exception $e ) {
+            Logger::log('db', 'error', 'Failed to get all illnesses', $e);
             $this->flash('fail', 'Database operation failed');
             Router::redirect('/');
         }
@@ -29,8 +28,7 @@ class CatalogController extends BaseController
             $dbReader = new Reader();
             $illness = $dbReader->getFullIllnessById($illnessId);
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to get full illness by id', $e);
             $this->flash('fail', 'Database operation failed');
             return $this->showCatalogPage();
         }
