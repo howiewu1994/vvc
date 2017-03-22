@@ -1,24 +1,21 @@
 ####### Users ########
 -
-    username    : user1
+    username    : "user1"
     roleId      : 2
 -
-    username    : user2
+    username    : "user2"
     roleId      : 2
 -
-    username    : user3
+    username    : "user3"
     roleId      : 2
 -
-    username    : user4
-    roleId      : 2
--
-    username    : user5
+    username    : "user4"
     roleId      : 2
 
 ####### Admins ########
 -
-    username    : admin1
+    username    : "admin1"
     roleId      : 1
 -
-    username    : admin2
+    username    : "admin2"
     roleId      : 1

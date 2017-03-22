@@ -6,7 +6,7 @@ RewriteEngine On
 # Routing
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(.*)$ index.php [QSA,L]
 
 # 3D
 # If client accepts compressed files

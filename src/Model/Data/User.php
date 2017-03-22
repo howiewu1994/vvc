@@ -10,7 +10,7 @@ class User
     private $createdAt;
 
     public function __construct(
-        int     $id,
+        $id = -1,
         string  $username,
         string  $password,
         int     $roleId,

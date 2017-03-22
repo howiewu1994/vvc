@@ -1,13 +1,13 @@
 USE mysql;
 DELETE FROM user WHERE password = '' AND user != 'root';
 
-CREATE DATABASE IF NOT EXISTS vvc DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS vvc_test DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE USER IF NOT EXISTS vvc_admin@localhost identified by '123';
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON vvc.* to vvc_admin@localhost identified by '123';
+GRANT ALL
+ON vvc_test.* to vvc_admin@localhost identified by '123';
 
-USE vvc;
+USE vvc_test;
 
 /*Table structure for table `drug` */
 

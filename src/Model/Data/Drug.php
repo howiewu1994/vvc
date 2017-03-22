@@ -10,7 +10,7 @@ class Drug
     private $cost = null;
 
     public function __construct(
-        int     $id,
+        $id = -1,
         string  $name,
         string  $text,
         string  $picture,

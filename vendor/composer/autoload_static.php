@@ -21,6 +21,7 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         ),
         'V' => 
         array (
+            'VVC\\Test\\' => 9,
             'VVC\\' => 4,
         ),
         'S' => 
@@ -59,6 +60,10 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'VVC\\Test\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
         ),
         'VVC\\' => 
         array (
