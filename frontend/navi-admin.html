@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="./js/index.js"></script>
+<meta charset="UTF-8">
+<head>
+<title>虚拟宠物医院学习系统 - 导航页</title>
+</head>
+<link rel="stylesheet" type="text/css" href="./css/navi.css">
+<body>
+  <div class="navibar">
+  	<span class='navi-text'>您好，系统管理员，欢迎登陆本系统</span>
+  	<div class='logout-text' onclick="logout()">
+  	  <span>注销并退出系统</span>
+  	</div>
+  </div>
+  <div class='select-bar'>
+  	<span>请选择你需要的功能:</span>
+  </div>
+  <div class='options-area'>
+  	<div class='options' id='3d-navi'>
+  		<p>3D导览</p>
+  		<br />
+  		<div class="image-wrapper">
+  			<img src='./img/3d.png'>
+  		</div>
+  	</div>
+  	<div class='options' id='character' onclick="zhinengxuexi()">
+  		<p>职能学习</p>
+  		<br />
+  		<div class="image-wrapper">
+  			<img src='./img/xuexi.png'>
+  		</div>
+  	</div>
+  	<div class='options' id='history'>
+  		<p>病历管理</p>
+  		<br />
+  		<div class="image-wrapper">
+  			<img src='./img/bingli.png'>
+  		</div>
+  	</div>
+  </div>
+</body>
+</html>

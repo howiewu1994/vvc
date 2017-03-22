@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="./js/index.js"></script>
+<meta charset="UTF-8">
+<head>
+<title>虚拟宠物医院学习系统 - 角色扮演</title>
+</head>
+<link rel="stylesheet" type="text/css" href="./css/char.css">
+<body>
+  <div class="navibar">
+  	<span class='navi-text'>您好，请选择你要扮演的角色</span>
+    <div class='back-text' onclick="goback2()">
+      <span>返回上一页</span>
+    </div>
+  	<div class='logout-text' onclick="logout()">
+  	  <span>注销并退出系统</span>
+  	</div>
+  </div>
+  <div class='select-bar'>
+  	<span>请选择你需要的功能:</span>
+  </div>
+  <div class='options-area'>
+  	<div class='options' id='3d-navi' onclick="window.location.href = './qiantai.html'">
+  		<p>前台</p>
+  		<br />
+  		<div class="image-wrapper">
+  			<img src='./img/juese.png'>
+  		</div>
+  	</div>
+  	<div class='options' id='character' onclick="window.location.href = './yisheng.html'">
+  		<p>医生</p>
+  		<br />
+  		<div class="image-wrapper">
+  			<img src='./img/bx.png'>
+  		</div>
+  	</div>
+    <div class='options' id='3d-navi' onclick="window.location.href = './zhuli.html'">
+      <p>医生助理</p>
+      <br />
+      <div class="image-wrapper">
+        <img src='./img/3d.png'>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
