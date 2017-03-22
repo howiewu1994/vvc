@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block meta %}<meta charset="UTF-8">{% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        {% block scripts %}
+        <script type="text/javascript" src="./js/index.js"></script>
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}{% endblock %}
+        {% block nav %}{% endblock %}
+        {% block content %}{% endblock %}
+        {% block footer %}{% endblock %}
+    </body>
+</html>
