@@ -3,14 +3,14 @@ namespace VVC\Model\Data;
 
 class Drug
 {
-    private $id = 'AB-123';
+    private $id;
     private $name = 'Basic drug';
     private $text = 'Best drug for...';
     private $picture = null;
     private $cost = null;
 
     public function __construct(
-        string  $id,
+        int     $id,
         string  $name,
         string  $text,
         string  $picture,

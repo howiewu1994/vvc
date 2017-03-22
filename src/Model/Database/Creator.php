@@ -59,7 +59,8 @@ class Creator extends Connection
 
         try {
             // Init illness
-            $illnessId = $this->createIllness($name, $class, $description);
+            $newIllness = $this->createIllness($name, $class, $description);
+            $illnessId = $newIllness->getId();
 
             // Add all step details
             foreach ($steps as $stepNum => $step) {
@@ -76,18 +77,20 @@ class Creator extends Connection
 
             // Add drugs
             foreach ($drugs as $drug) {
-                if (empty($drug['id'])) {
-                    $drugId = $this->createDrug(
+
+                $oldDrug = (new Reader())->findDrugByName($drug['name']);
+
+                if (empty($oldDrug)) {
+                    $newDrug = $this->createDrug(
                         $drug['name'],
                         $drug['text'],
                         $drug['picture'],
                         $drug['cost']
                     );
                 } else {
-                    $drugId = $drug['id'];
+                    $newDrug = $oldDrug;
                 }
-                // pe($drugId);;
-                $this->addDrugToIllness($illnessId, $drugId);
+                $this->addDrugToIllness($illnessId, $newDrug->getId());
             }
 
             // Add payments
@@ -102,7 +105,7 @@ class Creator extends Connection
 
             // Commit transaction
             $this->db->commit();
-            return true;
+            return $newIllness;
 
         } catch (\Exception $e) {
             Logger::log(
@@ -121,7 +124,7 @@ class Creator extends Connection
      * @param  string $name
      * @param  string $class
      * @param  string $description
-     * @return int  - new illness id
+     * @return new IllnessRecord OR false
      */
     public function createIllness(
         string  $name,
@@ -134,7 +137,9 @@ class Creator extends Connection
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$class,$description]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findIllnessById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**
@@ -157,7 +162,7 @@ class Creator extends Connection
      * @param  string $text
      * @param  string $picture
      * @param  float  $cost
-     * @return int  - new drug id
+     * @return new Drug OR false
      */
     public function createDrug(
         string  $name,
@@ -171,7 +176,9 @@ class Creator extends Connection
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$name,$text,$picture,$cost]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findDrugById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**
@@ -180,7 +187,7 @@ class Creator extends Connection
      * @param  string $name
      * @param  float  $cost
      * @param  int    $num
-     * @return int  - new payment id
+     * @return new Payment OR false
      */
     public function createPayment(
         int $illnessId, string $name, float $cost, int $num
@@ -191,7 +198,9 @@ class Creator extends Connection
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$name,$cost,$num]);
 
-        return $this->db->lastInsertId();
+        return (new Reader())->findPaymentById(
+            $this->db->lastInsertId()
+        );
     }
 
     /**

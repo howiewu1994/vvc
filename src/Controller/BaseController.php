@@ -47,9 +47,10 @@ class BaseController
 
         $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
         $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
+        $this->addTwigFunc('short', 'short', $this);
 
         $this->twig->addFilter(new \Twig_Filter(
-            'short', [$this, 'short']
+            'name', [$this, 'name']
         ));
     }
 
@@ -182,19 +183,29 @@ class BaseController
     }
 
     /**
-     * Returns first 40 characters of a string
-     * @param  string $full
+     * Returns first $limit characters of a string
+     * @param  string  full
+     * @param  int     limit
      * @return string
      */
-    public function short(string $full) : string
+    public function short(string $full, $limit = 55) : string
     {
-        $limit = 55;
-
         if (strlen($full) >= $limit) {
             return substr($full, 0, $limit-1) . "...";
         } else {
             return substr($full, 0, $limit);
         }
+    }
+
+    /**
+     * Returns only the filename in the path
+     * @param  string  $path - full path
+     * @return string
+     */
+    public function name(string $path) : string
+    {
+        $arr = explode('/', $path);
+        return $arr[count($arr) - 1];
     }
 
     /**

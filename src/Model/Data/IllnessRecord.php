@@ -18,7 +18,7 @@ class IllnessRecord
         int     $id,
         string  $name,
         string  $class,
-        string  $description
+        $description = ""
     ) {
         $this->setId($id);
         $this->setName($name);

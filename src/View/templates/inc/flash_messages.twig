@@ -8,6 +8,8 @@
             {% set css = 'warning' %}
         {% endif %}
         <div class="alert alert-{{ css }} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                aria-label="Close"><span aria-hidden="true">&times;</span></button>
             {{ message|raw|nl2br }}
         </div>
     {% endfor %}

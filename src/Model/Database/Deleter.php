@@ -35,7 +35,7 @@ class Deleter extends Connection
      * @param  int   $illnessId
      * @return deleted illness if successful OR false if rolled back
      */
-    public function deleteIllness(int $illnessId) : bool
+    public function deleteIllness(int $illnessId)
     {
         $oldIll = (new Reader())->findIllnessById($illnessId);
 
@@ -64,7 +64,7 @@ class Deleter extends Connection
             // Commit transaction
             $this->db->commit();
             return $oldIll;
-            
+
         } catch (\Exception $e) {
             Logger::log(
                 'db', 'error',
@@ -84,7 +84,7 @@ class Deleter extends Connection
      * @param  int    $stepNum
      * @return void
      */
-    public function removeStep(int $illnessId, int $stepNum) : void
+    public function removeStep(int $illnessId, int $stepNum)
     {
         $this->removeTextFromStep($illnessId, $stepNum);
         $this->removeAllPicturesFromStep($illnessId, $stepNum);
@@ -100,7 +100,7 @@ class Deleter extends Connection
      * @param  int  $stepNum
      * @return void
      */
-    public function removeTextFromStep(int $illnessId, int $stepNum) : void
+    public function removeTextFromStep(int $illnessId, int $stepNum)
     {
         $sql = "DELETE FROM steps
         		WHERE ill_id=? AND step_num=? ";
@@ -116,12 +116,21 @@ class Deleter extends Connection
      * @param  int  $stepNum
      * @return void
      */
-    public function removeAllPicturesFromStep(int $illnessId, int $stepNum) : void
+    public function removeAllPicturesFromStep(int $illnessId, int $stepNum)
     {
         $sql = "DELETE FROM illpic
         		WHERE ill_id=? AND step_num=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum]);
+    }
+
+    public function removePictureFromStep(
+        int $illnessId, int $stepNum, string $path
+    ) {
+        $sql = "DELETE FROM illpic
+        		WHERE ill_id=? AND step_num=? AND pic_path=?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId,$stepNum,$path]);
     }
 
     /**
@@ -132,12 +141,21 @@ class Deleter extends Connection
      * @param  int  $stepNum
      * @return void
      */
-    public function removeAllVideosFromStep(int $illnessId, int $stepNum) : void
+    public function removeAllVideosFromStep(int $illnessId, int $stepNum)
     {
         $sql = "DELETE FROM illvid
         		WHERE ill_id=? AND step_num=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId,$stepNum]);
+    }
+
+    public function removeVideoFromStep(
+        int $illnessId, int $stepNum, string $path
+    ) {
+        $sql = "DELETE FROM illvid
+        		WHERE ill_id=? AND step_num=? AND vid_path=?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId,$stepNum,$path]);
     }
 
     /**
@@ -147,12 +165,20 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeAllDrugsFromIllness(int $illnessId) : void
+    public function removeAllDrugsFromIllness(int $illnessId)
     {
         $sql = "DELETE FROM illdrug
         		WHERE ill_id=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
+    }
+
+    public function removeDrugFromIllness(int $illnessId, string $drugId)
+    {
+        $sql = "DELETE FROM illdrug
+        		WHERE ill_id=? AND drug_id=?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId, $drugId]);
     }
 
     /**
@@ -162,12 +188,20 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeAllPaymentsFromIllness(int $illnessId) : void
+    public function removeAllPaymentsFromIllness(int $illnessId)
     {
         $sql = "DELETE FROM payments
         		WHERE ill_id=? ";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
+    }
+
+    public function removePaymentFromIllness(int $illnessId, int $paymentId)
+    {
+        $sql = "DELETE FROM payments
+        		WHERE ill_id=? AND pay_id=?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId, $paymentId]);
     }
 
     /**
@@ -177,7 +211,7 @@ class Deleter extends Connection
      * @param  int    $illnessId
      * @return void
      */
-    public function removeStayFromIllness(int $illnessId) : void
+    public function removeStayFromIllness(int $illnessId)
     {
         $sql = "DELETE FROM payments
         		WHERE ill_id=? AND pay_name='stay'";
@@ -193,7 +227,7 @@ class Deleter extends Connection
      * @param  string $path
      * @return true if successful OR false if rolled back
      */
-    public function deletePicture(string $path) : bool
+    public function deletePicture(string $path)
     {
         // Turn autocommit off
         $this->db->beginTransaction();
@@ -232,7 +266,7 @@ class Deleter extends Connection
      * @param  string $path
      * @return int  - how many rows were deleted
      */
-    public function deleteVideo(string $path) : int
+    public function deleteVideo(string $path)
     {
         $sql = "DELETE FROM illvid
         		WHERE vid_path=?";
@@ -247,10 +281,12 @@ class Deleter extends Connection
      * If any of deletions fail, roll back transaction
      *
      * @param  string $drugId
-     * @return true if successful OR false if rolled back
+     * @return deleted drug if successful OR false if rolled back
      */
-    public function deleteDrug(string $drugId) : bool
+    public function deleteDrug(string $drugId)
     {
+        $oldDrug = (new Reader())->findDrugById($drugId);
+
         // Turn autocommit off
         $this->db->beginTransaction();
 
@@ -270,7 +306,7 @@ class Deleter extends Connection
 
             // Commit transaction
             $this->db->commit();
-            return true;
+            return $oldDrug;
 
         } catch (\Exception $e) {
             Logger::log(
@@ -289,10 +325,12 @@ class Deleter extends Connection
      * If any of deletions fail, roll back transaction
      *
      * @param  int $paymentId
-     * @return true if successful OR false if rolled back
+     * @return deleted payment if successful OR false if rolled back
      */
-    public function deletePayment(int $paymentId) : bool
+    public function deletePayment(int $paymentId)
     {
+        $oldPayment = (new Reader())->findPaymentById($paymentId);
+
         // Turn autocommit off
         $this->db->beginTransaction();
 
@@ -312,7 +350,7 @@ class Deleter extends Connection
 
             // Commit transaction
             $this->db->commit();
-            return true;
+            return $oldPayment;
 
         } catch (\Exception $e) {
             Logger::log(

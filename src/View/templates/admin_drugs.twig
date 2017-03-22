@@ -6,29 +6,27 @@
     {{ parent() }}
     <script src="/js/dialogues.js"></script>
     <script src="/js/check_all.js"></script>
-    {% if filename is not empty %}
-        <script src="/js/rewrite_file.js"></script>
-    {% endif %}
+    <script src="/js/popover.js"></script>
 {% endblock %}
 
 {% block content %}
 
 {# Dialogues #}
-{% include 'inc/dlg/delete_user.twig' %}
-{% include 'inc/dlg/delete_users.twig' %}
+{% include 'inc/dlg/delete_drug.twig' %}
+{% include 'inc/dlg/delete_drugs.twig' %}
 
 <div class="container">
     <div class="well">
-        <h2>用户管理</h2>
+        <h2>药品管理</h2>
         <br>
 
         {% include "inc/flash_messages.twig" %}
 
-        <h4>Add new users:</h4>
-        <form class="form-inline" action="/admin/accounts/add-many" method="post">
+        <h4>Add new drugs:</h4>
+        <form class="form-inline" action="/admin/drugs/add-many" method="post">
             <div class="form-group">
                 <a class="btn btn-primary" role="button"
-                    href="/admin/accounts/add-single">Add one</a>
+                    href="/admin/drugs/add-single">Add one</a>
                 <span style="margin: 0 10px"> OR </span>
                 <select class="form-control" name="yml">
                     <option disabled selected value="">Select YML file</option>
@@ -44,14 +42,16 @@
     </div>
     <div class="media well">
         <div class="media-body">
-            <form action="/admin/accounts/delete" method="post">
+            <form action="/admin/drugs/delete" method="post">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Username</th>
-                        <th>Registered at</th>
-                        <th>Privileges</th>
+                        <th>Name</th>
+                        <th>Text</th>
+                        <th>Picture</th>
+                        <th>Cost</th>
+                        <th>Illnesses</th>
                         <th></th>
                         <th></th>
                         <th class="col-sm-1 checkable" style="text-align:center">
@@ -60,10 +60,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user in users %}
-                        {% include "inc/admin_account.twig" %}
+                    {% for drug in drugs %}
+                        {% include "inc/admin_drug.twig" %}
                     {% endfor %}
-                    <td colspan="7" style="text-align:right">
+                    <td colspan="9" style="text-align:right">
                         <input class="btn btn-sm btn-danger" type="submit"
                             name="delete_selected" value="Delete selected">
                     </td>

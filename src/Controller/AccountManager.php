@@ -22,6 +22,9 @@ class AccountManager extends AdminController
             $this->showDashboardPage();
         }
 
+        $ymls = Uploader::getFiles(YML_DIRECTORY, ['yml']);
+        $this->addTwigVar('files', $ymls);
+
         $this->setTemplate('admin_accs.twig');
         $this->addTwigVar('users', $users);
         $this->render();
@@ -86,6 +89,13 @@ class AccountManager extends AdminController
         $bad = [];
 
         foreach ($users as $user) {
+            if (empty($user['username'])
+                || empty($user['roleId'])
+            ) {
+                $this->flash('fail', 'Some data is wrong or missing');
+                return Router::redirect('/admin/accounts');
+            }
+
             if (!$this->isClean($user)) {
                 $bad['data'][] = $user;
                 continue;
@@ -99,7 +109,7 @@ class AccountManager extends AdminController
                     continue;
                 }
 
-                $password = password_hash($user['password'], PASSWORD_DEFAULT);
+                $password = password_hash(BATCH_USER_PASSWORD, PASSWORD_DEFAULT);
                 $newUser = $dbCreator->createUser(
                     $user['username'], $password, $user['roleId']
                 );
@@ -156,21 +166,23 @@ class AccountManager extends AdminController
         try {
             $dbReader = new Reader();
 
-            $duplicateUser = $dbReader->findUserByUsername($username);
-            if (!empty($duplicateUser)
-                && $duplicateUser->getId() != $userId) {
-                $this->flash('fail', 'This username is already registered');
-                return $this->showChangeAccountPage($userId);
-            }
-
-            $oldUser = $dbReader->findUserById($userId);
-            if (empty($oldUser)) {
+            $old = $dbReader->findUserById($userId);
+            if (empty($old)) {
                 $this->flash('fail', 'Some problem occurred, please try again');
                 return $this->showChangeAccountPage($userId);
             }
 
+            if ($old->getUsername() != $username) {
+                // check for duplicate username
+                $duplicate = $dbReader->findUserByUsername($username);
+                if (!empty($duplicate)) {
+                    $this->flash('fail', 'This username is already registered');
+                    return $this->showChangeAccountPage($userId);
+                }
+            }
+
             $password = empty($password)
-                ? $oldUser->getPassword()
+                ? $old->getPassword()
                 : password_hash($password, PASSWORD_DEFAULT);
 
             $dbUpdater = new Updater();
@@ -179,7 +191,7 @@ class AccountManager extends AdminController
                 $username,
                 $password,
                 $roleId,
-                $oldUser->getCreatedAt()
+                $old->getCreatedAt()
             );
 
             $this->flash('success', 'Account Updated');
@@ -200,15 +212,15 @@ class AccountManager extends AdminController
     {
         try {
             $dbDeleter = new Deleter();
-            $deletedUser = $dbDeleter->deleteUser($userId);
-            if (!$deletedUser) {
+            $deleted = $dbDeleter->deleteUser($userId);
+            if (!$deleted) {
                 $this->flash('fail',
                     "Could not delete user <b>$userId</b>, try again"
                 );
                 return Router::redirect('/admin/accounts');
             }
 
-            $name = $deletedUser->getUsername();
+            $name = $deleted->getUsername();
 
             $this->flash('success', "User <b>$name</b> deleted");
             return Router::redirect('/admin/accounts');
@@ -231,12 +243,12 @@ class AccountManager extends AdminController
         foreach ($users as $userId) {
             try {
                 $dbDeleter = new Deleter();
-                $deletedUser = $dbDeleter->deleteUser($userId);
+                $deleted = $dbDeleter->deleteUser($userId);
 
-                if (!$deletedUser) {
+                if (!$deleted) {
                     $bad['db'][] = $userId;
                 } else {
-                    $good[] = $deletedUser;
+                    $good[] = $deleted;
                 }
             } catch (\Exception $e) {
                 Logger::log('db', 'error',

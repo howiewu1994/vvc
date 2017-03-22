@@ -112,7 +112,7 @@ class Updater extends Connection
                     drug_cost=?
                 WHERE drug_id=? ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$name,$text,$picture,$cost]);
+        $stmt->execute([$name,$text,$picture,$cost,$id]);
     }
 
     /**
@@ -125,8 +125,9 @@ class Updater extends Connection
      * @param  int    $number
      * @return void
      */
-    public function updatePayment(int $id, int $illnessId, string $name, float $cost,int $number) : void
-    {
+    public function updatePayment(
+        int $id, int $illnessId, string $name, float $cost,int $number
+    ) {
         $sql = "UPDATE payments
         		SET ill_id=?,
         		    pay_name=?,
@@ -134,7 +135,7 @@ class Updater extends Connection
         		    number=?
         		WHERE pay_id=? ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$illnessId,$name,$cost,$number]);
+        $stmt->execute([$illnessId,$name,$cost,$number,$id]);
     }
 
     /**

@@ -159,7 +159,11 @@ class Reader extends Connection
     public function getAllDrugs() : array
     {
         if (NO_DATABASE) {
-            return [];
+            return [
+                new Drug(1, 'AB-01', 'Drug for...', '/uploads/img/drugs/drug.jpg', 30),
+                new Drug(2, 'BC-02', 'Drug for...', '/uploads/img/drugs/jkl.jpg', 40),
+                new Drug(3, 'CD-03', 'Drug for...', '/uploads/img/drugs/drug.jpg', 50)
+            ];
         }
 
         $sql = "SELECT * FROM drug ";
@@ -427,7 +431,7 @@ class Reader extends Connection
     {
         if (NO_DATABASE) {
             return [new Drug(
-                "AB-" . rand(1,9) . rand(1,9),
+                rand(1,3),
                 'Drug',
                 'Drug description',
                 '/img/drug.jpg',
@@ -435,7 +439,9 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "SELECT d.name as drug_name,
+        $sql = "SELECT
+            d.id as drug_id,
+            d.name as drug_name,
             d.text as drug_text,
             d.picture as drug_picutre,
             d.cost as drug_cost
@@ -448,6 +454,7 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
         	$drugs[] = new Drug(
+                    $row['drug_id'],
         			$row['drug_name'],
         			$row['drug_text'],
         			$row['drug_picutre'],
@@ -467,7 +474,7 @@ class Reader extends Connection
     {
         if (NO_DATABASE) {
             return [new Payment(
-                1, 'Payment for drugs', rand(25, 50), rand(1,3)
+                1, $illnessId, 'Payment for drugs', rand(25, 50), rand(1,3)
             )];
         }
 
@@ -519,7 +526,25 @@ class Reader extends Connection
     public function findIllnessesByDrugId(string $drugId) : array
     {
         if (NO_DATABASE) {
-            return [];
+            return [
+                new IllnessRecord(
+                    1,
+                    'Illness 1',
+                    'Class 1',
+                    'Illness 1 description.'
+                ),
+                new IllnessRecord(
+                    2,
+                    'Illness 2',
+                    'Class 1',
+                    'Illness 2 description.'
+                ),
+                new IllnessRecord(
+                    3,
+                    'Illness 3',
+                    'Class 2',
+                    'Illness 3 very long description that goes on and on and on and yet it goes on still on'
+            )];
         }
 
         $sql = "SELECT id.ill_id,i.ill_name,i.class_name
@@ -614,6 +639,49 @@ class Reader extends Connection
             $result['class_name'],
             $result['ill_describe']
         );
+    }
+
+    public function findDrugById(string $drugId)
+    {
+        $sql = "SELECT * FROM drug WHERE drug_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$drugId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new Drug(
+            $result['drug_id'],
+            $result['drug_name'],
+            $result['drug_text'],
+            $result['drug_picture'],
+            $result['drug_cost']
+        );
+    }
+
+    public function findDrugByName(string $name)
+    {
+        $sql = "SELECT * FROM drug WHERE drug_name = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$name]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return new Drug(
+            $result['drug_id'],
+            $result['drug_name'],
+            $result['drug_text'],
+            $result['drug_picture'],
+            $result['drug_cost']
+        );
+    }
+
+    public function findPaymentById(int $paymentId)
+    {
+
     }
 
 

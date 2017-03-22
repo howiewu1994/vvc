@@ -226,7 +226,6 @@ class Router
                 break;
 
             case 'accounts' :
-
                 $controller = new AccountManager();
 
                 // Check if user id in uri is valid
@@ -247,9 +246,12 @@ class Router
                         } else {
                             $controller->addAccount($post);
                         }
+                        break;
 
                     case 'add-many' :
-                        $accs = Uploader::readAccountsFromYml($controller, $files);
+                        $accs = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/accounts'
+                        );
                         $controller->batchAddAccounts($accs);
                         break;
 
@@ -303,7 +305,9 @@ class Router
                         break;
 
                     case 'add-many' :
-                        $ills = Uploader::readIllnessesFromYml($controller, $files);
+                        $ills = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/illnesses'
+                        );
                         $controller->batchAddIllnesses($ills);
                         break;
 
@@ -330,9 +334,132 @@ class Router
 
             case 'drugs' :
 
+                $controller = new DrugManager();
+
+                // Check if drug id in uri is valid
+                if (in_array($route['action'], ['view', 'change'])
+                    && (empty($route['page']))) {
+                    self::redirect('/admin/drugs');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showDrugListPage();
+                        break;
+
+
+                    case 'add-single' :
+                        if (empty($post)) {
+                            $controller->showAddDrugPage();
+                        } else {
+                            if (!empty($files['drug_pic'])) {
+                                $pic = Uploader::uploadDrugPic(
+                                    $controller,
+                                    $files,
+                                    '/admin/drugs/add-single'
+                                );
+                                $post['picture'] = $pic;
+                            }
+                            $controller->addDrug($post);
+                        }
+                        break;
+
+                    case 'add-many' :
+                        $drugs = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/drugs'
+                        );
+                        $controller->batchAddDrugs($drugs);
+                        break;
+
+                    case 'change' :
+                        if (empty($post)) {
+                            $controller->showChangeDrugPage($route['page']);
+                        } else {
+                            if (!empty($files['drug_pic'])) {
+                                $pic = Uploader::uploadDrugPic(
+                                    $controller,
+                                    $files,
+                                    '/admin/drugs/change/' . $route['page']
+                                );
+                                $post['picture'] = $pic;
+                            }
+                            $controller->changeDrug($route['page'], $post);
+                        }
+                        break;
+
+                    case 'delete' :
+                        if (empty($post['id'])) {
+                            $controller->showDrugListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deleteDrug($post['id'][0]);
+                        } else {
+                            $controller->deleteDrugs($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/drugs');
+                }
+                break;
+
             case 'hospitalization' :
 
+                self::redirect('/admin');
+                break;
+
             case 'payments' :
+
+                self::redirect('/admin');
+                $controller = new PaymentManager();
+
+                // Check if payment id in uri is valid
+                if (in_array($route['action'], ['change'])
+                    && (empty($route['page']))) {
+                    self::redirect('/admin/payments');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                        $controller->showPaymentListPage();
+                        break;
+
+                    case 'add-single' :
+                        if (empty($post)) {
+                            $controller->showAddPaymentPage();
+                        } else {
+                            $controller->addPayment($post);
+                        }
+
+                    case 'add-many' :
+                        $payments = Uploader::readYml(
+                            $controller, $post['yml'], '/admin/payments'
+                        );
+                        $controller->batchAddPayments($payments);
+                        break;
+
+                    case 'change' :
+                        if (empty($post)) {
+                            $controller->showChangePaymentPage($route['page']);
+                        } else {
+                            $controller->changePayment($route['page'], $post);
+                        }
+                        break;
+
+                    case 'delete' :
+                        // print_r($post);exit;
+                        if (empty($post['id'])) {
+                            $controller->showPaymentListPage();
+                        } elseif (count($post['id']) == 1){
+                            $controller->deletePayment($post['id'][0]);
+                        } else {
+                            $controller->deletePayments($post['id']);
+                        }
+                        break;
+
+                    default :
+                        self::redirect('/admin/payments');
+                }
+                break;
 
             case 'uploads' :
 

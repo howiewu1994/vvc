@@ -22,6 +22,9 @@ class IllnessManager extends AdminController
             $this->showDashboardPage();
         }
 
+        $ymls = Uploader::getFiles(YML_DIRECTORY, ['yml']);
+        $this->addTwigVar('files', $ymls);
+
         $this->setTemplate('admin_ills.twig');
         $this->addTwigVar('list', $list->getJustIllnesses());
         $this->render();
@@ -66,12 +69,43 @@ class IllnessManager extends AdminController
         $bad = [];
 
         foreach ($ills as $ill) {
+            if (empty($ill['name'])
+                || empty($ill['class'])
+                || empty($ill['description'])
+                || empty($ill['steps'])
+            ) {
+                $this->flash('fail', 'Some data is wrong or missing');
+                return Router::redirect('/admin/illnesses');
+            }
+
             if (!$this->isClean($ill)) {
                 $bad['data'][] = $ill;
                 continue;
             }
 
-            $duplicate = $dbReader->findIllnessByName($ill['name']);
+            $name = $ill['name'];
+            $class = $ill['class'];
+            $description = $ill['description'];
+
+            foreach ($ill['steps'] as &$step) {
+                foreach ($step['pictures'] as &$pic) {
+                    $pic = PIC_DIRECTORY . $pic;
+                }
+                foreach ($step['videos'] as &$vid) {
+                    $vid = VID_DIRECTORY . $vid;
+                }
+            }
+            $steps = $ill['steps'];
+
+            foreach ($ill['drugs'] as &$drug) {
+                $drug['picture'] = DRUG_DIRECTORY . $drug['picture'];
+            }
+            $drugs = $ill['drugs'];
+
+            $stay = $ill['stay'];
+            $payments = $ill['payments'];
+
+            $duplicate = $dbReader->findIllnessByName($name);
 
             if ($duplicate) {
                 $bad['duplicate'][] = $ill;
@@ -79,20 +113,20 @@ class IllnessManager extends AdminController
             }
 
             $newIll = $dbCreator->createFullIllness(
-                $ill['name'],
-                $ill['class'],
-                $ill['description'],
-                $ill['steps'],
-                $ill['drugs'],
-                //$ill['stay'],
-                $ill['payments']
+                $name,
+                $class,
+                $description,
+                $steps,
+                $drugs,
+                // $stay,
+                $payments
             );
 
             if (!$newIll) {
                 Logger::log(
                     'db', 'error',
                     'Failed to create illness from batch file', $e, [
-                    'ill name' => $ill['name']
+                    'ill name' => $name
                 ]);
                 $bad['db'][] = $ill;
                 continue;

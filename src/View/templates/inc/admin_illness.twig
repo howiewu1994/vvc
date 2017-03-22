@@ -2,7 +2,7 @@
     <td>{{ ill.id }}</td>
     <td>{{ ill.name }}</td>
     <td>{{ ill.class }}</td>
-    <td>{{ ill.description|short }}</td>
+    <td>{{ short(ill.description) }}</td>
     <td class="col-sm-1" style="text-align:right">
         <a class="btn btn-sm btn-info" role="button" style="min-width: 60px"
             href="/admin/illnesses/view/{{ill.id}}">View</a>

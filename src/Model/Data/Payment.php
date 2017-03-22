@@ -4,13 +4,16 @@ namespace VVC\Model\Data;
 class Payment
 {
     private $id = 0;
+    private $illnessId = 0;
     private $name = 'Payment';
     private $cost = 0.0;
     private $number = 0;
 
-    public function __construct(int $id, string $name, float $cost, int $number)
-    {
+    public function __construct(
+        int $id, int $illnessId, string $name, float $cost, int $number
+    ) {
         $this->setId($id);
+        $this->setIllnessId($illnessId);
         $this->setName($name);
         $this->setCost($cost);
         $this->setNumber($number);
@@ -26,6 +29,16 @@ class Payment
     {
         // $this->ill_id=$id;
         $this->id = $id;
+    }
+
+    public function setIllnessId(int $illnessId)
+    {
+        $this->illnessId = $illnessId;
+    }
+
+    public function getIllnessId() : int
+    {
+        return $this->$illnessId;
     }
 
     public function getName() : string
