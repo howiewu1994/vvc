@@ -8,6 +8,12 @@ require_once __DIR__ . '/../web/config.php';
 use VVC\Model\Database\Reader;
 // use VVC\Model\Database\Updater;
 
+use VVC\Model\Data\Drug;
+use VVC\Model\Data\IllnessCollection;
+use VVC\Model\Data\IllnessRecord;
+use VVC\Model\Data\Payment;
+use VVC\Model\Data\Stay;
+use VVC\Model\Data\Step;
 use VVC\Model\Data\User;
 
 class ReaderTest extends DBTest
@@ -69,7 +75,7 @@ class ReaderTest extends DBTest
     }
 
     /**
-     * @test
+     * test
      */
     public function getAllUsers_Test()
     {
@@ -91,7 +97,7 @@ class ReaderTest extends DBTest
     }
 
     /**
-     * @test
+     * test
      */
     public function getAllIllnesses_Test()
     {
@@ -112,7 +118,7 @@ class ReaderTest extends DBTest
     }
 
     /**
-     * @test
+     * test
      */
     public function getAllDrugs_Test()
     {
@@ -133,6 +139,9 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getAllPayments_Test()
     {
         // Expect array
@@ -195,70 +204,130 @@ class ReaderTest extends DBTest
         }
     }
 
-    public function getStepsByIllnessId_Test()
+    /**
+     * @test
+     */
+    public function getStepsByIllnessId_TestCase()
     {
+        $testCase = [];
+        foreach ($this->data['steps'] as $entry) {
+            if (!in_array($entry['ill_id'], $testCase)) {
+                $testCase[] = $entry['ill_id'];
+            }
+        }
+
+        foreach ($testCase as $illnessId) {
+            $this->getStepsByIllnessId_Test($illnessId);
+        }
+    }
+
+    public function getStepsByIllnessId_Test(int $illnessId)
+    {
+        $set = [];
+        foreach ($this->data['steps'] as $entry) {
+            if ($entry['ill_id'] == $illnessId) {
+                $set[] = $entry['step_num'];
+            }
+        }
+
         // Expect array
-        $input = 1;
-        $step1 = new Step('');
-        $step1->setText('');
-        $step1->addPictures(['']);
-        $step1->addVideos(['']);
+        foreach ($this->data['stepname'] as $entry) {
+            if (in_array($entry['step_num'], $set)) {
+                $step = new Step(
+                    $entry['step_num'],
+                    $entry['step_name']
+                );
 
-        $step2 = new Step('');
-        $step2->setText('');
-        $step2->addPictures(['']);
-        $step2->addVideos(['']);
+                foreach ($this->data['steps'] as $_entry) {
+                    if ($_entry['ill_id'] == $illnessId &&
+                        $_entry['step_num'] == $entry['step_num']
+                    ) {
+                        $step->setText($_entry['step_text']);
+                    }
+                }
 
-        $step3 = new Step('');
-        $step3->setText('');
-        $step3->addPictures(['']);
-        $step3->addVideos(['']);
+                foreach ($this->data['illpic'] as $pic) {
+                    if ($pic['ill_id'] == $illnessId &&
+                        $pic['step_num'] == $entry['step_num']
+                    ) {
+                        $step->addPicture($pic['pic_path']);
+                    }
+                }
 
-        $step4 = new Step('');
-        $step4->setText('');
-        $step4->addPictures(['']);
-        $step4->addVideos(['']);
+                foreach ($this->data['illvid'] as $vid) {
+                    if ($vid['ill_id'] == $illnessId &&
+                        $vid['step_num'] == $entry['step_num']
+                    ) {
+                        $step->addVideo($vid['vid_path']);
+                    }
+                }
 
-        $expected = [$step1, $step2, $step3, $step4];
+                $expected[] = $step;
+            }
+        }
 
         $dbReader = new Reader($this->db);
 
-        $result = $dbReader->getStepsByIllnessId($input);
+        $result = $dbReader->getStepsByIllnessId($illnessId);
         $this->assertEquals($expected, $result);
     }
 
-    public function findIllnessSteps_Test()
+    /**
+     * @test
+     */
+    public function findIllnessSteps_TestCase()
     {
+        $testCase = [];
+        foreach ($this->data['steps'] as $entry) {
+            if (!in_array($entry['ill_id'], $testCase)) {
+                $testCase[] = $entry['ill_id'];
+            }
+        }
+
+        foreach ($testCase as $illnessId) {
+            $this->findIllnessSteps_Test($illnessId);
+        }
+    }
+
+    public function findIllnessSteps_Test(int $illnessId)
+    {
+        $set = [];
+        foreach ($this->data['steps'] as $entry) {
+            if ($entry['ill_id'] == $illnessId) {
+                $set[] = $entry['step_num'];
+            }
+        }
+
         // Expect array
         foreach ($this->data['stepname'] as $entry) {
-            $illnessId = $entry['ill_id'];
-            $input[] = $illnessId;
-            $expected[$illnessId][] = new Step(
-                $entry['step_num'],
-                $entry['step_name']
-            );
+            if (in_array($entry['step_num'], $set)) {
+                $expected[] = new Step(
+                    $entry['step_num'],
+                    $entry['step_name']
+                );
+            }
         }
 
         $dbReader = new Reader($this->db);
 
-        for ($i = 0; $i < count($input); $i++) {
-            $illnessId = $input[$i];
-            $result = $dbReader->findIllnessSteps($illnessId);
-            $this->assertEquals($expected[$illnessId][$i], $result);
-        }
+        $result = $dbReader->findIllnessSteps($illnessId);
+        $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getStepText_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['steps'] as $entry)) {
+        foreach ($this->data['steps'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
         }
 
         foreach ($testCase as $tc) {
-            $this->getStepVideos_Test($tc[0], $tc[1]);
+            $this->getStepText_Test($tc[0], $tc[1]);
         }
     }
 
@@ -269,7 +338,7 @@ class ReaderTest extends DBTest
             if ($entry['ill_id'] == $illnessId &&
                 $entry['step_num'] == $stepNum)
             {
-                $expected[] = $entry['step_text'];
+                $expected = $entry['step_text'];
             }
         }
 
@@ -279,17 +348,20 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getStepPictures_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illpic'] as $entry)) {
+        foreach ($this->data['illpic'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
         }
 
         foreach ($testCase as $tc) {
-            $this->getStepVideos_Test($tc[0], $tc[1]);
+            $this->getStepPictures_Test($tc[0], $tc[1]);
         }
     }
 
@@ -310,10 +382,13 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getStepVideos_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illvid'] as $entry)) {
+        foreach ($this->data['illvid'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
@@ -341,10 +416,13 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getDrugsByIllnessId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illdrug'] as $entry)) {
+        foreach ($this->data['illdrug'] as $entry) {
             if (!in_array($entry['ill_id'], $testCase)) {
                 $testCase[] = $entry['ill_id'];
             }
@@ -365,8 +443,8 @@ class ReaderTest extends DBTest
         }
 
         // Expect array
-        foreach ($this->data['drugs'] as $entry) {
-            if (in_array($entry['drug_id']), $set) {
+        foreach ($this->data['drug'] as $entry) {
+            if (in_array($entry['drug_id'], $set)) {
                 $expected[] = new Drug(
                     $entry['drug_id'],
                     $entry['drug_name'],
@@ -383,10 +461,13 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function getPaymentsByIllnessId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['payments'] as $entry)) {
+        foreach ($this->data['payments'] as $entry) {
             if (!in_array($entry['ill_id'], $testCase)) {
                 $testCase[] = $entry['ill_id'];
             }
@@ -418,24 +499,13 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
-    public function getStayByIllnessId_Test()
-    {
-        // Expect array
-        $illnessId = 1;
-
-        $pay1 = new Payment(1);
-        $expected = [$pay1];
-
-        $dbReader = new Reader($this->db);
-
-        $result = $dbReader->getPaymentsByIllnessId($illnessId);
-        $this->assertEquals($expected, $result);
-    }
-
+    /**
+     * @test
+     */
     public function findIllnessesByDrugId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illdrug'] as $entry)) {
+        foreach ($this->data['illdrug'] as $entry) {
             if (!in_array($entry['drug_id'], $testCase)) {
                 $testCase[] = $entry['drug_id'];
             }
@@ -457,7 +527,7 @@ class ReaderTest extends DBTest
 
         // Expect array
         foreach ($this->data['illness'] as $entry) {
-            if (in_array($entry['ill_id']), $set) {
+            if (in_array($entry['ill_id'], $set)) {
                 $expected[] = new IllnessRecord(
                     $entry['ill_id'],
                     $entry['ill_name'],
@@ -473,10 +543,13 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function findIllnessesByPaymentId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['payments'] as $entry)) {
+        foreach ($this->data['payments'] as $entry) {
             if (!in_array($entry['pay_id'], $testCase)) {
                 $testCase[] = $entry['pay_id'];
             }
@@ -489,9 +562,16 @@ class ReaderTest extends DBTest
 
     public function findIllnessesByPaymentId_Test(int $paymentId)
     {
-        // Expect array
+        $set = [];
         foreach ($this->data['payments'] as $entry) {
             if ($entry['pay_id'] == $paymentId) {
+                $set[] = $entry['ill_id'];
+            }
+        }
+
+        // Expect array
+        foreach ($this->data['illness'] as $entry) {
+            if (in_array($entry['ill_id'], $set)) {
                 $expected[] = new IllnessRecord(
                     $entry['ill_id'],
                     $entry['ill_name'],
@@ -507,6 +587,9 @@ class ReaderTest extends DBTest
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @test
+     */
     public function findIllnessById_Test()
     {
         // Expect IllnessRecord
@@ -531,6 +614,9 @@ class ReaderTest extends DBTest
         }
     }
 
+    /**
+     * @test
+     */
     public function findIllnessByName_Test()
     {
         // Expect IllnessRecord
@@ -555,6 +641,9 @@ class ReaderTest extends DBTest
         }
     }
 
+    /**
+     * @test
+     */
     public function findDrugById_Test()
     {
         // Expect Drug
@@ -580,6 +669,9 @@ class ReaderTest extends DBTest
         }
     }
 
+    /**
+     * @test
+     */
     public function findDrugByName_Test()
     {
         // Expect Drug

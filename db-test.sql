@@ -1,7 +1,8 @@
 USE mysql;
 DELETE FROM user WHERE password = '' AND user != 'root';
 
-CREATE DATABASE IF NOT EXISTS vvc_test DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+DROP DATABASE IF EXISTS vvc_test;
+CREATE DATABASE vvc_test DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE USER IF NOT EXISTS vvc_admin@localhost identified by '123';
 GRANT ALL
@@ -101,6 +102,11 @@ CREATE TABLE `stepname` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `stepname` */
+
+INSERT INTO stepname values (1, '接诊');
+INSERT INTO stepname values (2, '检查');
+INSERT INTO stepname values (3, '诊断');
+INSERT INTO stepname values (4, '治疗方案');
 
 /*Table structure for table `steps` */
 
