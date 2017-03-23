@@ -444,7 +444,7 @@ class Reader extends Connection
             drug.drug_text,
             drug.drug_picture,
             drug.drug_cost
-		    FROM drug INNER JOIN illdrug
+		        FROM drug INNER JOIN illdrug
             ON illdrug.ill_id=? AND drug.drug_id=illdrug.drug_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
@@ -489,10 +489,10 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
                 $row['pay_id'],
-            	$illnessId,
-            	$row['pay_name'],
-            	$row['pay_cost'],
-            	$row['number']
+            	  $illnessId,
+            	  $row['pay_name'],
+            	  $row['pay_cost'],
+            	  $row['number']
             );
         }
 
