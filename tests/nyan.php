@@ -12,7 +12,7 @@ class BuildTest extends TestCase
     public function dataProvider()
     {
         $arr = [];
-        for ($i = 0; $i < 300; $i++) {
+        for ($i = 0; $i < 200; $i++) {
             $arr[] = ['nyan', 'yannay'];
         }
 

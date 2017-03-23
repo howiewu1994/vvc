@@ -42,7 +42,7 @@ class Creator extends Connection
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$username, $password, $roleId, $createdAt]);
 
-        return (new Reader($this->db))->findUserByUsername($username);
+        return (new Reader())->findUserByUsername($username);
     }
 
     public function createFullIllness(
