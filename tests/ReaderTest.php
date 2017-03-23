@@ -251,7 +251,7 @@ class ReaderTest extends DBTest
     public function getStepText_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['steps'] as $entry)) {
+        foreach ($this->data['steps'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
@@ -282,7 +282,7 @@ class ReaderTest extends DBTest
     public function getStepPictures_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illpic'] as $entry)) {
+        foreach ($this->data['illpic'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
@@ -313,7 +313,7 @@ class ReaderTest extends DBTest
     public function getStepVideos_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illvid'] as $entry)) {
+        foreach ($this->data['illvid'] as $entry) {
             if (!in_array([$entry['ill_id'], $entry['step_num']], $testCase)) {
                 $testCase[] = [$entry['ill_id'], $entry['step_num']];
             }
@@ -344,7 +344,7 @@ class ReaderTest extends DBTest
     public function getDrugsByIllnessId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illdrug'] as $entry)) {
+        foreach ($this->data['illdrug'] as $entry) {
             if (!in_array($entry['ill_id'], $testCase)) {
                 $testCase[] = $entry['ill_id'];
             }
@@ -366,7 +366,7 @@ class ReaderTest extends DBTest
 
         // Expect array
         foreach ($this->data['drugs'] as $entry) {
-            if (in_array($entry['drug_id']), $set) {
+            if (in_array($entry['drug_id'], $set)) {
                 $expected[] = new Drug(
                     $entry['drug_id'],
                     $entry['drug_name'],
@@ -386,7 +386,7 @@ class ReaderTest extends DBTest
     public function getPaymentsByIllnessId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['payments'] as $entry)) {
+        foreach ($this->data['payments'] as $entry) {
             if (!in_array($entry['ill_id'], $testCase)) {
                 $testCase[] = $entry['ill_id'];
             }
@@ -435,7 +435,7 @@ class ReaderTest extends DBTest
     public function findIllnessesByDrugId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['illdrug'] as $entry)) {
+        foreach ($this->data['illdrug'] as $entry) {
             if (!in_array($entry['drug_id'], $testCase)) {
                 $testCase[] = $entry['drug_id'];
             }
@@ -457,7 +457,7 @@ class ReaderTest extends DBTest
 
         // Expect array
         foreach ($this->data['illness'] as $entry) {
-            if (in_array($entry['ill_id']), $set) {
+            if (in_array($entry['ill_id'], $set)) {
                 $expected[] = new IllnessRecord(
                     $entry['ill_id'],
                     $entry['ill_name'],
@@ -476,7 +476,7 @@ class ReaderTest extends DBTest
     public function findIllnessesByPaymentId_TestCase()
     {
         $testCase = [];
-        foreach ($this->data['payments'] as $entry)) {
+        foreach ($this->data['payments'] as $entry) {
             if (!in_array($entry['pay_id'], $testCase)) {
                 $testCase[] = $entry['pay_id'];
             }
