@@ -28,3 +28,12 @@ msg:  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'drug.id' in 'field
 loc:  src\Model\Database\Reader.php [line 450]
 ill id:  3
 
+[2017-03-23 10:59:59] Database ERROR > Failed to get full illness by id
+msg:  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'drug.id' in 'field list'
+loc:  src\Model\Database\Reader.php [line 450]
+ill id:  3
+
+[2017-03-23 11:01:24] Unhandled NOTICE > E_NOTICE: Undefined index: drug_cost
+
+[2017-03-23 11:01:24] Unhandled ERROR > Uncaught Exception TypeError: "Argument 5 passed to VVC\Model\Data\Drug::__construct() must be of the type float, null given, called in C:\xampp\htdocs\vvc\src\Model\Database\Reader.php on line 460" at C:\xampp\htdocs\vvc\src\Model\Data\Drug.php line 12
+

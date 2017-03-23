@@ -439,11 +439,11 @@ class Reader extends Connection
         }
 
         $sql = "SELECT
-            drug.id as drug_id,
-            drug.name as drug_name,
-            drug.text as drug_text,
-            drug.picture as drug_picture,
-            drug.cost as drug_cost
+            drug.drug_id,
+            drug.drug_name,
+            drug.drug_text,
+            drug.drug_picture,
+            drug.drug_cost
 		    FROM drug INNER JOIN illdrug
             ON illdrug.ill_id=? AND drug.drug_id=illdrug.drug_id";
         $stmt = $this->db->prepare($sql);
