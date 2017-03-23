@@ -1,0 +1,15 @@
+users:
+    -
+        user_id:    1
+        user_name:  "admin"
+        # password = '123'
+        password:   "$2y$10$bRD7HFqsU3dV8UFfrYsNvOdHKOp1HlHnuaz1krBgjyAiXPKSKksAm"
+        role_id:    1
+        createdAt:  "2017-01-01 00:00:00"
+    -
+        user_id:    2
+        user_name:  "user"
+        # password = '321'
+        password:   "$2y$10$2ui/hWJTln9ab2UsTAz88.CdOOR8MVO0SWM9gdXIfBTNIjznaV0Ai"
+        role_id:    2
+        createdAt:  "2017-02-02 10:20:30"

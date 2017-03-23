@@ -20,8 +20,15 @@ class Connection
      * All child classes use this method for instantiation
      * Creates a new connection or reuses existing one
      */
-    public function __construct()
+    public function __construct($db = null)
     {
+        // DBUnit database double
+        // and connection reuse
+        if ($db) {
+            $this->db = $db;
+            return;
+        }
+
         if (!Connection::getInstance()) {
             Connection::createConnection();
         }

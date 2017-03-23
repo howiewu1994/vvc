@@ -15,7 +15,7 @@ class IllnessRecord
     private $stay = null;
 
     public function __construct(
-        int     $id,
+        $id = -1,
         string  $name,
         string  $class,
         $description = ""

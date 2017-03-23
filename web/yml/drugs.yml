@@ -1,15 +1,15 @@
 -
-    name    : AB-01
-    text    : Used for...
+    name    : "AB-01"
+    text    : "Used for..."
     picture : drug.jpg
     cost    : 30
 -
-    name    : BC-02
-    text    : Used for...
+    name    : "BC-02"
+    text    : "Used for..."
     picture : jkl.jpg
     cost    : 40
 -
-    name    : CD-03
-    text    : Used for...
+    name    : "CD-03"
+    text    : "Used for..."
     picture : kfby.jpg
     cost    : 50

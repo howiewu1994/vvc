@@ -1,0 +1,127 @@
+* {
+  margin: 0;
+  font-family: 'Helvetica';
+}
+
+body {
+  background-image: url('../img/zhineng.jpg');
+  background-repeat: no-repeat;
+}
+
+.navibar {
+  height: 100px;
+  padding-top: 25px;
+  padding-left: 30px;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.navi-text {
+  font-size: 36px;
+}
+
+.logout-text {
+  border: 1px #000 solid;
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 24px;
+  color: #300;
+  position: absolute;
+  top: 40px;
+  right: 50px;
+}
+
+.back-text {
+  border: 1px #000 solid;
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 24px;
+  color: #300;
+  position: absolute;
+  top: 40px;
+  right: 250px;
+}
+
+.select-bar {
+  font-size: 36px;
+  position: absolute;
+  left: 100px;
+  top: 200px;
+}
+
+.options-area {
+  position: absolute;
+  top: 360px;
+  left: 100px;
+}
+
+.options {
+  font-size: 36px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-right: 100px;
+  background-color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 20px;
+}
+
+.operations {
+  font-size: 36px;
+  width: 900px;
+  height: 400px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-right: 100px;
+  background-color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding-top: 100px;
+  position: absolute;
+  left: 100px;
+  top: 270px;
+}
+
+.arrow {
+  display: inline-block;
+}
+
+.proce {
+  width: 300px;
+  height: 100px;
+  background-color: rgba(33, 66, 99, 0.7);
+  text-align: center;
+  padding-top: 30px;
+  display: inline-block;
+  margin-bottom: 30px;
+  margin-right: 30px;
+}
+
+.proce-wrapper {
+  width: 300px;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0);
+  text-align: center;
+  padding-top: 30px;
+  display: inline-block;
+  margin-bottom: 30px;
+  margin-right: 30px;
+}
+
+.bingli {
+  width: 200px;
+  height: 100px;
+  background-color: rgba(33, 66, 77, 0.8);
+  text-align: center;
+  padding-top: 30px;
+  display: inline-block;
+  margin-bottom: 30px;
+  margin-right: 30px;
+}
+
+.chuanran {
+  width: 300px;
+  height: 50px;
+  background-color: rgba(22, 66, 33, 0.8);
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 30px;
+  margin-right: 30px;
+}

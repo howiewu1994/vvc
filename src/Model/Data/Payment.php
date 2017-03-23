@@ -10,7 +10,11 @@ class Payment
     private $number = 0;
 
     public function __construct(
-        int $id, int $illnessId, string $name, float $cost, int $number
+        $id = -1,
+        int $illnessId,
+        string $name,
+        float $cost,
+        int $number
     ) {
         $this->setId($id);
         $this->setIllnessId($illnessId);
