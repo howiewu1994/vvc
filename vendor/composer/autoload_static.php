@@ -21,6 +21,7 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         ),
         'V' => 
         array (
+            'VVC\\Test\\' => 9,
             'VVC\\' => 4,
         ),
         'S' => 
@@ -28,6 +29,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\HttpFoundation\\' => 33,
+        ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
         ),
         'F' => 
         array (
@@ -52,6 +61,10 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
+        'VVC\\Test\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
+        ),
         'VVC\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
@@ -67,6 +80,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         'Symfony\\Component\\HttpFoundation\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -87,6 +108,14 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
     );
 
     public static $prefixesPsr0 = array (
+        'p' => 
+        array (
+            'phpDocumentor' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpdocumentor/graphviz/src',
+                1 => __DIR__ . '/..' . '/phpdocumentor/graphviz/tests/unit',
+            ),
+        ),
         'T' => 
         array (
             'Twig_' => 
@@ -718,6 +747,9 @@ class ComposerStaticInit4f27e86b97e36216251d31e77749a107
         'SebastianBergmann\\ObjectEnumerator\\Enumerator' => __DIR__ . '/..' . '/sebastian/object-enumerator/src/Enumerator.php',
         'SebastianBergmann\\ObjectEnumerator\\Exception' => __DIR__ . '/..' . '/sebastian/object-enumerator/src/Exception.php',
         'SebastianBergmann\\ObjectEnumerator\\InvalidArgumentException' => __DIR__ . '/..' . '/sebastian/object-enumerator/src/InvalidArgumentException.php',
+        'SebastianBergmann\\ObjectReflector\\Exception' => __DIR__ . '/..' . '/sebastian/object-reflector/src/Exception.php',
+        'SebastianBergmann\\ObjectReflector\\InvalidArgumentException' => __DIR__ . '/..' . '/sebastian/object-reflector/src/InvalidArgumentException.php',
+        'SebastianBergmann\\ObjectReflector\\ObjectReflector' => __DIR__ . '/..' . '/sebastian/object-reflector/src/ObjectReflector.php',
         'SebastianBergmann\\RecursionContext\\Context' => __DIR__ . '/..' . '/sebastian/recursion-context/src/Context.php',
         'SebastianBergmann\\RecursionContext\\Exception' => __DIR__ . '/..' . '/sebastian/recursion-context/src/Exception.php',
         'SebastianBergmann\\RecursionContext\\InvalidArgumentException' => __DIR__ . '/..' . '/sebastian/recursion-context/src/InvalidArgumentException.php',

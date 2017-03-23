@@ -11,7 +11,7 @@ class Connection
     // Holds connection that is shared between all child classes
     // Destroyed when execution of the script ends
     private static $instance;
-    
+
     // Copy of a connection for every child
     // Destroyed when child is destroyed
     protected $db;
@@ -20,8 +20,15 @@ class Connection
      * All child classes use this method for instantiation
      * Creates a new connection or reuses existing one
      */
-    public function __construct()
+    public function __construct($db = null)
     {
+        // DBUnit database double
+        // and connection reuse
+        if ($db) {
+            $this->db = $db;
+            return;
+        }
+
         if (!Connection::getInstance()) {
             Connection::createConnection();
         }

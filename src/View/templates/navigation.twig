@@ -2,14 +2,24 @@
 
 {% block title %}3D Navigation{% endblock %}
 
-{% block body %}
+{% block footer %}
+    {{ parent() }}
+    <script src="/js/load3d.js"></script>
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <div class="well">
-        <h2>3D 导览</h2>
-        <p>Select preferred role and explore the virtual clinic.</p>
+        <h2>3D 导览<small id="loading" hidden> Loading <span id="loading-icon"
+            class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+        </small></h2>
     </div>
-    <div style="margin: 50px auto">
-        <img src="/img/3d.jpg">
+</div>
+
+<div class="container">
+    <div id="window3d">
+        <button id="show3d" class="btn btn-lg btn-primary"
+            style="margin-top:100px; width:100%">Go!</button>
     </div>
 </div>
 {% endblock %}

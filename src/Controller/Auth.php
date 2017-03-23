@@ -19,7 +19,7 @@ class Auth
         global $req;
 
         try {
-            $expireTime = time() + 3600;    // cookie lives for one hour
+            $expireTime = time() + 24 * 60 * 60;    // cookie lives for one day
 
             $jwt = \Firebase\JWT\JWT::encode([
                 'iss'   =>  $req->getBaseUrl(),     // issuer (domain)
@@ -41,8 +41,7 @@ class Auth
             return $token;
 
         } catch (\Exception $e) {
-            // TODO logError($e)
-            // throw $e;
+            Logger::log('auth', 'error', 'Failed to encode a cookie', $e);
             return null;
         }
     }
@@ -71,8 +70,7 @@ class Auth
             return $jwt->{$field};
 
         } catch (\Exception $e) {
-            // TODO logError($e)
-            // throw $e;
+            Logger::log('auth', 'error', 'Failed to decode a cookie', $e);
             return false;
         }
     }
@@ -82,7 +80,7 @@ class Auth
         return new \Symfony\Component\HttpFoundation\Cookie(
             $token,
             'Expired',
-            time() - 3600,
+            time() - 24 * 60 * 60,
             '/',
             getenv('COOKIE_DOMAIN')
         );
@@ -100,6 +98,7 @@ class Auth
         global $req;
 
         if (!$req->cookies->has('auth_token')) {
+            // BUG ? refreshing page quickly loses cookie
             return false;
         }
 
@@ -145,6 +144,7 @@ class Auth
         }
 
         if (!self::isAuthenticated()) {
+            // BUG ? might need to comment out
             $token = self::killToken('auth_token');
             $session->getFlashBag()->add('success', 'Please sign in first');
             return Router::redirect('/login', $token);

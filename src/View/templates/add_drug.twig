@@ -1,0 +1,54 @@
+{% extends 'base.twig' %}
+
+{% block title %}Add Drug{% endblock %}
+
+{% block scripts %}
+<script src="/js/file_select.js"></script>
+{% endblock %}
+
+{% block content %}
+
+{# Dialogues #}
+{% include 'inc/dlg/select_pic.twig' %}
+
+<div class="container">
+    <div class="well col-sm-6 col-sm-offset-3">
+        <form method="post" action="/admin/drugs/add-single" enctype="multipart/form-data">
+            <h2>Add Drug</h2>
+            <br>
+
+            {% include "inc/flash_messages.twig" %}
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" type="text" class="form-control" name="name" placeholder="Drug name">
+            </div>
+            <div class="form-group">
+                <label for="text">Text</label>
+                <input id="text" type="text" class="form-control" name="text" placeholder="Drug description">
+            </div>
+            <div class="form-group">
+                <label for="cost">Cost</label>
+                <input id="cost" type="text" class="form-control" name="cost" placeholder="Drug price">
+            </div>
+            <div class="form-group">
+                <label>Picture</label><br>
+                <input id="picture" type="text" class="form-control" name="picture" placeholder="No picture selected" readonly>
+
+                <button type="button" class="btn btn-primary col-md-5" data-toggle="modal" data-target="#select_pic">
+                    Select from existing
+                </button>
+                <div class="col-md-2"></div>
+                <label class="btn btn-primary btn-file col-md-5">
+                    Upload new <input type="file" style="display:none" name="drug_pic">
+                </label>
+            </div>
+            <br>
+            <br>
+            <br>
+            <button class="btn btn-lg btn-primary btn-block"
+                type="submit">Create new drug</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

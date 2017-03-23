@@ -1,0 +1,12 @@
+<div class="media well">
+    <div class="media-body">
+      <h4 class="media-heading">{{ class }}</h4>
+      <ul>
+          {% for illness in illnesses %}
+          <li>
+              <p><a href="/catalog/{{ illness.id }}">{{ illness.name }}</a></p>
+          </li>
+          {% endfor %}
+      </ul>
+    </div>
+</div>

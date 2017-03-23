@@ -41,8 +41,7 @@ class LoginController extends BaseController
             $dbReader = new Reader();
             $user = $dbReader->findUserByUsername($username);
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to find user by username', $e);
             $this->flash('fail', 'Login failed, please try again');
             return $this->showLoginFailPage($username);
         }
@@ -52,15 +51,13 @@ class LoginController extends BaseController
             return $this->showLoginFailPage($username);
         }
 
-        if (!password_verify($password, $user['password'])) {
+        if (!password_verify($password, $user->getPassword())) {
             $this->flash('fail', 'Password is incorrect');
             return $this->showLoginFailPage($username);
         }
 
-        global $session;
-
-        $this->flash('success', "Welcome back, {$user['username']}");
-        $authToken = Auth::encodeToken($user['id'], $user['role_id']);
+        $this->flash('success', "Welcome back, $username");
+        $authToken = Auth::encodeToken($user->getId(), $user->getRoleId());
         return Router::redirect('/', $authToken);
     }
 }

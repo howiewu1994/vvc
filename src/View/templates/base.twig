@@ -12,15 +12,14 @@
 
         {% block links %}
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css">
-        {% endblock %}
-
-        {% block scripts %}
+            <!-- <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css"> -->
         {% endblock %}
     </head>
     <body>
         {% block header %}{% include "inc/header.twig" %}{% endblock %}
         {% block nav %}{% include "inc/nav.twig" %}{% endblock %}
-        {% block body %}{% endblock %}
+        {% block content %}{% endblock %}
         {% block footer %}{% include "inc/footer.twig" %}{% endblock %}
+        {% block scripts %}{% endblock %}
     </body>
 </html>

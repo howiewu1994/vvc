@@ -50,7 +50,7 @@ class RegistrationController extends BaseController
 
             if (!empty($user)) {
                 $this->flash('fail', 'This username is already registered');
-                return $this->showRegistrationFailPage($post['username']);
+                return $this->showRegistrationFailPage($username);
             }
 
             $hashed = password_hash($password, PASSWORD_DEFAULT);
@@ -59,14 +59,13 @@ class RegistrationController extends BaseController
             $user = $dbCreator->createUser($username, $hashed);
 
             $this->flash('success', 'Registration complete');
-            $authToken = Auth::encodeToken($user['id'], $user['role_id']);
+            $authToken = Auth::encodeToken($user->getId(), $user->getRoleId());
             return Router::redirect('/', $authToken);
 
         } catch (\Exception $e) {
-            // TODO logError($e);
-            // throw $e;
+            Logger::log('db', 'error', 'Failed to register new user', $e);
             $this->flash('fail', 'Registration failed, please try again');
-            return $this->showRegistrationFailPage($post['username']);
+            return $this->showRegistrationFailPage($username);
         }
     }
 }

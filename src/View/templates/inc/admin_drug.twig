@@ -1,0 +1,37 @@
+<tr>
+    <td>{{ drug.id }}</td>
+    <td>{{ drug.name }}</td>
+    <td>{{ drug.text }}</td>
+    <td>
+        {{ drug.picture|name }}
+        <span role="button" class="glyphicon glyphicon-question-sign pop-toggle">
+            <div data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"
+            data-content="
+            {% if drug.picture %}
+                <img src='{{drug.picture}}'>
+            {% endif %}
+            ">
+            </div>
+        </span>
+    </td>
+    <td>{{ drug.cost }}</td>
+    <td>
+        {{ attribute(ills, drug.id)|length }}
+        <span role="button" class="glyphicon glyphicon-question-sign pop-toggle">
+            <div data-container="body" data-toggle="popover" data-placement="bottom" data-html="true"
+            data-content="{% include 'inc/ill_ref.twig' %}">
+            <div>
+        </span>
+    </td>
+    <td class="col-sm-1">
+        <a class="btn btn-sm btn-primary" role="button"
+            href="/admin/drugs/change/{{drug.id}}">Change</a>
+    </td>
+    <td class="col-sm-1">
+        <input class="btn btn-sm btn-danger" type="submit"
+            name="delete" value="Delete">
+    </td>
+    <td class="col-sm-1 checkable" style="text-align:center">
+        <input type="checkbox" name="id[]" value="{{ drug.id }}">
+    </td>
+</tr>

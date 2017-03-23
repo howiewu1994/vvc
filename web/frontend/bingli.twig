@@ -1,0 +1,35 @@
+{% extends 'baseline.twig' %}
+
+{% block title %}虚拟宠物医院学习系统 - 病例学习{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="./css/char.css">
+{% endblock %}
+
+{% block content %}
+<div class="navibar">
+  <span class='navi-text'>您选择的是: {{ 病理类型 }}</span>
+  <div class='back-text' onclick="window.location.href = '{{ 病历目录 }}'">
+    <span>返回上一页</span>
+  </div>
+  <div class='logout-text' onclick="logout()">
+    <span>注销并退出系统</span>
+  </div>
+</div>
+<div class='select-bar'>
+  <span>请选择病例小类:</span>
+</div>
+<div class='operations' id='3d-navi'>
+  <!-- foreach 病例 -->
+  <div class='chuanran'>
+    <span>{{ 病例名称 }}</span>
+  </div>
+  <!-- endforeach -->
+  <!-- if 当前的页 > 1 -->
+  <span onclick="window.location.href = '{{ 上一页 }}"><< 上一页 </span>
+  <!-- endif -->
+  <!-- if 当前的页不是最后的页 -->
+  <span onclick="window.location.href = '{{ 下一页 }}'">下一页 >> </span>
+  <!-- endif -->
+</div>
+{% endblock %}
