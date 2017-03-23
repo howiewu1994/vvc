@@ -1,9 +1,0 @@
-[2017-03-23 09:24:29] Database ERROR > Failed to get full illness by id
-msg:  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'd.id' in 'field list'
-loc:  src\Model\Database\Reader.php [line 451]
-
-[2017-03-23 10:19:13] Database ERROR > Failed to get full illness by id
-msg:  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'd.id' in 'field list'
-loc:  src\Model\Database\Reader.php [line 451]
-ill id:  2
-

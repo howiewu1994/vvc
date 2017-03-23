@@ -13,7 +13,3 @@ users:
         password:   "$2y$10$2ui/hWJTln9ab2UsTAz88.CdOOR8MVO0SWM9gdXIfBTNIjznaV0Ai"
         role_id:    2
         createdAt:  "2017-02-02 10:20:30"
-drugs:
-    -
-        drug_id :
-        drug_picture: /uploads/img/drugs/drug.png

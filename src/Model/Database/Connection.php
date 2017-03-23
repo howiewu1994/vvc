@@ -26,6 +26,7 @@ class Connection
         // and connection reuse
         if ($db) {
             $this->db = $db;
+            self::$instance = $db;
             return;
         }
 
