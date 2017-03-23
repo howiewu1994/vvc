@@ -300,8 +300,11 @@ class Router
                         break;
 
                     case 'add-single' :
-                        // TODO
-                        Router::redirect('/admin/illnesses');
+                        if (empty($post)) {
+                          $controller->showAddIllnessPage();
+                        } else {
+                          $controller->addIllness($post);
+                        }
                         break;
 
                     case 'add-many' :
