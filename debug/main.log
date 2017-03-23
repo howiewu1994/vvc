@@ -37,3 +37,7 @@ ill id:  3
 
 [2017-03-23 11:01:24] Unhandled ERROR > Uncaught Exception TypeError: "Argument 5 passed to VVC\Model\Data\Drug::__construct() must be of the type float, null given, called in C:\xampp\htdocs\vvc\src\Model\Database\Reader.php on line 460" at C:\xampp\htdocs\vvc\src\Model\Data\Drug.php line 12
 
+[2017-03-23 18:26:49] Unhandled ERROR > Uncaught Exception TypeError: "Return value of VVC\Model\Data\IllnessRecord::getStay() must be an instance of VVC\Model\Data\Stay, null returned" at C:\xampp\htdocs\vvc\src\Model\Data\IllnessRecord.php line 151
+
+[2017-03-23 18:27:39] Unhandled ERROR > Uncaught Exception ParseError: "syntax error, unexpected end of file, expecting function (T_FUNCTION) or const (T_CONST)" at C:\xampp\htdocs\vvc\src\Model\Data\IllnessRecord.php line 160
+
