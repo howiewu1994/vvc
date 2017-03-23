@@ -13,7 +13,7 @@ users:
         password:   "$2y$10$2ui/hWJTln9ab2UsTAz88.CdOOR8MVO0SWM9gdXIfBTNIjznaV0Ai"
         role_id:    2
         createdAt:  "2017-02-02 10:20:30"
-        
+  
 drug:
     -
       
@@ -72,17 +72,20 @@ stepname:
     -   
 
         step_num:       2
-        step_name:      "�������"
+
+        step_name:      "检查"
 
     -   
 
         step_num:       3
-        step_name:      "��Ͻ��"
+
+        step_name:      "诊断"
 
     -   
 
         step_num:       4
-        step_name:      "���Ʒ���"
+
+        step_name:      "治疗方案"
 
 payments:
  
@@ -90,7 +93,7 @@ payments:
 
         pay_id:         1
         ill_id:         1
-        pay_name:       "ע��"
+        pay_name:       "payment1"
         pay_cost:       10.5
         number:         1
 
@@ -98,7 +101,7 @@ payments:
 
         pay_id:         2
         ill_id:         2
-        pay_name:       "סԺ"
+        pay_name:       "payment2"
         pay_cost:       100.8
         number:         5
 
@@ -106,7 +109,7 @@ payments:
 
         pay_id:         3
         ill_id:         3
-        pay_name:       "����"
+        pay_name:       "payment3"
         pay_cost:       20.5
         number:         3
 
@@ -116,74 +119,74 @@ steps:
  
         ill_id:         1
         step_num:       1
-        step_text:      "����1����"
+        step_text:      "step1text"
     
     -  
  
         ill_id:         1
         step_num:       2
-        step_text:      "����1���"
+        step_text:      "step2text"
 
     -  
  
         ill_id:         1
         step_num:       3
-        step_text:      "����1��Ͻ��"
+        step_text:      "step3text"
 
     -  
  
         ill_id:         1
         step_num:       4
-        step_text:      "����1���Ʒ���"
+        step_text:      "step4text"
  
     -  
  
         ill_id:         2
         step_num:       1
-        step_text:      "����2����"
+        step_text:      "step1text"
     
     -  
  
         ill_id:         2
         step_num:       2
-        step_text:      "����2���"
+        step_text:      "step2text"
 
     -  
  
         ill_id:         2
         step_num:       3
-        step_text:      "����2��Ͻ��"
+        step_text:      "step3text"
 
     -  
  
         ill_id:         2
         step_num:       4
-        step_text:      "����2���Ʒ���"
+        step_text:      "step4text"
 
  
     -  
  
         ill_id:         3
         step_num:       1
-        step_text:      "����3����"
+        step_text:      "step1text"
     
     -  
  
         ill_id:         3
         step_num:       2
-        step_text:      "����3���"
+        step_text:      "step2text"
 
     -  
  
         ill_id:         3
         step_num:       3
-        step_text:      "����3��Ͻ��"
+        step_text:      "step3text"
 
     -  
  
         ill_id:         3
         step_num:       4
-        step_text:      "����3���Ʒ���"
+        step_text:      "step4text"
 
 
 illdrug:
@@ -219,5 +222,3 @@ illpic:
 
 
 illvid:
-
-    -
