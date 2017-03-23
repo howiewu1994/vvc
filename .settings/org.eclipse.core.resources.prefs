@@ -1,2 +1,4 @@
 eclipse.preferences.version=1
 encoding//src/Model/Database/Reader.php=UTF-8
+encoding//src/View/templates/inc/illness_extra.twig=UTF-8
+encoding//tests/dataset.yml=UTF-8

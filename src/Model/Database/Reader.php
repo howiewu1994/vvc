@@ -7,7 +7,6 @@ use VVC\Model\Data\IllnessRecord;
 use VVC\Model\Data\Payment;
 use VVC\Model\Data\Stay;
 use VVC\Model\Data\Step;
-use VVC\Model\Data\TherapyStep;
 use VVC\Model\Data\User;
 
 /**
@@ -440,13 +439,13 @@ class Reader extends Connection
         }
 
         $sql = "SELECT
-            d.id as drug_id,
-            d.name as drug_name,
-            d.text as drug_text,
-            d.picture as drug_picutre,
-            d.cost as drug_cost
-		    FROM drug d INNER JOIN illdrug i
-            ON i.ill_id=? AND d.drug_id=i.drug_id";
+            drug.drug_id,
+            drug.drug_name,
+            drug.drug_text,
+            drug.drug_picture,
+            drug.drug_cost
+		        FROM drug INNER JOIN illdrug
+            ON illdrug.ill_id=? AND drug.drug_id=illdrug.drug_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -457,7 +456,7 @@ class Reader extends Connection
                     $row['drug_id'],
         			$row['drug_name'],
         			$row['drug_text'],
-        			$row['drug_picutre'],
+        			$row['drug_picture'],
         			$row['drug_cost']
         			);
         }
@@ -490,9 +489,10 @@ class Reader extends Connection
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
             $payments[] = new Payment(
                 $row['pay_id'],
-            	$row['pay_name'],
-            	$row['pay_cost'],
-            	$row['number']
+            	  $illnessId,
+            	  $row['pay_name'],
+            	  $row['pay_cost'],
+            	  $row['number']
             );
         }
 
