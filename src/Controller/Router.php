@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class Router
 {
     public static $cookies = [];
+    public static $route;
 
     /**
      * Finds appropriate controller based on request uri
@@ -31,6 +32,7 @@ class Router
         }
 
         $route = self::getRoute();
+        self::$route = $route;
 
         switch ($route['base']) {
             case '' :

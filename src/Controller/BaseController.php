@@ -48,6 +48,7 @@ class BaseController
         $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
         $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
         $this->addTwigFunc('short', 'short', $this);
+        $this->addTwigFunc('active', 'active', $this);
 
         $this->twig->addFilter(new \Twig_Filter(
             'name', [$this, 'name']
@@ -206,6 +207,15 @@ class BaseController
     {
         $arr = explode('/', $path);
         return $arr[count($arr) - 1];
+    }
+
+    public function active(string $section)
+    {
+        if ($section == Router::$route['section']) {
+            return 'active';
+        } else {
+            return '';
+        }
     }
 
     /**

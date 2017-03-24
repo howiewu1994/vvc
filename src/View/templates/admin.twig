@@ -1,9 +1,9 @@
-{% extends 'base.twig' %}
+{% extends 'admin_base.twig' %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="col-sm-9">
     <div class="well">
         <h2>管理仪表板</h2>
         {# display error message if login failed #}
@@ -29,13 +29,7 @@
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/uploads" disabled>Uploads</a></td>
-
-                <!-- <li><a href='/admin/accounts'>User accounts</a></li>
-                <li>Illness Records</li>
-                <li>Drug Details</li>
-                <li>住院管理</li>
-                <li>Payments</li>
-                <li>Uploads</li> -->
+            
     </div>
 </div>
 {% endblock %}

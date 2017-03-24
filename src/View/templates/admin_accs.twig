@@ -1,23 +1,18 @@
-{% extends 'base.twig' %}
+{% extends 'admin_base.twig' %}
 
 {% block title %}Manage accounts{% endblock %}
 
-{% block footer %}
-    {{ parent() }}
+{% block scripts %}
     <script src="/js/dialogues.js"></script>
     <script src="/js/check_all.js"></script>
-    {% if filename is not empty %}
-        <script src="/js/rewrite_file.js"></script>
-    {% endif %}
 {% endblock %}
 
 {% block content %}
-
 {# Dialogues #}
 {% include 'inc/dlg/delete_user.twig' %}
 {% include 'inc/dlg/delete_users.twig' %}
 
-<div class="container">
+<div class="col-sm-9">
     <div class="well">
         <h2>用户管理</h2>
         <br>

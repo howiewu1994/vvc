@@ -78,25 +78,21 @@
             pictures :
                 -
                     step2.png
-            videos   :
-                -
-                    "http://player.youku.com/embed/XNDM3NTQ5NTQ0"
-                -
-                    "/uploads/vid/video.flv"
+            videos   : []
         3 :
             text     : "Step 3 text"
             pictures :
                 -
                     step3.png
-            videos   :
-                -
-                    "http://player.youku.com/embed/XNDM3NTQ5NTQ0"
+            videos   : []
         4 :
             text     : "Step 4 text"
             pictures :
                 -
                     step4.png
-            videos   : []
+            videos   :
+                -
+                    "http://player.youku.com/embed/XNDM3NTQ5NTQ0"
     drugs :
         -
             name    : "AB-01"

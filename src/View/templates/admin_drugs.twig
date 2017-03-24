@@ -1,21 +1,19 @@
-{% extends 'base.twig' %}
+{% extends 'admin_base.twig' %}
 
 {% block title %}Manage accounts{% endblock %}
 
-{% block footer %}
-    {{ parent() }}
+{% block scripts %}
     <script src="/js/dialogues.js"></script>
     <script src="/js/check_all.js"></script>
     <script src="/js/popover.js"></script>
 {% endblock %}
 
 {% block content %}
-
 {# Dialogues #}
 {% include 'inc/dlg/delete_drug.twig' %}
 {% include 'inc/dlg/delete_drugs.twig' %}
 
-<div class="container">
+<div class="col-sm-9">
     <div class="well">
         <h2>药品管理</h2>
         <br>
