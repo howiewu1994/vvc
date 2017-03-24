@@ -214,8 +214,8 @@ class Router
      * @return void
      */
     public static function routeAdmin(
-        array $route, array $get, array $post, array $files)
-    {
+        array $route, array $get, array $post, array $files
+    ) {
         Auth::requireAdmin();
         $controller = new AdminController();
 
@@ -320,7 +320,6 @@ class Router
                         break;
 
                     case 'delete' :
-                        // pe($post);
                         if (empty($post['id'])) {
                             $controller->showIllnessListPage();
                         } elseif (count($post['id']) == 1){

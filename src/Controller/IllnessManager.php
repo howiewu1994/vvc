@@ -151,7 +151,7 @@ class IllnessManager extends AdminController
                 continue;
             }
 
-            $newIll = $dbCreator->createIllness(
+            $newIll = $dbCreator->createFullIllness(
                 $name,
                 $class,
                 $description,
