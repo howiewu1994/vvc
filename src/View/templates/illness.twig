@@ -22,7 +22,9 @@
         {% for step in ill.steps %}
             {% include "inc/illness_step.twig" %}
         {% endfor %}
-        {% include "/inc/illness_extra.twig" %}
+        {% if ill.drugs is not empty or ill.payments is not empty %}
+            {% include "/inc/illness_extra.twig" %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

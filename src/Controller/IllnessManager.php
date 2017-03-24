@@ -54,6 +54,45 @@ class IllnessManager extends AdminController
         $this->render();
     }
 
+    public function showAddIllnessPage()
+    {
+        $this->setTemplate('add_illness.twig');
+        $this->render();
+    }
+
+    public function addIllness(array $post)
+    {
+        if (!$this->isClean($post)) {
+            $this->flash('fail', 'Input contains invalid characters');
+            return $this->showAddIllnessPage();
+        }
+
+        $name = $post['name'];
+        $class = $post['class'];
+        $text = $post['text'];
+
+        try {
+            $dbReader = new Reader();
+            $illness = $dbReader->findIllnessByName($name);
+
+            if (!empty($illness)) {
+                $this->flash('fail', "This illness already exists - $name");
+                return $this->showAddIllnessPage();
+            }
+
+            $dbCreator = new Creator();
+            $illness = $dbCreator->createIllness($name, $class, $text);
+
+            $this->flash('success', "$name added successfully");
+            return Router::redirect('/admin/illnesses');
+
+        } catch (\Exception $e) {
+            Logger::log('db', 'error', "Failed to create illness $name (single)", $e);
+            $this->flash('fail', 'Database operation failed');
+            return $this->showAddIllnessPage();
+        }
+    }
+
     public function batchAddIllnesses(array $ills)
     {
         try {
