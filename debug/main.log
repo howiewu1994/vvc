@@ -1,0 +1,4 @@
+[2017-03-25 20:47:20] Database ERROR > Failed to change payment 119
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='0'
+        		WHERE pay_id='119'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]

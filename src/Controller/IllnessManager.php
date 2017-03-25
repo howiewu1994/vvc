@@ -131,7 +131,9 @@ class IllnessManager extends AdminController
                     $pic = PIC_DIRECTORY . $pic;
                 }
                 foreach ($step['videos'] as &$vid) {
-                    $vid = VID_DIRECTORY . $vid;
+                    if (!Uploader::isEmbedded($vid)) {
+                        $vid = VID_DIRECTORY . $vid;
+                    }
                 }
             }
             $steps = $ill['steps'];

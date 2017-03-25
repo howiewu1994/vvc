@@ -1,0 +1,25 @@
+-
+    name        : "Payment 1"
+    illnessName : "Illness 1"
+    cost        : 33.3
+    number      : 1
+-
+    name        : "Payment 2"
+    illnessName : "Illness 1"
+    cost        : 10
+    number      : 10
+-
+    name        : "Payment 3"
+    illnessName : "Illness 2"
+    cost        : 12
+    number      : 2
+-
+    name        : "Payment 4"
+    illnessName : "Illness 2"
+    cost        : 0
+    number      : 0
+-
+    name        : "Payment 5"
+    illnessName : "Illness 2"
+    cost        : 6
+    number      : 5

@@ -1,8 +1,6 @@
-<ul>
 {% for ill in attribute(ills, drug.id) %}
-    <li>
-        <a href='/admin/illnesses/view/{{ill.id}}'>
-        {{ill.name}}</a>
-    </li>
+    <a href='/admin/illnesses/view/{{ill.id}}'>
+        {{ill.name}}
+    </a>
+    <br>
 {% endfor %}
-</ul>

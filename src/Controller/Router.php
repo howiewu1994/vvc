@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class Router
 {
     public static $cookies = [];
+    public static $route;
 
     /**
      * Finds appropriate controller based on request uri
@@ -31,6 +32,7 @@ class Router
         }
 
         $route = self::getRoute();
+        self::$route = $route;
 
         switch ($route['base']) {
             case '' :
@@ -411,7 +413,6 @@ class Router
 
             case 'payments' :
 
-                self::redirect('/admin');
                 $controller = new PaymentManager();
 
                 // Check if payment id in uri is valid
@@ -431,6 +432,7 @@ class Router
                         } else {
                             $controller->addPayment($post);
                         }
+                        break;
 
                     case 'add-many' :
                         $payments = Uploader::readYml(

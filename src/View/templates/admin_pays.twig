@@ -1,6 +1,6 @@
 {% extends 'admin_base.twig' %}
 
-{% block title %}Manage accounts{% endblock %}
+{% block title %}Manage payments{% endblock %}
 
 {% block scripts %}
     <script src="/js/dialogues.js"></script>
@@ -10,21 +10,21 @@
 
 {% block content %}
 {# Dialogues #}
-{% include 'inc/dlg/delete_ill.twig' %}
-{% include 'inc/dlg/delete_ills.twig' %}
+{% include 'inc/dlg/delete_pay.twig' %}
+{% include 'inc/dlg/delete_pays.twig' %}
 
 <div class="col-sm-9">
     <div class="well">
-        <h2>病例管理</h2>
+        <h2>收费管理</h2>
         <br>
 
         {% include "inc/flash_messages.twig" %}
 
-        <h4>Add new illnesses:</h4>
-        <form class="form-inline" action="/admin/illnesses/add-many" method="post">
+        <h4>Add new payments:</h4>
+        <form class="form-inline" action="/admin/payments/add-many" method="post">
             <div class="form-group">
                 <a class="btn btn-primary" role="button"
-                    href="/admin/illnesses/add-single">Add one</a>
+                    href="/admin/payments/add-single">Add one</a>
                 <span style="margin: 0 10px"> OR </span>
                 <select class="form-control" name="yml" required>
                     <option disabled selected value="">Select YML file</option>
@@ -40,15 +40,16 @@
     </div>
     <div class="media well">
         <div class="media-body">
-            <form action="/admin/illnesses/delete" method="post">
+            <form action="/admin/payments/delete" method="post">
             <table id="tableToSort" class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th role="button" onclick="sortTable(0)">ID</th>
                         <th role="button" onclick="sortTable(1)">Name</th>
-                        <th role="button" onclick="sortTable(2)">Class</th>
-                        <th role="button" onclick="sortTable(3)">Description</th>
-                        <th></th>
+                        <th role="button" onclick="sortTable(2)">Illness</th>
+                        <th role="button" onclick="sortTable(3)">Price</th>
+                        <th role="button" onclick="sortTable(4)">Qty</th>
+                        <th role="button" onclick="sortTable(5)">Total</th>
                         <th></th>
                         <th></th>
                         <th role="button" class="col-sm-1 checkable" style="text-align:center">
@@ -57,12 +58,12 @@
                     </tr>
                 </thead>
                 <tbody id="tableTBody">
-                    {% for ill in list %}
-                        {% include "inc/admin_illness.twig" %}
+                    {% for pay in payments %}
+                        {% include "inc/admin_payment.twig" %}
                     {% endfor %}
                 </tbody>
                 <tfoot>
-                    <td colspan="8" style="text-align:right">
+                    <td colspan="9" style="text-align:right">
                         <input class="btn btn-sm btn-danger" type="submit"
                             name="delete_selected" value="Delete selected">
                     </td>

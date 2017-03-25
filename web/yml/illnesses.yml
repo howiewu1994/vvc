@@ -31,7 +31,9 @@
             pictures :
                 -
                     step4.png
-            videos   : []
+            videos   :
+                -
+                    "http://player.youku.com/embed/XNDM3NTQ5NTQ0"
     drugs :
         -
             name    : "AB-01"
@@ -88,7 +90,9 @@
             pictures :
                 -
                     step4.png
-            videos   : []
+            videos   :
+                -
+                    "http://player.youku.com/embed/XNDM3NTQ5NTQ0"
     drugs :
         -
             name    : "AB-01"

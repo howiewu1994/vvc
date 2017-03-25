@@ -25,36 +25,23 @@ class PaymentManager extends AdminController
         $ymls = Uploader::getFiles(YML_DIRECTORY, ['yml']);
         $this->addTwigVar('files', $ymls);
 
-        $this->setTemplate('admin_payments.twig');
+        $this->setTemplate('admin_pays.twig');
         $this->addTwigVar('payments', $payments);
-        $this->render();
-    }
-
-    public function showPaymentPage(int $paymentId)
-    {
-        try {
-            $dbReader = new Reader();
-            $payment = $dbReader->getPaymentById($paymentId);
-        } catch (\Exception $e) {
-            Logger::log('db', 'error',
-                "Failed to get payment by id $paymentId", $e
-            );
-            $this->flash('fail', 'Database operation failed');
-            return $this->showPaymentListPage();
-        }
-
-        if (empty($payment)) {
-            $this->flash('fail', "Could not find this payment - $paymentId");
-            return $this->showPaymentListPage();
-        }
-
-        $this->setTemplate('payment.twig');
-        $this->addTwigVar('payment', $payment);
         $this->render();
     }
 
     public function showAddPaymentPage()
     {
+        try {
+            $dbReader = new Reader();
+            $illnesses = $dbReader->getAllIllnesses();
+        } catch (\Exception $e) {
+            Logger::log('db', 'error', 'Failed to get all illnesses', $e);
+            $this->flash('fail', 'Database operation failed');
+            return $this->showPaymentListPage();
+        }
+
+        $this->addTwigVar('illnesses', $illnesses->getJustIllnesses());
         $this->setTemplate('add_payment.twig');
         $this->render();
     }
@@ -66,12 +53,20 @@ class PaymentManager extends AdminController
             return $this->showAddPaymentPage();
         }
 
-        $illnessId = $post['illnessId'];
+        $illnessName = $post['illness'];
         $name = $post['name'];
         $cost = $post['cost'];
         $number = $post['number'];
 
         try {
+            $dbReader = new Reader();
+            $illnessId = $dbReader->findIllnessIdByName($illnessName);
+
+            if (!$illnessId) {
+                $this->flash('fail', "Illness name $illnessName does not exist");
+                return $this->showAddPaymentPage();
+            }
+
             $dbCreator = new Creator();
             $payment = $dbCreator->createPayment(
                 $illnessId, $name, $cost, $number
@@ -90,6 +85,7 @@ class PaymentManager extends AdminController
     public function batchAddPayments(array $payments)
     {
         try {
+            $dbReader = new Reader();
             $dbCreator = new Creator();
         } catch (\Exception $e) {
             Logger::log('db', 'error', 'Failed to open connection', $e);
@@ -101,10 +97,8 @@ class PaymentManager extends AdminController
         $bad = [];
 
         foreach ($payments as $payment) {
-            if (empty($ill['illnessId'])
-                || empty($ill['name'])
-                || empty($ill['cost'])
-                || empty($ill['number'])
+            if (empty($payment['illnessName'])
+                || empty($payment['name'])
             ) {
                 $this->flash('fail', 'Some data is wrong or missing');
                 return Router::redirect('/admin/payments');
@@ -115,12 +109,24 @@ class PaymentManager extends AdminController
                 continue;
             }
 
+            $name = $payment['name'];
+            $illnessName = $payment['illnessName'];
+            $cost = $payment['cost'];
+            $number = $payment['number'];
+
             try {
+                $illnessId = $dbReader->findIllnessIdByName($illnessName);
+
+                if (!$illnessId) {
+                    $this->flash('fail', "Illness name $illnessName does not exist");
+                    return Router::redirect('/admin/payments');
+                }
+
                 $newPayment = $dbCreator->createPayment(
-                    $payment['illnessId'],
-                    $payment['name'],
-                    $payment['cost'],
-                    $payment['number']
+                    $illnessId,
+                    $name,
+                    $cost,
+                    $number
                 );
 
                 $good[] = $newPayment;
@@ -136,8 +142,8 @@ class PaymentManager extends AdminController
             }
         }
 
-        $this->prepareGoodBatchResults($good, $payments, ['illnessId', 'name']);
-        $this->prepareBadBatchResults($bad, $payments, ['illnessId', 'name']);
+        $this->prepareGoodBatchResults($good, $payments, ['name', 'illnessName']);
+        $this->prepareBadBatchResults($bad, $payments, ['name', 'illnessName']);
 
         return Router::redirect('/admin/payments');
     }
@@ -147,6 +153,7 @@ class PaymentManager extends AdminController
         try {
             $dbReader = new Reader();
             $payment = $dbReader->findPaymentById($paymentId);
+            $illnesses = $dbReader->getAllIllnesses();
         } catch (\Exception $e) {
             Logger::log('db', 'error', "Failed to find payment by id $paymentId", $e);
             $this->flash('fail', 'Database operation failed');
@@ -159,7 +166,8 @@ class PaymentManager extends AdminController
         }
 
         $this->setTemplate('change_payment.twig');
-        $this->addTwigVar('payment', $payment);
+        $this->addTwigVar('illnesses', $illnesses->getJustIllnesses());
+        $this->addTwigVar('pay', $payment);
         $this->render();
     }
 
@@ -170,15 +178,17 @@ class PaymentManager extends AdminController
             return $this->showChangePaymentPage($paymentId);
         }
 
-        $illnessId = $post['illnessId'];
+        $illnessName = $post['illness'];
         $name = $post['name'];
         $cost = $post['cost'];
         $number = $post['number'];
 
         try {
-            $oldPayment = $dbReader->findPaymentById($paymentId);
-            if (empty($oldPayment)) {
-                $this->flash('fail', 'Some problem occurred, please try again');
+            $dbReader = new Reader();
+            $illnessId = $dbReader->findIllnessIdByName($illnessName);
+
+            if (!$illnessId) {
+                $this->flash('fail', "Illness name $illnessName does not exist");
                 return $this->showChangePaymentPage($paymentId);
             }
 
