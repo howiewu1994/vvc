@@ -3,8 +3,8 @@ $(".thumbnail").click(function() {
     var $name = $selected.siblings('p').text();
 
     $(".thumbnail").not(this).css("outline", "none");
-    $selected.css("outline", "3px solid #2a9fd6");
-    
+    $selected.css("outline", "3px solid #2c3e50");
+
     $('#select_pic').modal()
 	.one('click', '#confirm_button', function(e) {
 		$('#picture').val($name);

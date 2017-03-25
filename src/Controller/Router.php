@@ -413,7 +413,6 @@ class Router
 
             case 'payments' :
 
-                self::redirect('/admin');
                 $controller = new PaymentManager();
 
                 // Check if payment id in uri is valid
@@ -433,6 +432,7 @@ class Router
                         } else {
                             $controller->addPayment($post);
                         }
+                        break;
 
                     case 'add-many' :
                         $payments = Uploader::readYml(

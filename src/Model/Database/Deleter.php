@@ -320,46 +320,19 @@ class Deleter extends Connection
     }
 
     /**
-     * Deletes payment and removes it from all illnesses
-     *
-     * If any of deletions fail, roll back transaction
-     *
+     * Deletes payment
      * @param  int $paymentId
-     * @return deleted payment if successful OR false if rolled back
+     * @return deleted payment
      */
     public function deletePayment(int $paymentId)
     {
         $oldPayment = (new Reader())->findPaymentById($paymentId);
 
-        // Turn autocommit off
-        $this->db->beginTransaction();
+        $sql = "DELETE FROM payments
+                WHERE pay_id=? ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$paymentId]);
 
-        try {
-            // Remove payment from all illnesses
-            $illnesses = (new Reader())->findIllnessByPaymentId($paymentId);
-            foreach ($illnesses as $illness) {
-                $illnessId = $illness->getId();
-                $this->removePaymentFromIllness($illnessId, $paymentId);
-            }
-
-            // Delete payment
-            $sql = "DELETE FROM payment
-            		WHERE pay_id=? ";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$paymentId]);
-
-            // Commit transaction
-            $this->db->commit();
-            return $oldPayment;
-
-        } catch (\Exception $e) {
-            Logger::log(
-                'db', 'error',
-                "Failed to delete payment $paymentId, rolled back transaction",
-                $e
-            );
-            $this->db->rollBack();
-            return false;
-        }
+        return $oldPayment;
     }
 }

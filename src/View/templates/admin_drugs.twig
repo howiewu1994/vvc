@@ -27,7 +27,7 @@
                 <a class="btn btn-primary" role="button"
                     href="/admin/drugs/add-single">Add one</a>
                 <span style="margin: 0 10px"> OR </span>
-                <select class="form-control" name="yml">
+                <select class="form-control" name="yml" required>
                     <option disabled selected value="">Select YML file</option>
                     {% for file in files %}
                         <option value="{{file|name}}">{{ file|name }}</option>

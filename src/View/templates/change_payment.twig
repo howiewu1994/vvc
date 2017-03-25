@@ -1,0 +1,42 @@
+{% extends 'admin_base.twig' %}
+
+{% block title %}Change Payment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="well col-sm-6 col-sm-offset-3">
+        <form method="post" action="/admin/payments/change/{{pay.id}}">
+            <h2>Change Payment</h2>
+            <br>
+            {% include "inc/flash_messages.twig" %}
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" type="text" class="form-control" name="name" placeholder="What is this payment for" value="{{pay.name}}" required>
+            </div>
+            <div class="form-group">
+                <label for="illness">Illness</label>
+                <select id="illness" class="form-control" name="illness" required>
+                    <option disabled selected value="">Select illness to add payment for</option>
+                    {% for ill in illnesses %}
+                        <option value="{{ill.name}}"
+                        {% if pay.illnessName == ill.name %}
+                            selected
+                        {% endif %}>{{ ill.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cost">Price</label>
+                <input id="cost" type="number" min="0" step="any" class="form-control" name="cost" placeholder="Price for one" value="{{pay.cost}}" required>
+            </div>
+            <div class="form-group">
+                <label for="number">Quantity</label>
+                <input id="number" type="number" min="0" step="1" class="form-control" name="number" placeholder="Quantity" value="{{pay.number}}" required>
+            </div>
+            <br>
+            <button class="btn btn-lg btn-primary btn-block"
+                type="submit">Apply changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

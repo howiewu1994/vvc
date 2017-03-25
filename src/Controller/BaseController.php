@@ -167,12 +167,14 @@ class BaseController
                         $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         $vars[$key] = str_replace(' ', '', $val);
                         break;
-                    case 'text' :
-                    case 'description' :
-                    case 'name' :
                     case 'username' :
                         $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'text' :
+                    case 'description' :
+                    // case 'name' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         break;
                     case 'roleid'  :
                     case 'role_id' :

@@ -686,7 +686,47 @@ class Reader extends Connection
 
     public function findPaymentById(int $paymentId)
     {
+        $sql = "SELECT * FROM payments WHERE pay_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$paymentId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
 
+        return new Payment(
+             $result['pay_id'],
+             $result['ill_id'],
+             $result['pay_name'],
+             $result['pay_cost'],
+             $result['number']
+        );
+    }
+
+    public function findIllnessNameById(string $illnessId)
+    {
+        $sql = "SELECT ill_name FROM illness WHERE ill_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return $result['ill_name'];
+    }
+
+    public function findIllnessIdByName(string $illnessName)
+    {
+        $sql = "SELECT ill_id FROM illness WHERE ill_name = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessName]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return $result['ill_id'];
     }
 
 
