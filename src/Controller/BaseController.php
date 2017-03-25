@@ -156,7 +156,7 @@ class BaseController
 
     public function cleanupVars(array &$vars)
     {
-        foreach ($vars as $key => $val) {
+        foreach ($vars as $key => &$val) {
             if (is_array($val)) {
                 // p($val);
                 $this->cleanupVars($val);
@@ -167,14 +167,20 @@ class BaseController
                         $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         $vars[$key] = str_replace(' ', '', $val);
                         break;
+                    case 'text' :
+                    case 'description' :
+                    case 'name' :
                     case 'username' :
                         $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         $vars[$key] = str_replace(' ', '', $val);
                         break;
                     case 'roleid'  :
                     case 'role_id' :
+                    case 'number' :
                         $val = trim(filter_var($val, FILTER_SANITIZE_NUMBER_INT));
-                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'cost' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
                         break;
                     default :
                         $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));

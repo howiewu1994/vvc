@@ -57,7 +57,7 @@ class DrugManager extends AdminController
 
         $name = $post['name'];
         $text = $post['text'];
-        $picture = DRUG_DIRECTORY . $post['picture'];
+        $picture = $post['picture'] ? DRUG_DIRECTORY . $post['picture'] : '';
         $cost = $post['cost'];
 
         try {

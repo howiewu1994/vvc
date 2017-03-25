@@ -10,7 +10,7 @@
         {% include "inc/flash_messages.twig" %}
         <p>From this dashboard you can manage:</p>
         <table class="table">
-            <tr>
+        <tr>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/accounts">User Accounts</a></td>
@@ -19,17 +19,19 @@
             href="/admin/illnesses">Illness Records</a></td>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
-            href="/admin/drugs">Drug Details</a></td></tr>
-
-        <tr><td><a class="btn btn-lg btn-primary btn-block" role="button"
-            href="/admin/hospitalization" disabled>Hospitalization</a></td>
-
+            href="/admin/drugs">Drug Details</a></td>
+        </tr>
+        <tr>
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/payments" disabled>Payments</a></td>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/uploads" disabled>Uploads</a></td>
-            
+
+        <td><a class="btn btn-lg btn-primary btn-block" role="button"
+            href="/admin/hospitalization" disabled>Hospitalization</a></td>
+        </tr>
+
     </div>
 </div>
 {% endblock %}

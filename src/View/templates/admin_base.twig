@@ -8,15 +8,20 @@
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
         {% endblock %}
         <title>{% block title %}Virtual Vet Clinic{% endblock %}</title>
-        {% block links %}
+        {% block stylesheets %}
             <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css"> -->
             <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css">
+            <style>
+            /*.well{
+                background-color: rgb(22, 105, 173);
+            }*/
+            </style>
         {% endblock %}
     </head>
     <body>
         {% block header %}
         <div class="header">
-            <h2 class="col-sm-offset-2"><small>VVC - Admin Dashboard</small></h2>
+            <h2 style="margin-left:30px"><small>虚拟宠物医院 - Admin Dashboard</small></h2>
         </div>
         {% endblock %}
         <div class="container-fluid">
