@@ -131,7 +131,7 @@ class Updater extends Connection
         $sql = "UPDATE payments
         		SET ill_id=?,
         		    pay_name=?,
-        		    pay_cost=?
+        		    pay_cost=?,
         		    number=?
         		WHERE pay_id=? ";
         $stmt = $this->db->prepare($sql);

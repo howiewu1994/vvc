@@ -356,10 +356,11 @@ class Router
                         if (empty($post)) {
                             $controller->showAddDrugPage();
                         } else {
-                            if (!empty($files['drug_pic'])) {
-                                $pic = Uploader::uploadDrugPic(
+                            if (!empty($files['pic'])) {
+                                $pic = Uploader::uploadPicture(
+                                    DRUG_DIRECTORY,
                                     $controller,
-                                    $files,
+                                    $files['pic'],
                                     '/admin/drugs/add-single'
                                 );
                                 $post['picture'] = $pic;
@@ -379,10 +380,11 @@ class Router
                         if (empty($post)) {
                             $controller->showChangeDrugPage($route['page']);
                         } else {
-                            if (!empty($files['drug_pic'])) {
-                                $pic = Uploader::uploadDrugPic(
+                            if (!empty($files['pic'])) {
+                                $pic = Uploader::uploadPicture(
+                                    DRUG_DIRECTORY,
                                     $controller,
-                                    $files,
+                                    $files['pic'],
                                     '/admin/drugs/change/' . $route['page']
                                 );
                                 $post['picture'] = $pic;
@@ -450,7 +452,6 @@ class Router
                         break;
 
                     case 'delete' :
-                        // print_r($post);exit;
                         if (empty($post['id'])) {
                             $controller->showPaymentListPage();
                         } elseif (count($post['id']) == 1){
@@ -467,9 +468,59 @@ class Router
 
             case 'uploads' :
 
-                // $controller = new UploadManager();
-                // $controller->showUploadsPage();
-                // break;
+                $controller = new UploadManager();
+
+                // Check if tab in uri is valid
+                if (!in_array($route['action'], ['', 'pictures', 'drugs'])) {
+                    self::redirect('/admin/uploads');
+                }
+
+                switch ($route['action']) {
+                    case '' :
+                    case 'pictures' :
+                        switch ($route['page']) {
+                            case 'add' :
+                                if (!empty($post)) {
+                                    $controller->addPicturesToIllness($post);
+                                } else {
+                                    $controller->showUploadsPage();
+                                }
+                                break;
+
+                            case 'delete' :
+                                if (!empty($post['pics'])) {
+                                    $controller->deletePictures($post['pics']);
+                                } else {
+                                    $controller->showUploadsPage();
+                                }
+                                break;
+
+                            case 'upload' :
+                                if (!empty($files['uploads'])) {
+                                    Uploader::uploadPictures(
+                                        PIC_DIRECTORY,
+                                        $controller,
+                                        $files['uploads'],
+                                        '/admin/uploads/pictures'
+                                    );
+                                } else {
+                                    $controller->showUploadsPage();
+                                }
+                                break;
+
+                            default :
+                                if (!empty($post['pics_per_page'])) {
+                                    $controller->showUploadsPage(
+                                        $route['action'],
+                                        $post['pics_per_page']
+                                    );
+                                } else {
+                                    $controller->showUploadsPage();
+                                }
+                        }
+                        break;
+                }
+                break;
 
             default :
                 self::redirect('/admin');

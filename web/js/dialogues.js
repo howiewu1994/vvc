@@ -1,4 +1,4 @@
-// Confirm delete user dialogue
+// Confirm delete dialogue
 $('input[name="delete"]').on('click', function(e) {
 	var $btn = $(this);
 	var $form = $btn.closest('form');
@@ -14,7 +14,7 @@ $('input[name="delete"]').on('click', function(e) {
 	});
 });
 
-// Confirm delete selected users dialogue
+// Confirm delete selected dialogue
 $('input[name="delete_selected"]').on('click', function(e) {
 	var $form = $(this).closest('form');
 	e.preventDefault();

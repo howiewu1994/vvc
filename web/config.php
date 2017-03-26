@@ -53,6 +53,13 @@ function pe($obj)
     exit;
 }
 
+// print $obj and new line
+function pn($obj)
+{
+    print_r($obj);
+    echo "\n";
+}
+
 // print new line
 function n()
 {
