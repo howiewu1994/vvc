@@ -48,6 +48,7 @@ class BaseController
         $this->addTwigFunc('authenticated', 'isAuthenticated', 'VVC\Controller\Auth');
         $this->addTwigFunc('admin', 'isAdmin', 'VVC\Controller\Auth');
         $this->addTwigFunc('short', 'short', $this);
+        $this->addTwigFunc('active', 'active', $this);
 
         $this->twig->addFilter(new \Twig_Filter(
             'name', [$this, 'name']
@@ -155,7 +156,7 @@ class BaseController
 
     public function cleanupVars(array &$vars)
     {
-        foreach ($vars as $key => $val) {
+        foreach ($vars as $key => &$val) {
             if (is_array($val)) {
                 // p($val);
                 $this->cleanupVars($val);
@@ -170,10 +171,18 @@ class BaseController
                         $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
                         $vars[$key] = str_replace(' ', '', $val);
                         break;
+                    case 'text' :
+                    case 'description' :
+                    // case 'name' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_STRING));
+                        break;
                     case 'roleid'  :
                     case 'role_id' :
+                    case 'number' :
                         $val = trim(filter_var($val, FILTER_SANITIZE_NUMBER_INT));
-                        $vars[$key] = str_replace(' ', '', $val);
+                        break;
+                    case 'cost' :
+                        $val = trim(filter_var($val, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
                         break;
                     default :
                         $vars[$key] = trim(filter_var($val, FILTER_SANITIZE_STRING));
@@ -206,6 +215,15 @@ class BaseController
     {
         $arr = explode('/', $path);
         return $arr[count($arr) - 1];
+    }
+
+    public function active(string $section)
+    {
+        if ($section == Router::$route['section']) {
+            return 'active';
+        } else {
+            return '';
+        }
     }
 
     /**

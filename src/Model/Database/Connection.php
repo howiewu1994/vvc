@@ -48,7 +48,7 @@ class Connection
             return self::createConnection_stub();
         }
 
-        $dsn = "mysql:host=localhost;dbname=vvc";
+        $dsn = "mysql:host=localhost;dbname=vvc;charset=UTF8";
         $username = "vvc_admin";
         $password = "123";
 

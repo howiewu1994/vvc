@@ -1,4 +1,4 @@
-{% extends 'base.twig' %}
+{% extends 'admin_base.twig' %}
 
 {% block title %}Add Drug{% endblock %}
 
@@ -21,7 +21,7 @@
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input id="name" type="text" class="form-control" name="name" placeholder="Drug name">
+                <input id="name" type="text" class="form-control" name="name" placeholder="Drug name" required autofocus>
             </div>
             <div class="form-group">
                 <label for="text">Text</label>
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label for="cost">Cost</label>
-                <input id="cost" type="text" class="form-control" name="cost" placeholder="Drug price">
+                <input id="cost" type="number" min="0" step="any" class="form-control" name="cost" placeholder="Drug price" required>
             </div>
             <div class="form-group">
                 <label>Picture</label><br>

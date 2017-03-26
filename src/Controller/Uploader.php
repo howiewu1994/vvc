@@ -90,4 +90,15 @@ class Uploader
 
         return $filename;
     }
+
+    public static function isEmbedded(string $path)
+    {
+        if (strpos($path, 'http://') !== false ||
+            strpos($path, 'https://') !== false)
+        {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -333,7 +333,8 @@ class Reader extends Connection
     {
         $sql = "SELECT s.step_num,n.step_name,s.step_text
                 FROM steps s INNER JOIN stepname n
-                ON ill_id=? AND s.step_num=n.step_num ";
+                ON s.step_num=n.step_num
+                WHERE s.ill_id=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$illnessId]);
 
@@ -366,7 +367,8 @@ class Reader extends Connection
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$stepNum, $illnessId]);
 
-        return $stmt->fetchColumn(0);   // if only one column was selected
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $result['step_text'];
     }
 
     /**
@@ -384,7 +386,7 @@ class Reader extends Connection
         $sql = "SELECT pic_path FROM illpic
                 WHERE step_num=? And ill_id=? ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$illnessId, $stepNum]);
+        $stmt->execute([$stepNum, $illnessId]);
 
         $pics = [];
 
@@ -410,7 +412,7 @@ class Reader extends Connection
         $sql = "SELECT vid_path FROM illvid
                 WHERE step_num=? And ill_id=? ";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$illnessId, $stepNum]);
+        $stmt->execute([$stepNum, $illnessId]);
 
         $vids = [];
 
@@ -547,7 +549,7 @@ class Reader extends Connection
             )];
         }
 
-        $sql = "SELECT id.ill_id,i.ill_name,i.class_name
+        $sql = "SELECT id.ill_id,i.ill_name,i.class_name,i.ill_describe
         		    FROM illness i INNER JOIN illdrug id
                 ON id.drug_id=? AND i.ill_id=id.ill_id ";
         $stmt = $this->db->prepare($sql);
@@ -559,7 +561,8 @@ class Reader extends Connection
             $illnesses[] = new IllnessRecord(
             	$row['ill_id'],
                 $row['ill_name'],
-            	$row['class_name']
+            	$row['class_name'],
+                $row['ill_describe']
             );
         }
 
@@ -577,7 +580,7 @@ class Reader extends Connection
             return [];
         }
 
-        $sql = "SELECT i.ill_name,i.class_name
+        $sql = "SELECT i.ill_id,i.ill_name,i.class_name,i.ill_describe
         		    FROM illness i INNER JOIN payments p
                  ON p.pay_id=? AND i.ill_id=p.ill_id ";
         $stmt = $this->db->prepare($sql);
@@ -587,9 +590,11 @@ class Reader extends Connection
 
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
         	$illnesses[] = new IllnessRecord(
-        			$row['ill_name'],
-        			$row['class_name']
-        			);
+                $row['ill_id'],
+    			$row['ill_name'],
+    			$row['class_name'],
+                $row['ill_describe']
+        	);
         }
 
         return $illnesses;
@@ -681,7 +686,47 @@ class Reader extends Connection
 
     public function findPaymentById(int $paymentId)
     {
+        $sql = "SELECT * FROM payments WHERE pay_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$paymentId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
 
+        return new Payment(
+             $result['pay_id'],
+             $result['ill_id'],
+             $result['pay_name'],
+             $result['pay_cost'],
+             $result['number']
+        );
+    }
+
+    public function findIllnessNameById(string $illnessId)
+    {
+        $sql = "SELECT ill_name FROM illness WHERE ill_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return $result['ill_name'];
+    }
+
+    public function findIllnessIdByName(string $illnessName)
+    {
+        $sql = "SELECT ill_id FROM illness WHERE ill_name = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$illnessName]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) {
+            return false;
+        }
+
+        return $result['ill_id'];
     }
 
 

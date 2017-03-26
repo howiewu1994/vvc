@@ -1,16 +1,16 @@
-{% extends 'base.twig' %}
+{% extends 'admin_base.twig' %}
 
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="col-sm-9">
     <div class="well">
         <h2>管理仪表板</h2>
         {# display error message if login failed #}
         {% include "inc/flash_messages.twig" %}
         <p>From this dashboard you can manage:</p>
         <table class="table">
-            <tr>
+        <tr>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/accounts">User Accounts</a></td>
@@ -19,23 +19,19 @@
             href="/admin/illnesses">Illness Records</a></td>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
-            href="/admin/drugs">Drug Details</a></td></tr>
-
-        <tr><td><a class="btn btn-lg btn-primary btn-block" role="button"
-            href="/admin/hospitalization" disabled>Hospitalization</a></td>
-
+            href="/admin/drugs">Drug Details</a></td>
+        </tr>
+        <tr>
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
-            href="/admin/payments" disabled>Payments</a></td>
+            href="/admin/payments">Payments</a></td>
 
         <td><a class="btn btn-lg btn-primary btn-block" role="button"
             href="/admin/uploads" disabled>Uploads</a></td>
 
-                <!-- <li><a href='/admin/accounts'>User accounts</a></li>
-                <li>Illness Records</li>
-                <li>Drug Details</li>
-                <li>住院管理</li>
-                <li>Payments</li>
-                <li>Uploads</li> -->
+        <td><a class="btn btn-lg btn-primary btn-block" role="button"
+            href="/admin/hospitalization" disabled>Hospitalization</a></td>
+        </tr>
+
     </div>
 </div>
 {% endblock %}

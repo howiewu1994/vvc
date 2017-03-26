@@ -1,0 +1,19 @@
+<tr>
+    <td>{{ pay.id }}</td>
+    <td>{{ pay.name }}</td>
+    <td><a href="/admin/illnesses/view/{{pay.illnessId}}">{{ pay.illnessName }}</a></td>
+    <td>{{ pay.cost }}元</td>
+    <td>{{ pay.number }}</td>
+    <td>{{ pay.total }}元</td>
+    <td class="col-sm-1">
+        <a class="btn btn-sm btn-primary" role="button" style="min-width: 60px"
+            href="/admin/payments/change/{{pay.id}}">Change</a>
+    </td>
+    <td class="col-sm-1">
+        <input class="btn btn-sm btn-danger" type="submit" style="min-width: 60px"
+            name="delete" value="Delete">
+    </td>
+    <td role="button" class="col-sm-1 checkable" style="text-align:center">
+        <input role="button" type="checkbox" name="id[]" value="{{ pay.id }}">
+    </td>
+</tr>

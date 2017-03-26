@@ -19,7 +19,9 @@
           <h5>Videos</h5>
           <ul>
               {% for vid in step.videos %}
-                  <li><img src="{{ vid }}"></li>
+                  <div class="embed-responsive embed-responsive-16by9">
+                      <iframe class="embed-responsive-item" src="{{vid}}"></iframe>
+                  </div>
               {% endfor %}
           </ul>
         {% endif %}

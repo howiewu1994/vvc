@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div>
         <h2>{{ ill.name }}</h2>
         <div class="media well">
             <div class="media-body">
@@ -22,7 +22,9 @@
         {% for step in ill.steps %}
             {% include "inc/illness_step.twig" %}
         {% endfor %}
-        {% include "/inc/illness_extra.twig" %}
+        {% if ill.drugs is not empty or ill.payments is not empty %}
+            {% include "/inc/illness_extra.twig" %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -5,6 +5,7 @@ class Payment
 {
     private $id = 0;
     private $illnessId = 0;
+    private $illnessName = '';
     private $name = 'Payment';
     private $cost = 0.0;
     private $number = 0;
@@ -42,7 +43,14 @@ class Payment
 
     public function getIllnessId() : int
     {
-        return $this->$illnessId;
+        return $this->illnessId;
+    }
+
+    public function getIllnessName() : string
+    {
+        return (new \VVC\Model\Database\Reader())->findIllnessNameById(
+            $this->getIllnessId()
+        );
     }
 
     public function getName() : string
