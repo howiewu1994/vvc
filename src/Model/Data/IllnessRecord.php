@@ -146,7 +146,7 @@ class IllnessRecord
         ksort($this->payments);
     }
 
-    public function getStay() : Stay
+    /*public function getStay() : Stay
     {
         return $this->stay;
     }
@@ -154,6 +154,6 @@ class IllnessRecord
     public function setStay(Stay $stay)
     {
         $this->stay = $stay;
-    }
+    }*/
 
 }
