@@ -2,3 +2,43 @@
 msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='0'
         		WHERE pay_id='119'' at line 5
 loc:  src\Model\Database\Updater.php [line 138]
+[2017-03-26 16:50:12] Database ERROR > Failed to change payment 8
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='1'
+        		WHERE pay_id='8'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 16:50:29] Auth ERROR > Failed to decode a cookie
+msg:  Wrong number of segments
+loc:  src\JWT.php [line 79]
+
+[2017-03-26 16:52:06] Database ERROR > Failed to change payment 7
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='2'
+        		WHERE pay_id='7'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 16:53:50] Database ERROR > Failed to change payment 7
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='2'
+        		WHERE pay_id='7'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 16:58:02] Database ERROR > Failed to change payment 7
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='22'
+        		WHERE pay_id='7'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 17:04:57] Database ERROR > Failed to change payment 8
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='1'
+        		WHERE pay_id='8'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 17:09:01] Database ERROR > Failed to change payment 8
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'number='1'
+        		WHERE pay_id='8'' at line 5
+loc:  src\Model\Database\Updater.php [line 138]
+
+[2017-03-26 17:11:11] Database ERROR > Failed to change payment 7
+msg:  SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '??
+        		    number='2'
+        		WHERE pay_id='7'' at line 4
+loc:  src\Model\Database\Updater.php [line 138]
+

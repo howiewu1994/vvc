@@ -177,9 +177,9 @@ class PaymentManager extends AdminController
             $this->flash('fail', 'Input contains invalid characters');
             return $this->showChangePaymentPage($paymentId);
         }
-
-        $illnessName = $post['illness'];
+        
         $name = $post['name'];
+        $illnessName = $post['illness'];
         $cost = $post['cost'];
         $number = $post['number'];
 
