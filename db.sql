@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS `payments`;
 CREATE TABLE `payments` (
   `pay_id` int(11) NOT NULL AUTO_INCREMENT,
   `ill_id` int(11) DEFAULT NULL,
-  `pay_name` varchar(12) DEFAULT NULL,
+  `pay_name` varchar(50) DEFAULT NULL,
   `pay_cost` float DEFAULT NULL,
   `number` int(11) DEFAULT NULL,
   PRIMARY KEY (`pay_id`)
