@@ -13,7 +13,9 @@ class Uploader
 
             while (false !== ($file = readdir($handle))) {
                 $fileInfo = pathinfo($file);
-                if (in_array($fileInfo['extension'], $extensions)) {
+                if (!empty($fileInfo['extension']) &&
+                    in_array($fileInfo['extension'], $extensions)
+                ) {
                     $files[] = $directory . $file;
                 }
             }
@@ -53,11 +55,12 @@ class Uploader
         return $file->move(ltrim($location, '/'), $name);
     }
 
-    public static function uploadDrugPic(
-        $controller, array $files, string $redirect
+    public static function uploadPicture(
+        string $dir,
+        $controller,
+        $tmp,
+        string $redirect
     ) {
-        $tmp = $files['drug_pic'];
-
         $ext = $tmp->getClientOriginalExtension();
         $mime = $tmp->getMimeType();
 
@@ -71,7 +74,7 @@ class Uploader
         }
 
         $filename = $tmp->getClientOriginalName();
-        $path = DRUG_DIRECTORY . $filename;
+        $path = $dir . $filename;
 
         if (file_exists($path)) {
             // DUP
@@ -81,7 +84,7 @@ class Uploader
             // $controller->showAccountListPage();
         }
 
-        $pic = self::uploadFile(DRUG_DIRECTORY, $filename, $tmp);
+        $pic = self::uploadFile($dir, $filename, $tmp);
 
         if (!$pic) {
             $controller->flash('fail', 'Upload failed');
@@ -89,6 +92,60 @@ class Uploader
         }
 
         return $filename;
+    }
+
+    public function uploadPictures(
+        string $dir,
+        $controller,
+        array $pics,
+        string $redirect
+    ) {
+        $good = [];
+        $bad = [];
+
+        foreach ($pics as $tmp) {
+            $ext = $tmp->getClientOriginalExtension();
+            $mime = $tmp->getMimeType();
+            $filename = $tmp->getClientOriginalName();
+            $path = ltrim($dir . $filename, '/');
+
+            if (!(in_array($mime, ['image/png', 'image/jpeg'])) ||
+                !(in_array($ext, ['png', 'jpg'])))
+            {
+                $bad['ext'][] = $filename;
+                continue;
+            }
+
+            if (file_exists($path)) {
+                $bad['duplicate'][] = $filename;
+                continue;
+            }
+
+            $pic = Uploader::uploadFile($dir, $filename, $tmp);
+
+            if (!$pic) {
+                $bad['fs'][] = $filename;
+                continue;
+            }
+
+            $good[] = $filename;
+        }
+
+        $controller->prepareGoodBatchResults($good, $pics, ['name']);
+        $controller->prepareBadBatchResults($bad, $pics, ['name']);
+
+        return Router::redirect($redirect);
+    }
+
+    public function deleteFile(string $fullPath)
+    {
+        $file = ltrim($fullPath, '/');
+        if (file_exists($file)) {
+            unlink($file);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static function isEmbedded(string $path)

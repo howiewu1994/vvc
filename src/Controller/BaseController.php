@@ -312,6 +312,28 @@ class BaseController
                             $badOut .= $this->getBatchResultsRow($item, $fields);
                         }
                         break;
+
+                    case 'fs' :
+                        $badOut .= "\n\nFile System failure:\n";
+                        for ($i = 0; $i < count($fields); $i++) {
+                            if ($i != 0) $badOut .= " - ";
+                            $badOut .= "[" . $fields[$i] . "]";
+                        }
+                        foreach ($items as $item) {
+                            $badOut .= $this->getBatchResultsRow($item, $fields);
+                        }
+                        break;
+
+                    case 'ext' :
+                        $badOut .= "\n\nWrong file extension\n";
+                        for ($i = 0; $i < count($fields); $i++) {
+                            if ($i != 0) $badOut .= " - ";
+                            $badOut .= "[" . $fields[$i] . "]";
+                        }
+                        foreach ($items as $item) {
+                            $badOut .= $this->getBatchResultsRow($item, $fields);
+                        }
+                        break;
                 }
             }
 

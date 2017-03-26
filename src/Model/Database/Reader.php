@@ -729,6 +729,23 @@ class Reader extends Connection
         return $result['ill_id'];
     }
 
+    public function getAllSteps()
+    {
+        $sql = "SELECT * FROM stepname";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $steps = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $steps[] = new Step(
+                $row['step_num'],
+            	$row['step_name']
+            );
+        }
+
+        return $steps;
+    }
+
 
     public function findUserByUsername_stub($username)
     {
